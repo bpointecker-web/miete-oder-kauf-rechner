@@ -1,0 +1,10 @@
+{
+  "name": "miete-oder-kauf-rechner",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Transparenter Mieten-vs-Kaufen-Vergleichsrechner für Österreich",
+  "scripts": {
+    "test": "node --test"
+  }
+}
