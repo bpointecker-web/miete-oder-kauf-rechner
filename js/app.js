@@ -25,6 +25,8 @@ export function appState() {
     init() {
       this.$watch('inputs.purchasePrice', () => this.syncPricePerSqm());
       this.$watch('inputs.livingAreaSqm', () => this.syncPricePerSqm());
+      this.$watch('inputs.equityAmount', () => this.syncEquityRatio());
+      this.$watch('inputs.purchasePrice', () => this.syncEquityRatio());
       this.$watch('inputs', () => this.recalculate(), { deep: true });
       this.recalculate();
     },
@@ -34,6 +36,14 @@ export function appState() {
       const { purchasePrice, livingAreaSqm } = this.inputs;
       if (livingAreaSqm > 0 && purchasePrice > 0) {
         this.inputs.pricePerSqm = Math.round(purchasePrice / livingAreaSqm);
+      }
+    },
+
+    // Hält equityRatioPct als abgeleiteten Wert in sync — calculator.js nutzt weiterhin equityRatioPct
+    syncEquityRatio() {
+      const { equityAmount, purchasePrice } = this.inputs;
+      if (purchasePrice > 0) {
+        this.inputs.equityRatioPct = parseFloat((equityAmount / purchasePrice * 100).toFixed(1));
       }
     },
 

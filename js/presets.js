@@ -95,7 +95,8 @@ export function createDefaultInputs(region) {
     notaryPct: 1.5,
 
     // Finanzierung
-    equityRatioPct: 20,
+    equityAmount: Math.round(purchasePrice * 0.20),  // primäres UI-Eingabefeld
+    equityRatioPct: 20,                              // wird via app.js aus equityAmount berechnet
     mortgageLienPct: 1.2,
     bankProcessingPct: 1.5,
     financeClosingCosts: false,
