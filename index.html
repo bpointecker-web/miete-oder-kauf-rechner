@@ -84,15 +84,27 @@
       <div class="form-section">
         <p class="form-section-title">Kaufnebenkosten (% vom Kaufpreis)</p>
         <div class="field-row">
-          <div class="field">
+          <div class="field" x-data="{ open: false }">
             <label>Grunderwerbsteuer</label>
             <input type="number" x-model.number="inputs.transferTaxPct" min="0" step="0.1">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 3,5 %</span> § 7 GrEStG 1987</p>
+            <p class="hint">
+              <span class="field-tag optional">Optional. Default: 3,5 %</span>
+              <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zur Grunderwerbsteuer">i</button>
+            </p>
+            <div class="info-panel" x-show="open">
+              Gesetzlicher Satz nach § 7 GrEStG 1987 für Käufe zum Marktpreis. Begünstigter Stufentarif gilt nur bei Erwerb innerhalb der Kernfamilie: 0,5 % bis 250.000 €, 2 % bis 400.000 €, 3,5 % darüber (§ 26a GGG).
+            </div>
           </div>
-          <div class="field">
+          <div class="field" x-data="{ open: false }">
             <label>Grundbucheintragung</label>
             <input type="number" x-model.number="inputs.landRegisterPct" min="0" step="0.1">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 1,1 %</span> § 26 Abs. 1 GBG</p>
+            <p class="hint">
+              <span class="field-tag optional">Optional. Default: 1,1 %</span>
+              <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zur Grundbucheintragung">i</button>
+            </p>
+            <div class="info-panel" x-show="open">
+              Eintragungsgebühr nach § 26 Abs. 1 GBG (1 % des Kaufpreises) plus Eingabegebühr (~22 € pauschal, hier vernachlässigt). Wird vom Grundbuchgericht eingehoben, nicht verhandelbar.
+            </div>
           </div>
           <div class="field" x-data="{ open: false }">
             <label>Makler (Kauf)</label>
