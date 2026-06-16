@@ -267,6 +267,20 @@ body {
 .results-table .row-label { color: var(--color-dark-text); font-weight: 500; }
 .hint-inline { font-size: .75rem; font-weight: 400; color: rgba(181,212,244,.5); display: block; }
 
+.field-tag {
+  display: inline;
+  font-size: .6875rem;
+  font-weight: 600;
+  margin-right: 3px;
+}
+.field-tag.required {
+  color: var(--color-primary);
+}
+.field-tag.optional {
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
 .results-breakeven {
   font-size: .875rem;
   color: var(--color-dark-text);
