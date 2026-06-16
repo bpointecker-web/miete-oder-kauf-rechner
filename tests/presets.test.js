@@ -6,7 +6,7 @@ import { runComparison } from '../js/calculator.js';
 const REQUIRED_FIELDS = [
   'region', 'pricePerSqm', 'livingAreaSqm',
   'transferTaxPct', 'landRegisterPct', 'brokerBuyPct', 'notaryPct',
-  'equityRatioPct', 'mortgageLienPct', 'bankProcessingPct', 'financeClosingCosts',
+  'equityAmount', 'equityRatioPct', 'mortgageLienPct', 'bankProcessingPct',
   'rateModel', 'interestRatePct', 'variableSwitchYear', 'variableRatePct',
   'loanTermYears', 'annualExtraRepayment',
   'ownerCostsPerSqm', 'operatingCostsPerSqm', 'appreciationPct',
@@ -30,8 +30,8 @@ test('createDefaultInputs: rentPerSqm aus pricePerSqm x rentalYieldPct, apprecia
   const wien = REGIONS['wien'];
   const inputs = createDefaultInputs('wien');
 
-  // Assert rentPerSqm: pricePerSqm * rentalYieldPct% / 12
-  const expectedRent = (wien.pricePerSqm * wien.rentalYieldPct) / 100 / 12;
+  // Assert rentPerSqm: pricePerSqm * rentalYieldPct% / 12, auf Cent gerundet
+  const expectedRent = Math.round((wien.pricePerSqm * wien.rentalYieldPct) / 100 / 12 * 100) / 100;
   assert.ok(
     Math.abs(inputs.rentPerSqm - expectedRent) < 0.0001,
     `Wien rentPerSqm: ${inputs.rentPerSqm}, erwartet: ${expectedRent}`

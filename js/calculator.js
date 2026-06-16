@@ -308,16 +308,26 @@ export function findBreakevenYear(buyerSeries, renterSeries) {
 /**
  * Leitet Startkapital, Kreditsumme, Mietkaution und Nebenkosten aus den Rohwerten ab.
  *
- * `Startkapital = Eigenkapital + Kaufnebenkosten + Finanzierungsnebenkosten` (Spec §1.1).
+ * **Mittelverwendung (ein einziges, intuitives Modell):** `equity` ist das gesamte
+ * Bargeld, das der Käufer einsetzt. Daraus werden zuerst Kauf- und
+ * Finanzierungsnebenkosten bezahlt; der Rest (`downPayment`) fließt als Anzahlung in
+ * den Kaufpreis und reduziert den Kredit. Geld ist fungibel — ob man die Nebenkosten
+ * gedanklich „aus dem Eigenkapital zahlt" oder „über den Kredit mitfinanziert", führt
+ * zu identischer Kreditsumme; deshalb gibt es keinen separaten „Nebenkosten
+ * mitfinanzieren"-Modus mehr.
  *
- * **Mindest-Eigenkapital-Validierung (Spec §2.2, D3):** Banken finanzieren die
- * Nebenkosten praktisch nicht mit ("keine 110%-Finanzierung"). Das Mindest-EK
- * entspricht daher `Kaufnebenkosten + Kaufpreis × Finanzierungsnebenkosten-Satz`
- * (Finanzierungsnebenkosten hier bewusst auf den vollen Kaufpreis bezogen, nicht
- * auf die ggf. noch unbekannte finale Kreditsumme — vermeidet Zirkelbezug und
- * entspricht der "≈11,8% bei Default-Sätzen"-Angabe der Spec).
- * Liegt das eingegebene Eigenkapital darunter, wird es intern auf den
- * Mindestwert angehoben und eine `warning` zurückgegeben.
+ * Da die Finanzierungsnebenkosten von der noch unbekannten Kredithöhe abhängen, ist
+ * die Gleichung nach `loanAmount` aufgelöst:
+ *   `loan = (purchasePrice − equity + closingCosts) / (1 − financingCostsPct/100)`
+ * Es gilt die Quell-/Verwendungs-Invariante `equity + loanAmount = purchasePrice +
+ * closingCosts + financingCosts`.
+ *
+ * **Plausibilitätsprüfung:** Reicht das Eigenkapital nicht einmal für die Nebenkosten
+ * (`downPayment < 0`), läge der Kredit über dem Kaufpreis (>100%-Finanzierung) — in
+ * Österreich praktisch nicht vergeben. In diesem Fall wird eine `warning`
+ * zurückgegeben (kein stilles Anheben — der eingegebene Wert bleibt sichtbar).
+ *
+ * `startCapital` = `equity` (beide Vergleichsseiten setzen dasselbe Bargeld ein).
  *
  * @param {object} inputs
  * @param {number} inputs.pricePerSqm
@@ -331,15 +341,10 @@ export function findBreakevenYear(buyerSeries, renterSeries) {
  * @param {number} inputs.bankProcessingPct
  * @param {number} inputs.rentPerSqm
  * @param {number} inputs.depositMonths
- * @param {boolean} [inputs.financeClosingCosts=false] - falls true, deckt der Kredit
- *   zusätzlich Kauf- und Finanzierungsnebenkosten ab (z.B. wenn das Eigenkapital
- *   exakt dem Kaufpreis-Anteil entsprechen soll, etwa Erlös aus einem Wohnungsverkauf).
- *   Die EK-Mindestprüfung entfällt in diesem Modus, da ihr Zweck (Nebenkosten aus
- *   EK decken) hier über den Kredit gelöst wird.
  * @returns {{
  *   purchasePrice: number, equity: number, loanAmount: number,
- *   closingCosts: number, financingCosts: number, startCapital: number,
- *   monthlyRent: number, deposit: number,
+ *   closingCosts: number, financingCosts: number, downPayment: number,
+ *   startCapital: number, monthlyRent: number, deposit: number,
  *   warnings: Array<{code: string, message: string}>
  * }}
  */
@@ -355,7 +360,6 @@ export function deriveStartCapital({
   bankProcessingPct,
   rentPerSqm,
   depositMonths,
-  financeClosingCosts = false,
 }) {
   const purchasePrice = pricePerSqm * livingAreaSqm;
   const closingCostsPct = transferTaxPct + landRegisterPct + brokerBuyPct + notaryPct;
@@ -363,28 +367,21 @@ export function deriveStartCapital({
 
   const closingCosts = purchasePrice * (closingCostsPct / 100);
 
-  const warnings = [];
-  let equity = purchasePrice * (equityRatioPct / 100);
+  // Eigenkapital = gesamtes Bargeld. Nebenkosten zuerst daraus bezahlen, Rest als
+  // Anzahlung → Kredit nach loanAmount aufgelöst (Finanzierungsnebenkosten hängen
+  // von der Kredithöhe ab).
+  const equity = purchasePrice * (equityRatioPct / 100);
+  const loanAmount = (purchasePrice - equity + closingCosts) / (1 - financingCostsPct / 100);
+  const financingCosts = loanAmount * (financingCostsPct / 100);
+  const downPayment = equity - closingCosts - financingCosts;
+  const startCapital = equity;
 
-  let loanAmount, financingCosts, startCapital;
-  if (financeClosingCosts) {
-    // loanAmount = (Kaufpreisanteil + Kaufnebenkosten + loanAmount*financingCostsPct%)
-    // -> aufgelöst nach loanAmount:
-    loanAmount = (purchasePrice - equity + closingCosts) / (1 - financingCostsPct / 100);
-    financingCosts = loanAmount * (financingCostsPct / 100);
-    startCapital = equity;
-  } else {
-    const minEquity = closingCosts + purchasePrice * (financingCostsPct / 100);
-    if (equity < minEquity) {
-      warnings.push({
-        code: 'EQUITY_BELOW_MINIMUM',
-        message: `Mindest-Eigenkapital beträgt ${minEquity.toFixed(2)} € (Nebenkosten werden von Banken praktisch nicht mitfinanziert, keine 110%-Finanzierung). Eigenkapitalquote wurde automatisch angehoben.`,
-      });
-      equity = minEquity;
-    }
-    loanAmount = purchasePrice - equity;
-    financingCosts = loanAmount * (financingCostsPct / 100);
-    startCapital = equity + closingCosts + financingCosts;
+  const warnings = [];
+  if (downPayment < 0) {
+    warnings.push({
+      code: 'EQUITY_BELOW_COSTS',
+      message: `Das Eigenkapital (${equity.toFixed(0)} €) deckt nicht einmal die Nebenkosten (${(closingCosts + financingCosts).toFixed(0)} €). Das entspräche einer Über-100%-Finanzierung, die österreichische Banken praktisch nicht vergeben. Bitte mehr Eigenkapital ansetzen.`,
+    });
   }
 
   const monthlyRent = rentPerSqm * livingAreaSqm;
@@ -396,6 +393,7 @@ export function deriveStartCapital({
     loanAmount,
     closingCosts,
     financingCosts,
+    downPayment,
     startCapital,
     monthlyRent,
     deposit,
@@ -523,6 +521,7 @@ export function runComparison(inputs) {
       loanAmount: derived.loanAmount,
       closingCosts: derived.closingCosts,
       financingCosts: derived.financingCosts,
+      downPayment: derived.downPayment,
       startCapital: derived.startCapital,
       monthlyRent: derived.monthlyRent,
       deposit: derived.deposit,

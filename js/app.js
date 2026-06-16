@@ -39,11 +39,14 @@ export function appState() {
       }
     },
 
-    // Hält equityRatioPct als abgeleiteten Wert in sync — calculator.js nutzt weiterhin equityRatioPct
+    // Hält equityRatioPct als abgeleiteten Wert in sync — calculator.js nutzt weiterhin
+    // equityRatioPct. Bewusst volle Präzision speichern (nicht runden!), damit der
+    // Rechenkern exakt das eingegebene equityAmount rekonstruiert; gerundet wird nur
+    // in der Anzeige (readonly-Feld via toFixed(1)).
     syncEquityRatio() {
       const { equityAmount, purchasePrice } = this.inputs;
       if (purchasePrice > 0) {
-        this.inputs.equityRatioPct = parseFloat((equityAmount / purchasePrice * 100).toFixed(1));
+        this.inputs.equityRatioPct = (equityAmount / purchasePrice) * 100;
       }
     },
 

@@ -182,13 +182,36 @@
             <p class="hint">% des Kaufpreises (berechnet)</p>
           </div>
         </div>
-        <div class="field-check">
-          <input type="checkbox" id="financeClosingCosts" x-model="inputs.financeClosingCosts">
-          <label for="financeClosingCosts">Nebenkosten über Kredit mitfinanzieren</label>
+        <!-- Live-Mittelverwendung: macht sichtbar, wohin das Eigenkapital fließt -->
+        <div class="fund-usage" x-show="results" x-cloak>
+          <p class="fund-usage-title">Mittelverwendung</p>
+          <ul>
+            <li>
+              <span>Eigenkapital (gesamtes Bargeld)</span>
+              <span x-text="formatEur(results.derived.equity)"></span>
+            </li>
+            <li class="minus">
+              <span>− Kaufnebenkosten (GrESt, Makler, Notar, Grundbuch)</span>
+              <span x-text="'−' + formatEur(results.derived.closingCosts)"></span>
+            </li>
+            <li class="minus">
+              <span>− Finanzierungsnebenkosten</span>
+              <span x-text="'−' + formatEur(results.derived.financingCosts)"></span>
+            </li>
+            <li class="sum">
+              <span>= fließt in den Kaufpreis (Anzahlung)</span>
+              <span x-text="formatEur(results.derived.downPayment)"></span>
+            </li>
+            <li class="loan">
+              <span>→ benötigte Kreditsumme</span>
+              <span x-text="formatEur(results.derived.loanAmount)"></span>
+            </li>
+          </ul>
+          <p class="fund-usage-note">
+            Tipp: Wer die Nebenkosten über den Kredit „mitfinanzieren" will, trägt einfach
+            entsprechend weniger Eigenkapital ein – die Kreditsumme passt sich automatisch an.
+          </p>
         </div>
-        <p class="hint" style="margin-top:-.25rem; margin-bottom:.75rem;">
-          <span class="field-tag optional">Default: Nein</span> Kredit deckt Kaufpreis-Anteil + alle Nebenkosten (z.B. bei Verkauf der Vorwohnung)
-        </p>
       </div>
 
       <div class="form-section">

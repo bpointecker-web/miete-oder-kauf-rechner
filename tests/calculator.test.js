@@ -509,21 +509,28 @@ test('deriveStartCapital: Default-Beispiel (Wien) rechnerisch korrekt, kein Warn
   assert.equal(derived.purchasePrice, 385000);
   // closingCosts = 385.000 * 9,1% = 35.035
   assert.ok(Math.abs(derived.closingCosts - 35035) < 0.001, `closingCosts: ${derived.closingCosts}`);
-  // equity = 385.000 * 20% = 77.000 (oberhalb Mindest-EK ~45.430 -> kein Warning)
+  // equity = gesamtes Bargeld = 385.000 * 20% = 77.000 (deckt Nebenkosten -> kein Warning)
   assert.equal(derived.equity, 77000);
   assert.equal(derived.warnings.length, 0);
-  // loanAmount = 385.000 - 77.000 = 308.000
-  assert.equal(derived.loanAmount, 308000);
-  // financingCosts = 308.000 * 2,7% = 8.316
-  assert.ok(Math.abs(derived.financingCosts - 8316) < 0.001, `financingCosts: ${derived.financingCosts}`);
-  // startCapital = 77.000 + 35.035 + 8.316 = 120.351
-  assert.ok(Math.abs(derived.startCapital - 120351) < 0.001, `startCapital: ${derived.startCapital}`);
+  // loanAmount = (385.000 - 77.000 + 35.035) / (1 - 2,7%) = 343.035 / 0,973
+  const expectedLoan = (385000 - 77000 + 35035) / (1 - 0.027);
+  assert.ok(Math.abs(derived.loanAmount - expectedLoan) < 0.001, `loanAmount: ${derived.loanAmount}`);
+  // financingCosts = loanAmount * 2,7%
+  assert.ok(Math.abs(derived.financingCosts - expectedLoan * 0.027) < 0.001, `financingCosts: ${derived.financingCosts}`);
+  // downPayment = 77.000 - closingCosts - financingCosts (Rest fließt in den Kaufpreis)
+  assert.ok(Math.abs(derived.downPayment - (77000 - 35035 - expectedLoan * 0.027)) < 0.001, `downPayment: ${derived.downPayment}`);
+  // startCapital = equity (beide Seiten setzen dasselbe Bargeld ein)
+  assert.equal(derived.startCapital, 77000);
+  // Quell-/Verwendungs-Invariante: equity + loan = purchasePrice + closingCosts + financingCosts
+  assert.ok(
+    Math.abs((derived.equity + derived.loanAmount) - (derived.purchasePrice + derived.closingCosts + derived.financingCosts)) < 0.001
+  );
   // monthlyRent = 13.5 * 70 = 945, deposit = 945 * 3 = 2.835
   assert.equal(derived.monthlyRent, 945);
   assert.equal(derived.deposit, 2835);
 });
 
-test('deriveStartCapital: Eigenkapital unter Mindestwert wird automatisch angehoben + Warning', () => {
+test('deriveStartCapital: Eigenkapital unter den Nebenkosten -> Warning, kein stilles Anheben', () => {
   // Arrange
   const inputs = {
     pricePerSqm: 5500,
@@ -532,7 +539,7 @@ test('deriveStartCapital: Eigenkapital unter Mindestwert wird automatisch angeho
     landRegisterPct: 1.1,
     brokerBuyPct: 3.0,
     notaryPct: 1.5,
-    equityRatioPct: 5, // deutlich unter Mindest-EK
+    equityRatioPct: 5, // 19.250 EUR < Nebenkosten -> Ueber-100%-Finanzierung
     mortgageLienPct: 1.2,
     bankProcessingPct: 1.5,
     rentPerSqm: 13.5,
@@ -543,21 +550,19 @@ test('deriveStartCapital: Eigenkapital unter Mindestwert wird automatisch angeho
   const derived = deriveStartCapital(inputs);
 
   // Assert
-  // Mindest-EK = closingCosts (35.035) + 385.000 * 2,7% (10.395) = 45.430
-  // eingegebenes EK = 385.000 * 5% = 19.250 < 45.430 -> wird angehoben
-  assert.ok(Math.abs(derived.equity - 45430) < 0.001, `equity: ${derived.equity}`);
+  // equity bleibt unveraendert (kein stilles Anheben mehr) = 385.000 * 5% = 19.250
+  assert.equal(derived.equity, 19250);
   assert.equal(derived.warnings.length, 1);
-  assert.equal(derived.warnings[0].code, 'EQUITY_BELOW_MINIMUM');
-  // loanAmount = 385.000 - 45.430 = 339.570
-  assert.ok(Math.abs(derived.loanAmount - 339570) < 0.001, `loanAmount: ${derived.loanAmount}`);
+  assert.equal(derived.warnings[0].code, 'EQUITY_BELOW_COSTS');
+  // downPayment ist negativ -> Kredit liegt ueber dem Kaufpreis (>100%-Finanzierung)
+  assert.ok(derived.downPayment < 0, `downPayment: ${derived.downPayment}`);
+  assert.ok(derived.loanAmount > derived.purchasePrice, `loanAmount: ${derived.loanAmount}`);
 });
 
-test('deriveStartCapital: financeClosingCosts=true finanziert Nebenkosten ueber den Kredit mit', () => {
-  // Arrange
-  // Kaufpreis 1.000.000 EUR, Eigenkapital 50% = 500.000 EUR (z.B. Erloes aus Wohnungsverkauf).
-  // closingCostsPct = 3,5+1,1+3,0+1,5 = 9,1% -> closingCosts = 91.000 EUR
-  // financingCostsPct = 1,2+1,5 = 2,7%
-  // loanAmount = (500.000 + 91.000) / (1 - 2,7%) = 591.000 / 0,973 = 607.399,7924...
+test('deriveStartCapital: Nebenkosten "mitfinanzieren" = weniger Eigenkapital eintragen (identische Kreditsumme)', () => {
+  // Geld ist fungibel: ob Nebenkosten gedanklich aus dem Eigenkapital oder ueber den
+  // Kredit bezahlt werden, fuehrt bei gleichem Bargeldeinsatz zur gleichen Kreditsumme.
+  // Kaufpreis 1.000.000 EUR, Eigenkapital 500.000 EUR (z.B. Erloes aus Wohnungsverkauf).
   const inputs = {
     pricePerSqm: 10000,
     livingAreaSqm: 100,
@@ -570,7 +575,6 @@ test('deriveStartCapital: financeClosingCosts=true finanziert Nebenkosten ueber 
     bankProcessingPct: 1.5,
     rentPerSqm: 13.5,
     depositMonths: 3,
-    financeClosingCosts: true,
   };
 
   // Act
@@ -580,16 +584,16 @@ test('deriveStartCapital: financeClosingCosts=true finanziert Nebenkosten ueber 
   assert.equal(derived.purchasePrice, 1000000);
   assert.equal(derived.equity, 500000);
   assert.equal(derived.closingCosts, 91000);
+  // loanAmount = (1.000.000 - 500.000 + 91.000) / (1 - 2,7%) = 591.000 / 0,973
   const expectedLoan = 591000 / (1 - 0.027);
   assert.ok(Math.abs(derived.loanAmount - expectedLoan) < 0.001, `loanAmount: ${derived.loanAmount}`);
   assert.ok(
     Math.abs(derived.financingCosts - expectedLoan * 0.027) < 0.001,
     `financingCosts: ${derived.financingCosts}`
   );
-  // Bargeldbedarf = nur das Eigenkapital, da Nebenkosten ueber Kredit laufen
+  // Bargeldeinsatz = Eigenkapital (beide Vergleichsseiten setzen dasselbe ein)
   assert.equal(derived.startCapital, 500000);
-  // Kreditsumme deckt Kaufpreisanteil + alle Nebenkosten:
-  // equity + loanAmount = purchasePrice + closingCosts + financingCosts
+  // Quell-/Verwendungs-Invariante: equity + loan = purchasePrice + closingCosts + financingCosts
   assert.ok(
     Math.abs((derived.equity + derived.loanAmount) - (derived.purchasePrice + derived.closingCosts + derived.financingCosts)) < 0.001
   );
@@ -603,13 +607,16 @@ test('runComparison: "Golden Master" Referenzszenario (Default Wien, 30 Jahre)',
   // Act
   const results = runComparison(inputs);
 
-  // Assert: Bottom-Line-Kennzahlen (eingefroren, Stand A11)
+  // Assert: Bottom-Line-Kennzahlen (eingefroren, Stand A11 — neu kalibriert nach
+  // Umstellung "Eigenkapital = gesamtes Bargeld"). Käufer-Werte unveraendert, da der
+  // Kredit bei Laufzeit = Horizont voll getilgt ist und das Käufer-Portfolio 0 bleibt;
+  // nur die Mieter-Seite aendert sich (investiert 77.000 statt zuvor 120.351).
   assert.ok(Math.abs(results.buyerNetWealthNominal - 783336.61) < 0.01, `buyerNetWealthNominal: ${results.buyerNetWealthNominal}`);
-  assert.ok(Math.abs(results.renterNetWealthNominal - 1071479.34) < 0.01, `renterNetWealthNominal: ${results.renterNetWealthNominal}`);
-  assert.ok(Math.abs(results.differenceNominal - -288142.73) < 0.01, `differenceNominal: ${results.differenceNominal}`);
+  assert.ok(Math.abs(results.renterNetWealthNominal - 1035781.69) < 0.01, `renterNetWealthNominal: ${results.renterNetWealthNominal}`);
+  assert.ok(Math.abs(results.differenceNominal - -252445.08) < 0.01, `differenceNominal: ${results.differenceNominal}`);
   assert.ok(Math.abs(results.buyerNetWealthReal - 432457.34) < 0.01, `buyerNetWealthReal: ${results.buyerNetWealthReal}`);
-  assert.ok(Math.abs(results.renterNetWealthReal - 591532.55) < 0.01, `renterNetWealthReal: ${results.renterNetWealthReal}`);
-  assert.ok(Math.abs(results.differenceReal - -159075.21) < 0.01, `differenceReal: ${results.differenceReal}`);
+  assert.ok(Math.abs(results.renterNetWealthReal - 571824.92) < 0.01, `renterNetWealthReal: ${results.renterNetWealthReal}`);
+  assert.ok(Math.abs(results.differenceReal - -139367.58) < 0.01, `differenceReal: ${results.differenceReal}`);
   // Bei den Default-Annahmen (Anlagerendite 6% > Wertsteigerung 2,5%) bleibt der
   // Mieter ueber den gesamten Horizont vorne -> kein Breakeven
   assert.equal(results.breakevenYear, null);
@@ -618,10 +625,12 @@ test('runComparison: "Golden Master" Referenzszenario (Default Wien, 30 Jahre)',
   // Assert: derived
   assert.equal(results.derived.purchasePrice, 385000);
   assert.equal(results.derived.equity, 77000);
-  assert.equal(results.derived.loanAmount, 308000);
+  const expectedLoan = (385000 - 77000 + 35035) / (1 - 0.027);
+  assert.ok(Math.abs(results.derived.loanAmount - expectedLoan) < 0.001, `loanAmount: ${results.derived.loanAmount}`);
   assert.ok(Math.abs(results.derived.closingCosts - 35035) < 0.001);
-  assert.ok(Math.abs(results.derived.financingCosts - 8316) < 0.001);
-  assert.ok(Math.abs(results.derived.startCapital - 120351) < 0.001);
+  assert.ok(Math.abs(results.derived.financingCosts - expectedLoan * 0.027) < 0.001);
+  assert.ok(Math.abs(results.derived.downPayment - (77000 - 35035 - expectedLoan * 0.027)) < 0.001);
+  assert.equal(results.derived.startCapital, 77000);
   assert.equal(results.derived.monthlyRent, 945);
   assert.equal(results.derived.deposit, 2835);
 

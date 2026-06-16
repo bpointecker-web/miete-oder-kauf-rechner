@@ -99,7 +99,6 @@ export function createDefaultInputs(region) {
     equityRatioPct: 20,                              // wird via app.js aus equityAmount berechnet
     mortgageLienPct: 1.2,
     bankProcessingPct: 1.5,
-    financeClosingCosts: false,
     rateModel: 'fixed',
     interestRatePct: 3.5,
     variableSwitchYear: 10,
