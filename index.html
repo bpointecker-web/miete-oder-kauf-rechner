@@ -92,7 +92,8 @@
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zur Grunderwerbsteuer">i</button>
             </p>
             <div class="info-panel" x-show="open">
-              Gesetzlicher Satz nach § 7 GrEStG 1987 für Käufe zum Marktpreis. Begünstigter Stufentarif gilt nur bei Erwerb innerhalb der Kernfamilie: 0,5 % bis 250.000 €, 2 % bis 400.000 €, 3,5 % darüber (§ 26a GGG).
+              Gesetzlicher Satz nach § 7 GrEStG 1987. Für normale Käufe zum Marktpreis gilt immer pauschal 3,5 % — unabhängig vom Kaufpreis.<br><br>
+              Nur bei Schenkung, Erbschaft oder Übergabe innerhalb der Kernfamilie gilt ein begünstigter Stufentarif (0,5 % / 2 % / 3,5 %) auf den Grundstückswert. Für einen normalen Immobilienkauf ist dieser Fall nicht relevant.
             </div>
           </div>
           <div class="field" x-data="{ open: false }">
