@@ -76,7 +76,7 @@
           <div class="field">
             <label>Preis pro m²</label>
             <input type="number" readonly :value="inputs.livingAreaSqm > 0 ? Math.round(inputs.purchasePrice / inputs.livingAreaSqm) : 0">
-            <p class="hint">€/m² (berechnet)</p>
+            <p class="hint">€/m² (berechnet) · Preset-Wert: Schätzwert Bestandswohnungen ~2025 (immopreise.at). Bitte prüfen und anpassen.</p>
           </div>
         </div>
       </div>
@@ -87,22 +87,22 @@
           <div class="field">
             <label>Grunderwerbsteuer</label>
             <input type="number" x-model.number="inputs.transferTaxPct" min="0" step="0.1">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 3,5 %</span> gesetzlicher Satz</p>
+            <p class="hint"><span class="field-tag optional">Optional. Default: 3,5 %</span> § 7 GrEStG 1987</p>
           </div>
           <div class="field">
             <label>Grundbucheintragung</label>
             <input type="number" x-model.number="inputs.landRegisterPct" min="0" step="0.1">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 1,1 %</span> gesetzlicher Satz</p>
+            <p class="hint"><span class="field-tag optional">Optional. Default: 1,1 %</span> § 26 Abs. 1 GBG (1 % + 1,1 ‰ Eingabegebühr)</p>
           </div>
           <div class="field">
             <label>Makler (Kauf)</label>
             <input type="number" x-model.number="inputs.brokerBuyPct" min="0" step="0.1">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 3,0 %</span> (0 wenn ohne Makler)</p>
+            <p class="hint"><span class="field-tag optional">Optional. Default: 3,0 %</span> gesetzl. Max. (§ 15 MaklerG); 0 wenn ohne Makler</p>
           </div>
           <div class="field">
             <label>Notar/Rechtsanwalt</label>
             <input type="number" x-model.number="inputs.notaryPct" min="0" step="0.1">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 1,5 %</span></p>
+            <p class="hint"><span class="field-tag optional">Optional. Default: 1,5 %</span> Schätzwert, variiert je Notar/RA und Aufwand</p>
           </div>
           <div class="field">
             <label>Nebenkosten gesamt</label>
@@ -119,7 +119,13 @@
           <div class="field">
             <label>Wertsteigerung p.a.</label>
             <input type="number" x-model.number="inputs.appreciationPct" step="0.1">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 2,5 % p.a.</span> · Eurostat 10J-Ø (inkl. Corona-Boom): <span x-text="inputs.eurostatAppreciationPct?.toFixed(2)"></span>%</p>
+            <p class="hint">
+              <span class="field-tag optional">Optional. Default: 2,5 % p.a.</span>
+              Konservativer Langfrist-Schätzwert für Österreich.<br>
+              Zum Vergleich: Eurostat AT-Wohnimmobilienpreisindex (prc_hpi_q), gleitender 10J-Schnitt: <strong x-text="inputs.eurostatAppreciationPct?.toFixed(2)"></strong> % —
+              dieser Schnitt enthält den Corona-Boom 2020–2022 (zwischenzeitlich +15 %/Jahr) und überzeichnet die langfristige Erwartung.
+              Für einen 30J-Horizont ist 2,5 % als Basis daher realistischer.
+            </p>
           </div>
         </div>
       </div>
@@ -184,7 +190,7 @@
           <div class="field">
             <label x-text="inputs.rateModel === 'fixed' ? 'Fixzins' : 'Startzins'"></label>
             <input type="number" x-model.number="inputs.interestRatePct" min="0" step="0.1">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 3,5 % p.a.</span></p>
+            <p class="hint"><span class="field-tag optional">Optional. Default: 3,5 % p.a.</span> AT-Marktdurchschnitt Fixzins 25J, Stand Mitte 2025 (Quelle: OeNB/Bankstellenbericht)</p>
           </div>
           <div class="field">
             <label>Laufzeit</label>
@@ -224,12 +230,15 @@
           <div class="field">
             <label>Eigentümerkosten</label>
             <input type="number" x-model.number="inputs.ownerCostsPerSqm" min="0" step="0.05">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 2,75 €/m²/Monat</span> Instandhaltung, Versicherung, Grundsteuer …</p>
+            <p class="hint">
+              <span class="field-tag optional">Optional. Default: 2,75 €/m²/Monat</span>
+              Aufschlüsselung (≈ 1,5 % des Kaufpreises/Jahr): Instandhaltungsrücklage ~0,7 %, Gebäudeversicherung ~0,2 %, Grundsteuer ~0,1 %, Hausverwaltung/Sonstiges ~0,5 %
+            </p>
           </div>
           <div class="field">
             <label>Betriebskosten</label>
             <input type="number" x-model.number="inputs.operatingCostsPerSqm" min="0" step="0.05">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 2,20 €/m²/Monat</span> Wasser, Müll, Hausbetreuung …</p>
+            <p class="hint"><span class="field-tag optional">Optional. Default: 2,20 €/m²/Monat</span> Wasser, Abwasser, Müll, Hausbetreuung, Aufzug – entspricht AT-Durchschnitt laut WKO/IV (Stand 2024)</p>
           </div>
         </div>
       </div>
@@ -271,7 +280,10 @@
           <div class="field">
             <label>Miete pro m²</label>
             <input type="number" x-model.number="inputs.rentPerSqm" min="1" step="0.5">
-            <p class="hint"><span class="field-tag optional">Optional. Default: aus Kaufpreis × Bruttorendite</span> €/m²/Monat brutto</p>
+            <p class="hint">
+              <span class="field-tag optional">Optional. Default: Kaufpreis/m² × <span x-text="inputs.rentalYieldPct?.toFixed(1)"></span>% Bruttorendite ÷ 12</span>
+              €/m²/Monat brutto (inkl. Betriebskosten) · Bruttorendite: Schätzwert ~2025 (willhaben.at/immopreise.at Mietinserate)
+            </p>
           </div>
           <div class="field">
             <label>Monatsmiete gesamt</label>
@@ -301,17 +313,17 @@
           <div class="field">
             <label>Inflation p.a.</label>
             <input type="number" x-model.number="inputs.inflationPct" step="0.1">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 2,0 % p.a.</span> gilt für Miete + Eigentümerkosten</p>
+            <p class="hint"><span class="field-tag optional">Optional. Default: 2,0 % p.a.</span> EZB-Inflationsziel (symmetrisch, seit 2021); gilt für Miete + Eigentümerkosten</p>
           </div>
           <div class="field">
             <label>Anlagerendite p.a.</label>
             <input type="number" x-model.number="inputs.investmentReturnPct" step="0.1">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 6,0 % p.a.</span> nominal, Mieter-Portfolio</p>
+            <p class="hint"><span class="field-tag optional">Optional. Default: 6,0 % p.a.</span> nominal · MSCI World (EUR) historisch ~9 % brutto p.a.; 6 % nach Kosten und Sicherheitsabschlag für die Zukunft</p>
           </div>
           <div class="field">
             <label>KESt auf Gewinne</label>
             <input type="number" x-model.number="inputs.kestPct" min="0" max="100" step="0.5">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 27,5 %</span> gesetzlicher Satz in Österreich</p>
+            <p class="hint"><span class="field-tag optional">Optional. Default: 27,5 %</span> gesetzlicher Satz auf Kapitalerträge (§ 27a EStG)</p>
           </div>
         </div>
       </div>

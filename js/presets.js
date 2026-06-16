@@ -75,7 +75,7 @@ export function createDefaultInputs(region) {
     throw new Error(`Unbekannte Region: "${region}". Gültig: ${Object.keys(REGIONS).join(', ')}`);
   }
 
-  const rentPerSqm = (preset.pricePerSqm * preset.rentalYieldPct) / 100 / 12;
+  const rentPerSqm = Math.round((preset.pricePerSqm * preset.rentalYieldPct) / 100 / 12 * 100) / 100;
 
   const livingAreaSqm = 70;
   const purchasePrice = preset.pricePerSqm * livingAreaSqm;
@@ -86,6 +86,7 @@ export function createDefaultInputs(region) {
     purchasePrice,                      // primäres UI-Eingabefeld
     pricePerSqm: preset.pricePerSqm,   // vom UI aus purchasePrice/area berechnet
     livingAreaSqm,
+    rentalYieldPct: preset.rentalYieldPct, // für UI-Hint sichtbar machen
 
     // Kaufnebenkosten (Prozent vom Kaufpreis)
     transferTaxPct: 3.5,
