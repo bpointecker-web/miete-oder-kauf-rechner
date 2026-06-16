@@ -88,7 +88,7 @@
             <label>Grunderwerbsteuer</label>
             <input type="number" x-model.number="inputs.transferTaxPct" min="0" step="0.1">
             <p class="hint">
-              <span class="field-tag optional">Optional. Default: 3,5 %</span>
+              <span class="field-tag optional">Default: 3,5 %</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zur Grunderwerbsteuer">i</button>
             </p>
             <div class="info-panel" x-show="open">
@@ -100,7 +100,7 @@
             <label>Grundbucheintragung</label>
             <input type="number" x-model.number="inputs.landRegisterPct" min="0" step="0.1">
             <p class="hint">
-              <span class="field-tag optional">Optional. Default: 1,1 %</span>
+              <span class="field-tag optional">Default: 1,1 %</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zur Grundbucheintragung">i</button>
             </p>
             <div class="info-panel" x-show="open">
@@ -111,7 +111,7 @@
             <label>Makler (Kauf)</label>
             <input type="number" x-model.number="inputs.brokerBuyPct" min="0" step="0.1">
             <p class="hint">
-              <span class="field-tag optional">Optional. Default: 3,0 %</span>
+              <span class="field-tag optional">Default: 3,0 %</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zur Maklerprovision">i</button>
             </p>
             <div class="info-panel" x-show="open">
@@ -122,7 +122,7 @@
             <label>Notar/Rechtsanwalt</label>
             <input type="number" x-model.number="inputs.notaryPct" min="0" step="0.1">
             <p class="hint">
-              <span class="field-tag optional">Optional. Default: 1,5 %</span>
+              <span class="field-tag optional">Default: 1,5 %</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zu Notar/RA">i</button>
             </p>
             <div class="info-panel" x-show="open">
@@ -145,7 +145,7 @@
             <label>Wertsteigerung p.a.</label>
             <input type="number" x-model.number="inputs.appreciationPct" step="0.1">
             <p class="hint">
-              <span class="field-tag optional">Optional. Default: je Region – siehe Infotext</span>
+              <span class="field-tag optional">Default: je Region – siehe Infotext</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Warum 2,5 %?">i</button>
             </p>
             <div class="info-panel" x-show="open">
@@ -188,7 +188,7 @@
           <label for="financeClosingCosts">Nebenkosten über Kredit mitfinanzieren</label>
         </div>
         <p class="hint" style="margin-top:-.25rem; margin-bottom:.75rem;">
-          <span class="field-tag optional">Optional. Default: Nein</span> Kredit deckt Kaufpreis-Anteil + alle Nebenkosten (z.B. bei Verkauf der Vorwohnung)
+          <span class="field-tag optional">Default: Nein</span> Kredit deckt Kaufpreis-Anteil + alle Nebenkosten (z.B. bei Verkauf der Vorwohnung)
         </p>
       </div>
 
@@ -198,12 +198,12 @@
           <div class="field">
             <label>Pfandrechtseintragung</label>
             <input type="number" x-model.number="inputs.mortgageLienPct" min="0" step="0.1">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 1,2 %</span> § 26 Abs. 1 GBG</p>
+            <p class="hint"><span class="field-tag optional">Default: 1,2 %</span> § 26 Abs. 1 GBG</p>
           </div>
           <div class="field">
             <label>Bankbearbeitung</label>
             <input type="number" x-model.number="inputs.bankProcessingPct" min="0" step="0.1">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 1,5 %</span> marktüblich, variiert je Bank</p>
+            <p class="hint"><span class="field-tag optional">Default: 1,5 %</span> marktüblich, variiert je Bank</p>
           </div>
         </div>
       </div>
@@ -224,7 +224,7 @@
             <label x-text="inputs.rateModel === 'fixed' ? 'Fixzins' : 'Startzins'"></label>
             <input type="number" x-model.number="inputs.interestRatePct" min="0" step="0.1">
             <p class="hint">
-              <span class="field-tag optional">Optional. Default: 3,5 % p.a.</span>
+              <span class="field-tag optional">Default: 3,5 % p.a.</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Woher kommt der Zinssatz?">i</button>
             </p>
             <div class="info-panel" x-show="open">
@@ -234,12 +234,12 @@
           <div class="field">
             <label>Laufzeit</label>
             <input type="number" x-model.number="inputs.loanTermYears" min="5" max="35" step="1">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 30 Jahre</span></p>
+            <p class="hint"><span class="field-tag optional">Default: 30 Jahre</span></p>
           </div>
           <div class="field">
             <label>Sondertilgung</label>
             <input type="number" x-model.number="inputs.annualExtraRepayment" min="0" step="500">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 0 €/Jahr</span></p>
+            <p class="hint"><span class="field-tag optional">Default: 0 €/Jahr</span></p>
           </div>
         </div>
         <template x-if="inputs.rateModel === 'variable'">
@@ -247,12 +247,12 @@
             <div class="field">
               <label>Zinswechsel nach</label>
               <input type="number" x-model.number="inputs.variableSwitchYear" min="1" step="1">
-              <p class="hint"><span class="field-tag optional">Optional. Default: 10 Jahre</span></p>
+              <p class="hint"><span class="field-tag optional">Default: 10 Jahre</span></p>
             </div>
             <div class="field">
               <label>Zins nach Wechsel</label>
               <input type="number" x-model.number="inputs.variableRatePct" min="0" step="0.1">
-              <p class="hint"><span class="field-tag optional">Optional. Default: 5,0 % p.a.</span></p>
+              <p class="hint"><span class="field-tag optional">Default: 5,0 % p.a.</span></p>
             </div>
           </div>
         </template>
@@ -270,7 +270,7 @@
             <label>Eigentümerkosten</label>
             <input type="number" x-model.number="inputs.ownerCostsPerSqm" min="0" step="0.05">
             <p class="hint">
-              <span class="field-tag optional">Optional. Default: 2,75 €/m²/Mon.</span>
+              <span class="field-tag optional">Default: 2,75 €/m²/Mon.</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Aufschlüsselung">i</button>
             </p>
             <div class="info-panel" x-show="open">
@@ -286,7 +286,7 @@
             <label>Betriebskosten</label>
             <input type="number" x-model.number="inputs.operatingCostsPerSqm" min="0" step="0.05">
             <p class="hint">
-              <span class="field-tag optional">Optional. Default: 2,20 €/m²/Mon.</span>
+              <span class="field-tag optional">Default: 2,20 €/m²/Mon.</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Was ist enthalten?">i</button>
             </p>
             <div class="info-panel" x-show="open">
@@ -307,13 +307,13 @@
             <div class="field">
               <label>Maklerprovision Verkauf</label>
               <input type="number" x-model.number="inputs.saleBrokerFeePct" min="0" step="0.1">
-              <p class="hint"><span class="field-tag optional">Optional. Default: 3,0 %</span> des Verkaufspreises</p>
+              <p class="hint"><span class="field-tag optional">Default: 3,0 %</span> des Verkaufspreises</p>
             </div>
             <div class="field" x-data="{ open: false }">
               <label>ImmoESt-Satz</label>
               <input type="number" x-model.number="inputs.immoEstPct" min="0" step="1">
               <p class="hint">
-                <span class="field-tag optional">Optional. Default: 30 %</span>
+                <span class="field-tag optional">Default: 30 %</span>
                 <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Wann fällt ImmoESt an?">i</button>
               </p>
               <div class="info-panel" x-show="open">
@@ -340,7 +340,7 @@
             <label>Miete pro m²</label>
             <input type="number" x-model.number="inputs.rentPerSqm" min="1" step="0.5">
             <p class="hint">
-              <span class="field-tag optional">Optional. Default: aus Bruttorendite</span>
+              <span class="field-tag optional">Default: aus Bruttorendite</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Wie wird die Miete berechnet?">i</button>
             </p>
             <div class="info-panel" x-show="open">
@@ -357,7 +357,7 @@
           <div class="field">
             <label>Mietkaution</label>
             <input type="number" x-model.number="inputs.depositMonths" min="0" max="6" step="1">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 3 Monatsmieten</span></p>
+            <p class="hint"><span class="field-tag optional">Default: 3 Monatsmieten</span></p>
           </div>
         </div>
         <p class="hint" style="margin-top:.25rem;">
@@ -377,7 +377,7 @@
             <label>Inflation p.a.</label>
             <input type="number" x-model.number="inputs.inflationPct" step="0.1">
             <p class="hint">
-              <span class="field-tag optional">Optional. Default: 2,0 % p.a.</span>
+              <span class="field-tag optional">Default: 2,0 % p.a.</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Woher kommt 2 %?">i</button>
             </p>
             <div class="info-panel" x-show="open">
@@ -388,7 +388,7 @@
             <label>Anlagerendite p.a.</label>
             <input type="number" x-model.number="inputs.investmentReturnPct" step="0.1">
             <p class="hint">
-              <span class="field-tag optional">Optional. Default: 6,0 % p.a.</span>
+              <span class="field-tag optional">Default: 6,0 % p.a.</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Woher kommt 6 %?">i</button>
             </p>
             <div class="info-panel" x-show="open">
@@ -399,7 +399,7 @@
             <label>KESt auf Gewinne</label>
             <input type="number" x-model.number="inputs.kestPct" min="0" max="100" step="0.5">
             <p class="hint">
-              <span class="field-tag optional">Optional. Default: 27,5 %</span>
+              <span class="field-tag optional">Default: 27,5 %</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Wie wird die KESt angewendet?">i</button>
             </p>
             <div class="info-panel" x-show="open">
@@ -415,7 +415,7 @@
           <div class="field">
             <label>Horizont</label>
             <input type="number" x-model.number="inputs.horizonYears" min="5" max="35" step="1">
-            <p class="hint"><span class="field-tag optional">Optional. Default: 30 Jahre</span></p>
+            <p class="hint"><span class="field-tag optional">Default: 30 Jahre</span></p>
           </div>
         </div>
       </div>
@@ -431,7 +431,7 @@
             <div class="field">
               <label>Haircut</label>
               <input type="number" x-model.number="inputs.vorabpauschaleHaircutPct" min="0" step="0.1">
-              <p class="hint"><span class="field-tag optional">Optional. Default: 0,5 %</span> des Portfoliowerts</p>
+              <p class="hint"><span class="field-tag optional">Default: 0,5 %</span> des Portfoliowerts</p>
             </div>
           </div>
         </template>
