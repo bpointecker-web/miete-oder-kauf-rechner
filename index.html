@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mieten vs. Kaufen – Rechner für Österreich</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script type="module" src="js/app.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body x-data="appState" x-cloak>
+
+  <!-- ── Header ── -->
+  <header class="site-header">
+    <h1>Mieten vs. Kaufen</h1>
+    <p>Rein finanzieller Vergleich für Österreich – alle Annahmen transparent &amp; anpassbar</p>
+  </header>
+
+  <!-- ── Region-Auswahl ── -->
+  <div class="region-bar">
+    <label for="region-select">Region</label>
+    <select id="region-select" @change="setRegion($event.target.value)">
+      <template x-for="r in regions" :key="r.key">
+        <option :value="r.key" :selected="inputs.region === r.key" x-text="r.label"></option>
+      </template>
+    </select>
+  </div>
+
+  <!-- ── Warnungen ── -->
+  <template x-if="results && results.warnings.length > 0">
+    <div class="warnings">
+      <template x-for="w in results.warnings" :key="w.code">
+        <p x-text="w.message"></p>
+      </template>
+    </div>
+  </template>
+
+  <!-- ── Tab-Navigation ── -->
+  <nav class="tabs" role="tablist">
+    <button class="tab-btn" role="tab"
+      :aria-selected="activeTab === 'immobilie'"
+      :class="{ active: activeTab === 'immobilie' }"
+      @click="activeTab = 'immobilie'">Immobilie</button>
+    <button class="tab-btn" role="tab"
+      :aria-selected="activeTab === 'finanzierung'"
+      @click="activeTab = 'finanzierung'">Finanzierung</button>
+    <button class="tab-btn" role="tab"
+      :aria-selected="activeTab === 'kosten'"
+      @click="activeTab = 'kosten'">Eigentümerkosten</button>
+    <button class="tab-btn" role="tab"
+      :aria-selected="activeTab === 'miete'"
+      @click="activeTab = 'miete'">Miete</button>
+    <button class="tab-btn" role="tab"
+      :aria-selected="activeTab === 'annahmen'"
+      @click="activeTab = 'annahmen'">Annahmen</button>
+  </nav>
+
+  <main>
+
+    <!-- ── Tab: Immobilie & Kauf ── -->
+    <section class="tab-panel" :class="{ active: activeTab === 'immobilie' }" role="tabpanel">
+
+      <div class="form-section">
+        <p class="form-section-title">Kaufpreis</p>
+        <div class="field-row">
+          <div class="field">
+            <label>Preis pro m²</label>
+            <input type="number" x-model.number="inputs.pricePerSqm" min="500" step="100">
+            <p class="hint">€/m²</p>
+          </div>
+          <div class="field">
+            <label>Wohnfläche</label>
+            <input type="number" x-model.number="inputs.livingAreaSqm" min="20" step="5">
+            <p class="hint">m²</p>
+          </div>
+          <div class="field">
+            <label>Kaufpreis gesamt</label>
+            <input type="number" readonly
+              :value="inputs.pricePerSqm * inputs.livingAreaSqm">
+            <p class="hint">€ (berechnet)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <p class="form-section-title">Kaufnebenkosten (% vom Kaufpreis)</p>
+        <div class="field-row">
+          <div class="field">
+            <label>Grunderwerbsteuer</label>
+            <input type="number" x-model.number="inputs.transferTaxPct" min="0" step="0.1">
+            <p class="hint">% (Standard 3,5%)</p>
+          </div>
+          <div class="field">
+            <label>Grundbucheintragung</label>
+            <input type="number" x-model.number="inputs.landRegisterPct" min="0" step="0.1">
+            <p class="hint">% (Standard 1,1%)</p>
+          </div>
+          <div class="field">
+            <label>Makler (Kauf)</label>
+            <input type="number" x-model.number="inputs.brokerBuyPct" min="0" step="0.1">
+            <p class="hint">% (0 wenn ohne Makler)</p>
+          </div>
+          <div class="field">
+            <label>Notar/Rechtsanwalt</label>
+            <input type="number" x-model.number="inputs.notaryPct" min="0" step="0.1">
+            <p class="hint">% (Standard 1,5%)</p>
+          </div>
+          <div class="field">
+            <label>Nebenkosten gesamt</label>
+            <input type="number" readonly
+              :value="((inputs.transferTaxPct + inputs.landRegisterPct + inputs.brokerBuyPct + inputs.notaryPct) * inputs.pricePerSqm * inputs.livingAreaSqm / 100).toFixed(0)">
+            <p class="hint">€ (berechnet)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <p class="form-section-title">Wertsteigerung</p>
+        <div class="field-row">
+          <div class="field">
+            <label>Wertsteigerung p.a.</label>
+            <input type="number" x-model.number="inputs.appreciationPct" step="0.1">
+            <p class="hint">% (Eurostat 10J-Ø: 5,38%)</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ── Tab: Finanzierung ── -->
+    <section class="tab-panel" :class="{ active: activeTab === 'finanzierung' }" role="tabpanel">
+
+      <div class="form-section">
+        <p class="form-section-title">Eigenkapital</p>
+        <div class="field-row">
+          <div class="field">
+            <label>Eigenkapitalquote</label>
+            <input type="number" x-model.number="inputs.equityRatioPct" min="0" max="100" step="1">
+            <p class="hint">% des Kaufpreises</p>
+          </div>
+          <div class="field">
+            <label>Eigenkapital gesamt</label>
+            <input type="number" readonly
+              :value="(inputs.equityRatioPct * inputs.pricePerSqm * inputs.livingAreaSqm / 100).toFixed(0)">
+            <p class="hint">€ (berechnet)</p>
+          </div>
+        </div>
+        <div class="field-check">
+          <input type="checkbox" id="financeClosingCosts" x-model="inputs.financeClosingCosts">
+          <label for="financeClosingCosts">Nebenkosten über Kredit mitfinanzieren</label>
+        </div>
+        <p class="hint" style="margin-top:-.25rem; margin-bottom:.75rem;">
+          Wenn aktiv: Kredit deckt Kaufpreis-Anteil + alle Nebenkosten (z.B. bei Verkauf der Vorwohnung)
+        </p>
+      </div>
+
+      <div class="form-section">
+        <p class="form-section-title">Finanzierungsnebenkosten (% der Kreditsumme)</p>
+        <div class="field-row">
+          <div class="field">
+            <label>Pfandrechtseintragung</label>
+            <input type="number" x-model.number="inputs.mortgageLienPct" min="0" step="0.1">
+            <p class="hint">% (Standard 1,2%)</p>
+          </div>
+          <div class="field">
+            <label>Bankbearbeitung</label>
+            <input type="number" x-model.number="inputs.bankProcessingPct" min="0" step="0.1">
+            <p class="hint">% (Standard 1,5%)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <p class="form-section-title">Kreditkonditionen</p>
+        <div class="field" style="margin-bottom: .75rem;">
+          <label>Zinsmodell</label>
+          <div class="toggle-group" style="margin-top:.25rem;">
+            <button :class="{ active: inputs.rateModel === 'fixed' }"
+              @click="setRateModel('fixed')">Fixzins</button>
+            <button :class="{ active: inputs.rateModel === 'variable' }"
+              @click="setRateModel('variable')">Variabel</button>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label x-text="inputs.rateModel === 'fixed' ? 'Fixzins' : 'Startzins'"></label>
+            <input type="number" x-model.number="inputs.interestRatePct" min="0" step="0.1">
+            <p class="hint">% p.a.</p>
+          </div>
+          <div class="field">
+            <label>Laufzeit</label>
+            <input type="number" x-model.number="inputs.loanTermYears" min="5" max="35" step="1">
+            <p class="hint">Jahre</p>
+          </div>
+          <div class="field">
+            <label>Sondertilgung</label>
+            <input type="number" x-model.number="inputs.annualExtraRepayment" min="0" step="500">
+            <p class="hint">€/Jahr</p>
+          </div>
+        </div>
+        <template x-if="inputs.rateModel === 'variable'">
+          <div class="field-row">
+            <div class="field">
+              <label>Zinswechsel nach</label>
+              <input type="number" x-model.number="inputs.variableSwitchYear" min="1" step="1">
+              <p class="hint">Jahren</p>
+            </div>
+            <div class="field">
+              <label>Zins nach Wechsel</label>
+              <input type="number" x-model.number="inputs.variableRatePct" min="0" step="0.1">
+              <p class="hint">% p.a.</p>
+            </div>
+          </div>
+        </template>
+      </div>
+
+    </section>
+
+    <!-- ── Tab: Eigentümerkosten ── -->
+    <section class="tab-panel" :class="{ active: activeTab === 'kosten' }" role="tabpanel">
+
+      <div class="form-section">
+        <p class="form-section-title">Laufende Kosten (€/m²/Monat)</p>
+        <div class="field-row">
+          <div class="field">
+            <label>Eigentümerkosten</label>
+            <input type="number" x-model.number="inputs.ownerCostsPerSqm" min="0" step="0.05">
+            <p class="hint">Instandhaltung, Versicherung, Grundsteuer …</p>
+          </div>
+          <div class="field">
+            <label>Betriebskosten</label>
+            <input type="number" x-model.number="inputs.operatingCostsPerSqm" min="0" step="0.05">
+            <p class="hint">Wasser, Müll, Hausbetreuung … (auch Mieter zahlen das)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <p class="form-section-title">Verkauf simulieren</p>
+        <div class="field-check">
+          <input type="checkbox" id="simulateSale" x-model="inputs.simulateSale">
+          <label for="simulateSale">Verkaufskosten am Ende berücksichtigen</label>
+        </div>
+        <template x-if="inputs.simulateSale">
+          <div class="field-row">
+            <div class="field">
+              <label>Maklerprovision Verkauf</label>
+              <input type="number" x-model.number="inputs.saleBrokerFeePct" min="0" step="0.1">
+              <p class="hint">% des Verkaufspreises</p>
+            </div>
+            <div class="field">
+              <label>ImmoESt-Satz</label>
+              <input type="number" x-model.number="inputs.immoEstPct" min="0" step="1">
+              <p class="hint">% auf Wertgewinn (Standard 30%)</p>
+            </div>
+            <div class="field-check" style="align-self:end; padding-bottom:.5rem;">
+              <input type="checkbox" id="primaryResidence" x-model="inputs.primaryResidenceExempt">
+              <label for="primaryResidence">Hauptwohnsitzbefreiung (→ 0% ImmoESt)</label>
+            </div>
+          </div>
+        </template>
+      </div>
+
+    </section>
+
+    <!-- ── Tab: Miete ── -->
+    <section class="tab-panel" :class="{ active: activeTab === 'miete' }" role="tabpanel">
+
+      <div class="form-section">
+        <p class="form-section-title">Vergleichsmiete</p>
+        <div class="field-row">
+          <div class="field">
+            <label>Miete pro m²</label>
+            <input type="number" x-model.number="inputs.rentPerSqm" min="1" step="0.5">
+            <p class="hint">€/m²/Monat, brutto inkl. Betriebskosten</p>
+          </div>
+          <div class="field">
+            <label>Monatsmiete gesamt</label>
+            <input type="number" readonly
+              :value="(inputs.rentPerSqm * inputs.livingAreaSqm).toFixed(0)">
+            <p class="hint">€/Monat (berechnet)</p>
+          </div>
+          <div class="field">
+            <label>Mietkaution</label>
+            <input type="number" x-model.number="inputs.depositMonths" min="0" max="6" step="1">
+            <p class="hint">Monatsmieten</p>
+          </div>
+        </div>
+        <p class="hint" style="margin-top:.25rem;">
+          Mietsteigerung = Inflationsrate (keine separate Eingabe nötig)
+        </p>
+      </div>
+
+    </section>
+
+    <!-- ── Tab: Annahmen ── -->
+    <section class="tab-panel" :class="{ active: activeTab === 'annahmen' }" role="tabpanel">
+
+      <div class="form-section">
+        <p class="form-section-title">Wirtschaftliche Annahmen</p>
+        <div class="field-row">
+          <div class="field">
+            <label>Inflation p.a.</label>
+            <input type="number" x-model.number="inputs.inflationPct" step="0.1">
+            <p class="hint">% (gilt für Miete + Eigentümerkosten)</p>
+          </div>
+          <div class="field">
+            <label>Anlagerendite p.a.</label>
+            <input type="number" x-model.number="inputs.investmentReturnPct" step="0.1">
+            <p class="hint">% nominal (Mieter-Portfolio)</p>
+          </div>
+          <div class="field">
+            <label>KESt auf Gewinne</label>
+            <input type="number" x-model.number="inputs.kestPct" min="0" max="100" step="0.5">
+            <p class="hint">% (Österreich: 27,5%)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <p class="form-section-title">Betrachtungshorizont</p>
+        <div class="field-row">
+          <div class="field">
+            <label>Horizont</label>
+            <input type="number" x-model.number="inputs.horizonYears" min="5" max="35" step="1">
+            <p class="hint">Jahre</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <p class="form-section-title">Vorabpauschale (Österreich)</p>
+        <div class="field-check">
+          <input type="checkbox" id="vorabpauschale" x-model="inputs.applyVorabpauschale">
+          <label for="vorabpauschale">Vorabpauschale-Steuereffekt berücksichtigen</label>
+        </div>
+        <template x-if="inputs.applyVorabpauschale">
+          <div class="field-row" style="margin-top:.5rem;">
+            <div class="field">
+              <label>Haircut</label>
+              <input type="number" x-model.number="inputs.vorabpauschaleHaircutPct" min="0" step="0.1">
+              <p class="hint">% des Portfoliowerts (Standard 0,5%)</p>
+            </div>
+          </div>
+        </template>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ── Ergebnisübersicht (C2) ── -->
+  <template x-if="results">
+    <section class="results-panel">
+      <p class="results-winner" x-text="winnerText()"></p>
+
+      <div class="results-table-wrap"><table class="results-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="col-buyer">Käufer</th>
+            <th class="col-renter">Mieter</th>
+            <th>Differenz</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-label">Nettovermögen nominal</td>
+            <td class="col-buyer" x-text="formatEur(results.buyerNetWealthNominal)"></td>
+            <td class="col-renter" x-text="formatEur(results.renterNetWealthNominal)"></td>
+            <td :class="results.differenceNominal >= 0 ? 'diff-positive' : 'diff-negative'"
+                x-text="formatEur(results.differenceNominal)"></td>
+          </tr>
+          <tr>
+            <td class="row-label">Nettovermögen real
+              <span class="hint-inline">(inflationsbereinigt, <span x-text="inputs.inflationPct"></span>% p.a.)</span>
+            </td>
+            <td class="col-buyer" x-text="formatEur(results.buyerNetWealthReal)"></td>
+            <td class="col-renter" x-text="formatEur(results.renterNetWealthReal)"></td>
+            <td :class="results.differenceReal >= 0 ? 'diff-positive' : 'diff-negative'"
+                x-text="formatEur(results.differenceReal)"></td>
+          </tr>
+        </tbody>
+      </table></div>
+
+      <p class="results-breakeven">
+        <template x-if="results.breakevenYear !== null">
+          <span>Breakeven: Kaufen lohnt sich ab <strong x-text="'Jahr ' + results.breakevenYear"></strong>.</span>
+        </template>
+        <template x-if="results.breakevenYear === null">
+          <span>Kein Breakeven im Betrachtungshorizont von <span x-text="inputs.horizonYears"></span> Jahren.</span>
+        </template>
+      </p>
+    </section>
+  </template>
+
+  <!-- ── Sticky Bottom-Bar (Kern-KPIs) ── -->
+  <div class="bottom-bar">
+    <div class="kpi">
+      <span class="kpi-label">Käufer nach <span x-text="inputs.horizonYears"></span>J</span>
+      <span class="kpi-value buyer"
+        x-text="results ? formatEur(results.buyerNetWealthNominal) : '…'"></span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-label">Mieter nach <span x-text="inputs.horizonYears"></span>J</span>
+      <span class="kpi-value renter"
+        x-text="results ? formatEur(results.renterNetWealthNominal) : '…'"></span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-label">Differenz (nominal)</span>
+      <span class="kpi-value"
+        :style="results && results.differenceNominal >= 0 ? 'color:var(--color-buyer)' : 'color:var(--color-renter)'"
+        x-text="results ? formatEur(results.differenceNominal) : '…'"></span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-label">Breakeven</span>
+      <span class="kpi-value"
+        x-text="results ? (results.breakevenYear !== null ? 'Jahr ' + results.breakevenYear : 'kein') : '…'"></span>
+    </div>
+  </div>
+
+</body>
+</html>

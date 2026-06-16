@@ -65,7 +65,7 @@ Verdrahtet A1–A10 zur Pipeline (§5 Architektur), erzeugt das vollständige `r
 
 ## Phase B — Daten
 
-**B1 ⬜ `presets.js`**
+**B1 ✅ `presets.js`**
 Regionaltabelle (Spec §2.7) + `createDefaultInputs(region)` liefert ein vollständiges `inputs`-Objekt (§4.1 Architektur).
 *Tests:* jedes Preset erzeugt ein `inputs`-Objekt mit **allen** Pflichtfeldern; `runComparison(createDefaultInputs(r))` läuft für alle 6 Regionen ohne Fehler und liefert plausible (endliche, nicht NaN) Kennzahlen.
 
@@ -77,15 +77,15 @@ Regionaltabelle (Spec §2.7) + `createDefaultInputs(region)` liefert ein vollst�
 
 > Ab hier ist nichts mehr durch Unit-Tests abgedeckt → manuelle Browser-Verifikation pro Step.
 
-**C1 ⬜ `index.html` Grundgerüst + Alpine-Einbindung**
+**C1 ✅ `index.html` Grundgerüst + Alpine-Einbindung**
 Alpine via CDN, `x-data="appState()"`, Tab-/Akkordeon-Struktur (Spec §3), Eingabefelder mit `x-model` an `inputs` gebunden. Noch keine Ergebnisse.
 *Verifikation:* Seite lädt, Tabs schalten, Eingaben ändern `inputs` (im Alpine-Devtools/Konsole sichtbar).
 
-**C2 ⬜ `app.js` — inputs→results-Verdrahtung**
+**C2 ✅ `app.js` — inputs→results-Verdrahtung**
 `appState()` mit `inputs` (aus `createDefaultInputs`) und `results` (via `x-effect`/`Alpine.effect` aus `runComparison`). Bottom-Line-Kennzahlen + Realwerte als Text rendern.
 *Verifikation:* Kennzahlen erscheinen, ändern sich **live** bei jeder Eingabe ohne Reload; Werte stimmen mit Phase-A-Referenz überein.
 
-**C3 ⬜ `css/style.css` — Mobile-First**
+**C3 ✅ `css/style.css` — Mobile-First**
 Sticky Bottom-Line-Bar, Tab-Styling, responsives Layout, Info-Icons/Tooltips.
 *Verifikation:* sauber auf schmalem (≈375px) und breitem Viewport; Bottom-Bar bleibt sichtbar beim Scrollen.
 
