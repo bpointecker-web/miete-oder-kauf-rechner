@@ -1,7 +1,4 @@
-// ACHTUNG: Automatisch generiert von scripts/update-data.mjs — nicht von Hand editieren.
-// Letztes Update: 2026-06-16T07:56:11.070Z
-// Eurostat-Quelle: Eurostat prc_hpi_q (geo=AT, purchase=TOTAL, unit=I10_Q, Basis 2010=100)
-
+// AUTO-GENERIERT von data/regional.json — nicht manuell bearbeiten
 export const REGIONAL_DATA = {
   "meta": {
     "schemaVersion": 1,
@@ -30,8 +27,8 @@ export const REGIONAL_DATA = {
       "anchor": {
         "pricePerSqm": 5500,
         "rentalYieldPct": 2.9,
-        "appreciationPct": 2.5,
-        "appreciationNote": "Konservativer Langfrist-Default; Eurostat 10J-Schnitt (inkl. Corona-Boom) steht in computed.appreciationPct.",
+        "appreciationPct": 3,
+        "appreciationNote": "A-Lage: Inflation+Reallohn-Basis (2,5 %) + Aufschlag 0,5 % für strukturellen Flächenmangel und anhaltenden Netto-Zuzug. Eurostat 10J-Schnitt (inkl. Corona-Boom) steht in computed.appreciationPct.",
         "source": "Schaetzwert ~2025 (immopreise.at, Bandbreite Bestandswohnungen). TODO: mit konkreter Median-Quelle + Datum belegen.",
         "asOf": "2026-06"
       },
@@ -78,8 +75,8 @@ export const REGIONAL_DATA = {
       "anchor": {
         "pricePerSqm": 5800,
         "rentalYieldPct": 2.9,
-        "appreciationPct": 2.5,
-        "appreciationNote": "Konservativer Langfrist-Default.",
+        "appreciationPct": 3,
+        "appreciationNote": "A-Lage: Inflation+Reallohn-Basis (2,5 %) + Aufschlag 0,5 % für extreme geografische Flächenbegrenzung (Gebirge, Grenze) und hohe internationale Nachfrage.",
         "source": "Schaetzwert, Mitte der Bandbreite 5.000-6.500 EUR/m2. TODO: Quelle + Datum.",
         "asOf": "2026-06"
       },
@@ -94,8 +91,8 @@ export const REGIONAL_DATA = {
       "anchor": {
         "pricePerSqm": 6000,
         "rentalYieldPct": 2.8,
-        "appreciationPct": 2.5,
-        "appreciationNote": "Konservativer Langfrist-Default.",
+        "appreciationPct": 3,
+        "appreciationNote": "A-Lage: Inflation+Reallohn-Basis (2,5 %) + Aufschlag 0,5 % für alpine Flächenknappheit, internationale Uni-Stadt und Tourismus-Nachfrage.",
         "source": "Schaetzwert, Mitte der Bandbreite 5.700-6.500 EUR/m2. TODO: Quelle + Datum.",
         "asOf": "2026-06"
       },

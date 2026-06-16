@@ -145,7 +145,7 @@
             <label>Wertsteigerung p.a.</label>
             <input type="number" x-model.number="inputs.appreciationPct" step="0.1">
             <p class="hint">
-              <span class="field-tag optional">Optional. Default: 2,5 % p.a.</span>
+              <span class="field-tag optional">Optional. Default: <span x-text="inputs.appreciationPct?.toFixed(1)"></span> % p.a. (je Region)</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Warum 2,5 %?">i</button>
             </p>
             <div class="info-panel" x-show="open">
