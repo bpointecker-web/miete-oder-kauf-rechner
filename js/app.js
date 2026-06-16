@@ -23,8 +23,18 @@ export function appState() {
 
     // Wird beim Initialisieren von Alpine automatisch aufgerufen
     init() {
+      this.$watch('inputs.purchasePrice', () => this.syncPricePerSqm());
+      this.$watch('inputs.livingAreaSqm', () => this.syncPricePerSqm());
       this.$watch('inputs', () => this.recalculate(), { deep: true });
       this.recalculate();
+    },
+
+    // Hält pricePerSqm als abgeleiteten Wert in sync — calculator.js nutzt weiterhin pricePerSqm
+    syncPricePerSqm() {
+      const { purchasePrice, livingAreaSqm } = this.inputs;
+      if (livingAreaSqm > 0 && purchasePrice > 0) {
+        this.inputs.pricePerSqm = Math.round(purchasePrice / livingAreaSqm);
+      }
     },
 
     recalculate() {
@@ -35,7 +45,6 @@ export function appState() {
       }
     },
 
-    // Region wechseln: komplette inputs ersetzen, Ergebnis neu berechnen
     setRegion(regionKey) {
       this.inputs = createDefaultInputs(regionKey);
     },

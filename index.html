@@ -64,9 +64,9 @@
         <p class="form-section-title">Kaufpreis</p>
         <div class="field-row">
           <div class="field">
-            <label>Preis pro m²</label>
-            <input type="number" x-model.number="inputs.pricePerSqm" min="500" step="100">
-            <p class="hint"><span class="field-tag required">Pflichtfeld</span> €/m²</p>
+            <label>Kaufpreis gesamt</label>
+            <input type="number" x-model.number="inputs.purchasePrice" min="50000" step="5000">
+            <p class="hint"><span class="field-tag required">Pflichtfeld</span> € ohne Nebenkosten</p>
           </div>
           <div class="field">
             <label>Wohnfläche</label>
@@ -74,10 +74,9 @@
             <p class="hint"><span class="field-tag required">Pflichtfeld</span> m²</p>
           </div>
           <div class="field">
-            <label>Kaufpreis gesamt</label>
-            <input type="number" readonly
-              :value="inputs.pricePerSqm * inputs.livingAreaSqm">
-            <p class="hint">€ (berechnet)</p>
+            <label>Preis pro m²</label>
+            <input type="number" readonly :value="inputs.livingAreaSqm > 0 ? Math.round(inputs.purchasePrice / inputs.livingAreaSqm) : 0">
+            <p class="hint">€/m² (berechnet)</p>
           </div>
         </div>
       </div>

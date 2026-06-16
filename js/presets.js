@@ -77,11 +77,15 @@ export function createDefaultInputs(region) {
 
   const rentPerSqm = (preset.pricePerSqm * preset.rentalYieldPct) / 100 / 12;
 
+  const livingAreaSqm = 70;
+  const purchasePrice = preset.pricePerSqm * livingAreaSqm;
+
   return {
     // Immobilie & Kauf
     region,
-    pricePerSqm: preset.pricePerSqm,
-    livingAreaSqm: 70,
+    purchasePrice,                      // primäres UI-Eingabefeld
+    pricePerSqm: preset.pricePerSqm,   // vom UI aus purchasePrice/area berechnet
+    livingAreaSqm,
 
     // Kaufnebenkosten (Prozent vom Kaufpreis)
     transferTaxPct: 3.5,
