@@ -4,6 +4,7 @@
  */
 import { createDefaultInputs, REGIONS } from './presets.js';
 import { runComparison } from './calculator.js';
+import { renderCharts } from './charts.js';
 
 /**
  * Erzeugt den Alpine-Komponentenzustand.
@@ -16,6 +17,9 @@ export function appState() {
 
     // ── Abgeleitete Ergebnisse (read-only, via x-effect berechnet) ──
     results: null,
+
+    // ── Chart-Instanzen (intern, werden bei jedem Update ersetzt) ──
+    _charts: null,
 
     // ── UI-Zustand ──
     activeTab: 'immobilie',
@@ -56,6 +60,12 @@ export function appState() {
       } catch {
         this.results = null;
       }
+      // Charts nach Alpine-Tick rendern, damit die Canvas-Elemente im DOM sind
+      this.$nextTick(() => {
+        if (this.results) {
+          this._charts = renderCharts(this.results, this._charts);
+        }
+      });
     },
 
     setRegion(regionKey) {
