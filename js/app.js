@@ -56,7 +56,10 @@ export function appState() {
     },
 
     setRegion(regionKey) {
+      const equityAmount = this.inputs.equityAmount;
       this.inputs = createDefaultInputs(regionKey);
+      this.inputs.equityAmount = equityAmount;
+      this.syncEquityRatio();
     },
 
     // Hilfsmethode: Zins-Modell umschalten (fix/variabel)
