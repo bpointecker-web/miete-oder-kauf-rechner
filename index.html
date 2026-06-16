@@ -149,22 +149,15 @@
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Warum 2,5 %?">i</button>
             </p>
             <div class="info-panel" x-show="open">
-              <strong>Warum 2,5 %?</strong><br>
-              Langfristig setzt sich die Immobilienwertsteigerung aus zwei Komponenten zusammen:
-              EZB-Inflationsziel (~2,0 % p.a.) + realem Lohnwachstum (~0,5–1,0 % p.a.) = <strong>2,5–3,0 % nominal</strong>.
-              Wohnen muss langfristig leistbar bleiben, daher können Preise der Lohnentwicklung nicht dauerhaft davonlaufen.<br><br>
+              <strong>Wie wird der Default abgeleitet?</strong><br>
+              Zwei langfristige Treiber: EZB-Inflationsziel (~2,0 % p.a.) + reales Lohnwachstum (~0,5–1,0 % p.a.) = <strong>2,5–3,0 % nominal</strong>. Wohnen muss leistbar bleiben — Preise können der Lohnentwicklung nicht dauerhaft davonlaufen.<br><br>
 
-              <strong>Historische OeNB-Daten (drei Phasen):</strong><br>
-              · 1990–2010: Preise stiegen nahezu deckungsgleich mit der Inflation (~2 % p.a., reale Rendite ≈ 0)<br>
-              · 2010–2022: Boom durch EZB-Nullzinsen, oft +6–10 %/Jahr in Wien und Ballungsräumen<br>
-              · ab 2023: Normalisierung durch Zinswende und KIM-Verordnung<br>
-              Über 30 Jahre (1990–2024) ergibt sich ein historischer Schnitt von ca. 3–4 % — aber wir starten heute von einem historisch hohen Preisniveau.<br><br>
+              <strong>Historische Einordnung (OeNB):</strong><br>
+              · 1990–2010: nahezu deckungsgleich mit der Inflation (~2 % p.a.)<br>
+              · 2010–2022: Boom durch EZB-Nullzinsen (+6–10 %/Jahr in Ballungsräumen)<br>
+              · ab 2023: Normalisierung durch Zinswende und KIM-Verordnung<br><br>
 
-              <strong>Zum Vergleich:</strong> Eurostat AT-Index (prc_hpi_q), gleitender 10J-Schnitt 2015–2024:
-              <strong x-text="inputs.eurostatAppreciationPct?.toFixed(2)"></strong> % — geprägt durch den Boom, für eine 30J-Prognose zu optimistisch.<br><br>
-
-              <strong>Standort-Hinweis:</strong> A-Lagen (Wien, Salzburg, Innsbruck) eher 2,5–3,5 %;
-              periphere Lagen mit Abwanderung eher 1,0–2,0 % (teilweise reale Wertverluste möglich).
+              <strong>Standort-Zuschlag:</strong> A-Lagen mit Flächenmangel und Zuzug (Wien, Salzburg, Innsbruck) +0,5 % → 3,0 %. Periphere Lagen mit Abwanderung eher 1,0–2,0 %.
             </div>
           </div>
         </div>
