@@ -73,16 +73,10 @@
             <input type="number" x-model.number="inputs.livingAreaSqm" min="20" step="5">
             <p class="hint"><span class="field-tag required">Pflichtfeld</span> m²</p>
           </div>
-          <div class="field" x-data="{ open: false }">
+          <div class="field">
             <label>Preis pro m²</label>
             <input type="number" readonly :value="inputs.livingAreaSqm > 0 ? Math.round(inputs.purchasePrice / inputs.livingAreaSqm) : 0">
-            <p class="hint">
-              €/m² (berechnet)
-              <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Woher kommt der Preset-Wert?">i</button>
-            </p>
-            <div class="info-panel" x-show="open">
-              Preset-Wert: Schätzwert für Bestandswohnungen ~2025 (Quelle: immopreise.at, soldd.com). Bitte selbst prüfen und auf den tatsächlichen Kaufpreis anpassen – Preise variieren je Lage, Zustand und Baujahr erheblich.
-            </div>
+            <p class="hint">€/m² (berechnet)</p>
           </div>
         </div>
       </div>
