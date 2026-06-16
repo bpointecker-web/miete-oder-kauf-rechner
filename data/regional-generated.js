@@ -30,6 +30,8 @@ export const REGIONAL_DATA = {
       "anchor": {
         "pricePerSqm": 5500,
         "rentalYieldPct": 2.9,
+        "appreciationPct": 2.5,
+        "appreciationNote": "Konservativer Langfrist-Default; Eurostat 10J-Schnitt (inkl. Corona-Boom) steht in computed.appreciationPct.",
         "source": "Schaetzwert ~2025 (immopreise.at, Bandbreite Bestandswohnungen). TODO: mit konkreter Median-Quelle + Datum belegen.",
         "asOf": "2026-06"
       },
@@ -44,6 +46,8 @@ export const REGIONAL_DATA = {
       "anchor": {
         "pricePerSqm": 4500,
         "rentalYieldPct": 2.9,
+        "appreciationPct": 2.5,
+        "appreciationNote": "Konservativer Langfrist-Default.",
         "source": "Schaetzwert, Mitte der Bandbreite 4.000-5.000 EUR/m2. TODO: Quelle + Datum.",
         "asOf": "2026-06"
       },
@@ -58,6 +62,8 @@ export const REGIONAL_DATA = {
       "anchor": {
         "pricePerSqm": 3800,
         "rentalYieldPct": 3.2,
+        "appreciationPct": 2,
+        "appreciationNote": "Konservativer Langfrist-Default.",
         "source": "Schaetzwert, laut Spezifikation keine belastbare Quelle gefunden. TODO: Quelle + Datum.",
         "asOf": "2026-06"
       },
@@ -72,6 +78,8 @@ export const REGIONAL_DATA = {
       "anchor": {
         "pricePerSqm": 5800,
         "rentalYieldPct": 2.9,
+        "appreciationPct": 2.5,
+        "appreciationNote": "Konservativer Langfrist-Default.",
         "source": "Schaetzwert, Mitte der Bandbreite 5.000-6.500 EUR/m2. TODO: Quelle + Datum.",
         "asOf": "2026-06"
       },
@@ -86,6 +94,8 @@ export const REGIONAL_DATA = {
       "anchor": {
         "pricePerSqm": 6000,
         "rentalYieldPct": 2.8,
+        "appreciationPct": 2.5,
+        "appreciationNote": "Konservativer Langfrist-Default.",
         "source": "Schaetzwert, Mitte der Bandbreite 5.700-6.500 EUR/m2. TODO: Quelle + Datum.",
         "asOf": "2026-06"
       },
@@ -100,6 +110,8 @@ export const REGIONAL_DATA = {
       "anchor": {
         "pricePerSqm": 3200,
         "rentalYieldPct": 3.4,
+        "appreciationPct": 2,
+        "appreciationNote": "Konservativer Langfrist-Default.",
         "source": "Schaetzwert, Mitte der Bandbreite 3.000-3.500 EUR/m2. TODO: Quelle + Datum.",
         "asOf": "2026-06"
       },

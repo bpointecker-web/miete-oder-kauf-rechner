@@ -13,7 +13,7 @@
   <!-- ── Header ── -->
   <header class="site-header">
     <h1>Mieten vs. Kaufen</h1>
-    <p>Rein finanzieller Vergleich für Österreich – alle Annahmen transparent &amp; anpassbar</p>
+    <p>Mieten ist verbranntes Geld? Zahlen statt Bauchgefühl – rechne es selbst durch. Was Kaufen vs. Mieten für dich wirklich bedeutet.</p>
   </header>
 
   <!-- ── Region-Auswahl ── -->
@@ -120,7 +120,7 @@
           <div class="field">
             <label>Wertsteigerung p.a.</label>
             <input type="number" x-model.number="inputs.appreciationPct" step="0.1">
-            <p class="hint">% (Eurostat 10J-Ø: 5,38%)</p>
+            <p class="hint">% konservativer Langfristwert · Eurostat 10J-Ø (inkl. Corona-Boom): <span x-text="inputs.eurostatAppreciationPct?.toFixed(2)"></span>%</p>
           </div>
         </div>
       </div>

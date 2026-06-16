@@ -50,7 +50,10 @@ export const REGIONS = Object.fromEntries(
       label: r.label,
       pricePerSqm: r.computed.pricePerSqm,
       rentalYieldPct: r.anchor.rentalYieldPct,
-      appreciationPct: r.computed.appreciationPct,
+      // Konservativer Langfristwert als Default — Eurostat 10J-Ø steht in eurostatAppreciationPct
+      // (enthält Corona-Boom 2020–2022 → für 30J-Vergleich zu optimistisch als Default)
+      appreciationPct: r.anchor.appreciationPct,
+      eurostatAppreciationPct: r.computed.appreciationPct,
     },
   ])
 );
@@ -102,6 +105,8 @@ export function createDefaultInputs(region) {
     ownerCostsPerSqm: 2.75,
     operatingCostsPerSqm: 2.20,
     appreciationPct: preset.appreciationPct,
+    // Nur für UI-Hint — nicht im Rechenkern verwendet
+    eurostatAppreciationPct: preset.eurostatAppreciationPct,
 
     // Miete — aus Rendite-Annahme abgeleitet, in UI überschreibbar
     rentPerSqm,
