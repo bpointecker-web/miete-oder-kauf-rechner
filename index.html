@@ -218,15 +218,27 @@
       <div class="form-section">
         <p class="form-section-title">Finanzierungsnebenkosten (% der Kreditsumme)</p>
         <div class="field-row">
-          <div class="field">
+          <div class="field" x-data="{ open: false }">
             <label>Pfandrechtseintragung</label>
             <input type="number" x-model.number="inputs.mortgageLienPct" min="0" step="0.1">
-            <p class="hint"><span class="field-tag optional">Default: 1,2 %</span> § 26 Abs. 1 GBG</p>
+            <p class="hint">
+              <span class="field-tag optional">Default: 1,2 %</span>
+              <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zur Pfandrechtseintragung">i</button>
+            </p>
+            <div class="info-panel" x-show="open">
+              Gebühr für die Eintragung des Pfandrechts (Hypothek) im Grundbuch nach § 26 Abs. 1 GBG — 1,2 % der Kreditsumme. Gesetzlich festgelegt, nicht verhandelbar. Wird direkt an das Grundbuchgericht entrichtet.
+            </div>
           </div>
-          <div class="field">
+          <div class="field" x-data="{ open: false }">
             <label>Bankbearbeitung</label>
             <input type="number" x-model.number="inputs.bankProcessingPct" min="0" step="0.1">
-            <p class="hint"><span class="field-tag optional">Default: 1,5 %</span> marktüblich, variiert je Bank</p>
+            <p class="hint">
+              <span class="field-tag optional">Default: 1,5 %</span>
+              <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zur Bankbearbeitung">i</button>
+            </p>
+            <div class="info-panel" x-show="open">
+              Einmalige Bearbeitungsgebühr der Bank für die Kreditgewährung. Marktüblich 1–2 % der Kreditsumme — je nach Bank und Verhandlungsposition. Bei manchen Banken entfällt sie bei Wechsel des Kontopakets oder höherem Eigenkapital. Vor Abschluss vergleichen und verhandeln!
+            </div>
           </div>
         </div>
       </div>
