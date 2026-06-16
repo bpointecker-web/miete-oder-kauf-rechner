@@ -1,0 +1,113 @@
+// ACHTUNG: Automatisch generiert von scripts/update-data.mjs — nicht von Hand editieren.
+// Letztes Update: 2026-06-16T07:56:11.070Z
+// Eurostat-Quelle: Eurostat prc_hpi_q (geo=AT, purchase=TOTAL, unit=I10_Q, Basis 2010=100)
+
+export const REGIONAL_DATA = {
+  "meta": {
+    "schemaVersion": 1,
+    "comment": "Regionale Ausgangsdaten mit Provenienz. 'anchor' = einmalig gesetzte Startwerte mit Quelle (nur manuell aendern). 'computed' = vom Script scripts/update-data.mjs automatisch fortgeschrieben. NICHT computed-Werte von Hand editieren.",
+    "anchorDate": "2026-06",
+    "index": {
+      "source": "Eurostat prc_hpi_q (geo=AT, purchase=TOTAL, unit=I10_Q, Basis 2010=100)",
+      "apiUrl": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hpi_q?format=JSON&geo=AT&purchase=TOTAL&unit=I10_Q&lang=EN",
+      "anchorIndexValue": 219,
+      "anchorIndexQuarter": "2025-Q4",
+      "appreciationMode": "10y_avg",
+      "appreciationNote": "appreciationPct = gleitender Schnitt der jaehrlichen Aenderungsrate (Eurostat unit=RCH_A) ueber die letzten 40 Quartale (10 Jahre). National, nicht stadtspezifisch. 10J-Schnitt bevorzugt, da langfristiger Vergleichsrechner nicht von kurzfristigen Preisboom-Phasen verzerrt werden soll."
+    },
+    "lastAutoUpdate": {
+      "timestamp": "2026-06-16T07:56:11.070Z",
+      "currentIndexQuarter": "2025-Q4",
+      "currentIndexValue": 219,
+      "scaleFactor": 1,
+      "appreciationPct": 5.38,
+      "appreciationBasisQuarters": 40
+    }
+  },
+  "regions": {
+    "wien": {
+      "label": "Wien",
+      "anchor": {
+        "pricePerSqm": 5500,
+        "rentalYieldPct": 2.9,
+        "source": "Schaetzwert ~2025 (immopreise.at, Bandbreite Bestandswohnungen). TODO: mit konkreter Median-Quelle + Datum belegen.",
+        "asOf": "2026-06"
+      },
+      "computed": {
+        "pricePerSqm": 5500,
+        "appreciationPct": 5.38,
+        "indexScaleFactor": 1
+      }
+    },
+    "graz": {
+      "label": "Graz",
+      "anchor": {
+        "pricePerSqm": 4500,
+        "rentalYieldPct": 2.9,
+        "source": "Schaetzwert, Mitte der Bandbreite 4.000-5.000 EUR/m2. TODO: Quelle + Datum.",
+        "asOf": "2026-06"
+      },
+      "computed": {
+        "pricePerSqm": 4500,
+        "appreciationPct": 5.38,
+        "indexScaleFactor": 1
+      }
+    },
+    "linz": {
+      "label": "Linz",
+      "anchor": {
+        "pricePerSqm": 3800,
+        "rentalYieldPct": 3.2,
+        "source": "Schaetzwert, laut Spezifikation keine belastbare Quelle gefunden. TODO: Quelle + Datum.",
+        "asOf": "2026-06"
+      },
+      "computed": {
+        "pricePerSqm": 3800,
+        "appreciationPct": 5.38,
+        "indexScaleFactor": 1
+      }
+    },
+    "salzburg": {
+      "label": "Salzburg",
+      "anchor": {
+        "pricePerSqm": 5800,
+        "rentalYieldPct": 2.9,
+        "source": "Schaetzwert, Mitte der Bandbreite 5.000-6.500 EUR/m2. TODO: Quelle + Datum.",
+        "asOf": "2026-06"
+      },
+      "computed": {
+        "pricePerSqm": 5800,
+        "appreciationPct": 5.38,
+        "indexScaleFactor": 1
+      }
+    },
+    "innsbruck": {
+      "label": "Innsbruck",
+      "anchor": {
+        "pricePerSqm": 6000,
+        "rentalYieldPct": 2.8,
+        "source": "Schaetzwert, Mitte der Bandbreite 5.700-6.500 EUR/m2. TODO: Quelle + Datum.",
+        "asOf": "2026-06"
+      },
+      "computed": {
+        "pricePerSqm": 6000,
+        "appreciationPct": 5.38,
+        "indexScaleFactor": 1
+      }
+    },
+    "oesterreich": {
+      "label": "Österreich-Ø",
+      "anchor": {
+        "pricePerSqm": 3200,
+        "rentalYieldPct": 3.4,
+        "source": "Schaetzwert, Mitte der Bandbreite 3.000-3.500 EUR/m2. TODO: Quelle + Datum.",
+        "asOf": "2026-06"
+      },
+      "computed": {
+        "pricePerSqm": 3200,
+        "appreciationPct": 5.38,
+        "indexScaleFactor": 1
+      }
+    }
+  }
+};
