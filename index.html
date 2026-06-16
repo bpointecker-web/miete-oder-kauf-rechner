@@ -140,12 +140,12 @@
 
       <div class="form-section">
         <p class="form-section-title">Wertsteigerung</p>
-        <div class="field-row">
+        <div class="field-row" style="grid-template-columns: 1fr">
           <div class="field" x-data="{ open: false }">
             <label>Wertsteigerung p.a.</label>
             <input type="number" x-model.number="inputs.appreciationPct" step="0.1">
             <p class="hint">
-              <span class="field-tag optional">Optional. Default: je Region</span>
+              <span class="field-tag optional">Optional. Default: je Region – siehe Infotext</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Warum 2,5 %?">i</button>
             </p>
             <div class="info-panel" x-show="open">

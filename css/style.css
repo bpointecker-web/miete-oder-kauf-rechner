@@ -144,6 +144,10 @@ body {
   margin-bottom: .25rem;
 }
 .field .hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 .15rem;
   font-size: .75rem;
   color: var(--color-muted);
   margin-top: .2rem;
