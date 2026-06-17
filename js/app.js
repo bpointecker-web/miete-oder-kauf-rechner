@@ -2,7 +2,7 @@
  * Alpine-Komponente: UI-Zustand und Verdrahtung mit dem Rechenkern.
  * Einzige Datei, die DOM/Alpine kennt — calculator.js bleibt rein.
  */
-import { createDefaultInputs, REGIONS } from './presets.js';
+import { createDefaultInputs, REGIONS, defaultFixedRate } from './presets.js';
 import { runComparison } from './calculator.js';
 import { renderCharts } from './charts.js';
 
@@ -31,6 +31,8 @@ export function appState() {
       this.$watch('inputs.livingAreaSqm', () => this.syncPricePerSqm());
       this.$watch('inputs.equityAmount', () => this.syncEquityRatio());
       this.$watch('inputs.purchasePrice', () => this.syncEquityRatio());
+      this.$watch('inputs.loanTermYears', () => this.syncFixedRate());
+      this.$watch('inputs.rateModel', () => this.syncFixedRate());
       this.$watch('inputs', () => this.recalculate(), { deep: true });
       this.recalculate();
     },
@@ -41,6 +43,12 @@ export function appState() {
       if (livingAreaSqm > 0 && purchasePrice > 0) {
         this.inputs.pricePerSqm = Math.round(purchasePrice / livingAreaSqm);
       }
+    },
+
+    // Passt interestRatePct an wenn sich Laufzeit oder Zinsmodell ändert
+    syncFixedRate() {
+      if (this.inputs.rateModel !== 'fixed') return;
+      this.inputs.interestRatePct = defaultFixedRate(this.inputs.loanTermYears);
     },
 
     // Hält equityRatioPct als abgeleiteten Wert in sync — calculator.js nutzt weiterhin

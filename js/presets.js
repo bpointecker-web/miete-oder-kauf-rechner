@@ -69,6 +69,15 @@ export const REGIONS = Object.fromEntries(
  * @returns {object} vollständiges inputs-Objekt
  * @throws {Error} bei unbekannter Region
  */
+/**
+ * Marktüblicher Fixzins-Default je Laufzeit (Stand Juni 2026).
+ * Quellen: optifin.at, capitalo.at, infina.at
+ */
+export function defaultFixedRate(termYears) {
+  if (termYears <= 10) return 3.4;
+  return 3.3; // 15–30 Jahre: Mitte der Marktbandbreite 3,2–3,5 %
+}
+
 export function createDefaultInputs(region) {
   const preset = REGIONS[region];
   if (!preset) {
@@ -100,7 +109,7 @@ export function createDefaultInputs(region) {
     mortgageLienPct: 1.2,
     bankProcessingPct: 1.5,
     rateModel: 'fixed',
-    interestRatePct: 3.5,
+    interestRatePct: defaultFixedRate(loanTermYears),
     variableSwitchYear: 10,
     variableRatePct: 5.0,
     loanTermYears: 30,
