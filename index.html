@@ -234,7 +234,8 @@
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Woher kommt der Zinssatz?">i</button>
             </p>
             <div class="info-panel" x-show="open">
-              Stand Juni 2026 (Quellen: optifin.at, capitalo.at, infina.at): Fixzins für 20–25 Jahre Laufzeit liegt bei ca. 3,2–3,5 % p.a., für 10 Jahre ab ca. 3,4 %.
+              Stand Juni 2026 (Quellen: optifin.at, capitalo.at, infina.at): Fixzins für 20–25 Jahre liegt bei ca. 3,2–3,5 % p.a., für 10 Jahre ab ca. 3,4 %.<br>
+              Orientierung: Fixzins ≈ EUR-Swap-Rate (Laufzeit) + Bankmarge. Aktuell 20J-Swap ~2,3 % + Marge ~0,7–1,2 % = ~3,0–3,5 %. Je höher das Eigenkapital und die Bonität, desto niedriger die Marge.
             </div>
           </div>
           <div class="field">
