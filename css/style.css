@@ -324,57 +324,6 @@ body {
   line-height: 1.55;
 }
 
-/* ── Live-Mittelverwendung (Finanzierungs-Tab) ── */
-.fund-usage {
-  margin-top: .25rem;
-  padding: .75rem .875rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-left: 3px solid var(--color-primary);
-  border-radius: var(--radius);
-}
-.fund-usage-title {
-  font-size: .6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  color: var(--color-primary-hover);
-  margin-bottom: .5rem;
-}
-.fund-usage ul { list-style: none; }
-.fund-usage li {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  font-size: .8125rem;
-  color: var(--color-text);
-  padding: .2rem 0;
-}
-.fund-usage li span:last-child {
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  font-weight: 500;
-}
-.fund-usage li.minus { color: var(--color-muted); }
-.fund-usage li.sum {
-  border-top: 1px solid var(--color-border);
-  margin-top: .2rem;
-  padding-top: .4rem;
-  font-weight: 600;
-}
-.fund-usage li.loan {
-  font-weight: 700;
-  color: var(--color-primary-hover);
-}
-.fund-usage li.loan span:last-child { font-weight: 700; }
-.fund-usage-note {
-  font-size: .6875rem;
-  color: var(--color-muted);
-  line-height: 1.45;
-  margin-top: .5rem;
-  padding-top: .5rem;
-  border-top: 1px dashed var(--color-border);
-}
 
 .results-breakeven {
   font-size: .875rem;
