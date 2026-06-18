@@ -88,6 +88,7 @@ export function createDefaultInputs(region) {
 
   const livingAreaSqm = 70;
   const purchasePrice = preset.pricePerSqm * livingAreaSqm;
+  const loanTermYears = 30;
 
   return {
     // Immobilie & Kauf
@@ -111,24 +112,26 @@ export function createDefaultInputs(region) {
     rateModel: 'fixed',
     interestRatePct: defaultFixedRate(loanTermYears),
     variableSwitchYear: 10,
-    variableRatePct: 5.0,
-    loanTermYears: 30,
+    variableRatePct: 3.5,
+    loanTermYears,
     annualExtraRepayment: 0,
 
     // Laufende Kosten Eigentum (€/m²/Monat)
     ownerCostsPerSqm: 2.75,
-    operatingCostsPerSqm: 2.20,
+    operatingCostsPerSqm: 2.50,
     appreciationPct: preset.appreciationPct,
     // Nur für UI-Hint — nicht im Rechenkern verwendet
     eurostatAppreciationPct: preset.eurostatAppreciationPct,
 
     // Miete — aus Rendite-Annahme abgeleitet, in UI überschreibbar
     rentPerSqm,
+    totalMonthlyRent: Math.round(rentPerSqm * livingAreaSqm),
     depositMonths: 3,
 
     // Annahmen
     inflationPct: 2.0,
-    investmentReturnPct: 6.0,
+    investmentReturnPct: 7.0,
+    renterSavingsRatePct: 100,
     applyVorabpauschale: false,
     vorabpauschaleHaircutPct: 0.5,
     kestPct: 27.5,

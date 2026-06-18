@@ -3,7 +3,7 @@
  * Einzige Datei, die DOM/Alpine kennt — calculator.js bleibt rein.
  */
 import { createDefaultInputs, REGIONS, defaultFixedRate } from './presets.js';
-import { runComparison } from './calculator.js';
+import { runComparison, findBreakevenSavingsRate } from './calculator.js';
 import { renderCharts } from './charts.js';
 
 /**
@@ -32,8 +32,17 @@ export function appState() {
       this.$watch('inputs.equityAmount', () => this.syncEquityRatio());
       this.$watch('inputs.purchasePrice', () => this.syncEquityRatio());
       this.$watch('inputs.loanTermYears', () => this.syncFixedRate());
+      this.$watch('inputs.variableSwitchYear', () => this.syncFixedRate());
       this.$watch('inputs.rateModel', () => this.syncFixedRate());
+      this.$watch('inputs.totalMonthlyRent', () => this.syncRentPerSqm());
+      this.$watch('inputs.livingAreaSqm', () => this.syncTotalMonthlyRentFromArea());
       this.$watch('inputs', () => this.recalculate(), { deep: true });
+      // Charts neu rendern wenn Ergebnis-Tab sichtbar wird (war vorher display:none)
+      this.$watch('activeTab', tab => {
+        if (tab === 'ergebnis' && this.results) {
+          this.$nextTick(() => { this._charts = renderCharts(this.results, this._charts); });
+        }
+      });
       this.recalculate();
     },
 
@@ -45,10 +54,30 @@ export function appState() {
       }
     },
 
-    // Passt interestRatePct an wenn sich Laufzeit oder Zinsmodell ändert
+    // Passt interestRatePct an wenn sich Laufzeit, Fixphase oder Zinsmodell ändert
     syncFixedRate() {
-      if (this.inputs.rateModel !== 'fixed') return;
-      this.inputs.interestRatePct = defaultFixedRate(this.inputs.loanTermYears);
+      if (this.inputs.rateModel === 'fixed') {
+        this.inputs.interestRatePct = defaultFixedRate(this.inputs.loanTermYears);
+      } else if (this.inputs.rateModel === 'hybrid') {
+        // Fixzins richtet sich nach der Fixphasen-Laufzeit, nicht der Gesamtlaufzeit
+        this.inputs.interestRatePct = defaultFixedRate(this.inputs.variableSwitchYear);
+      }
+    },
+
+    // Hält rentPerSqm in sync wenn Gesamtmiete oder Fläche sich ändert
+    syncRentPerSqm() {
+      const { totalMonthlyRent, livingAreaSqm } = this.inputs;
+      if (livingAreaSqm > 0) {
+        this.inputs.rentPerSqm = totalMonthlyRent / livingAreaSqm;
+      }
+    },
+
+    // Wenn Fläche sich ändert: Gesamtmiete aus bisherigem €/m²-Wert ableiten
+    syncTotalMonthlyRentFromArea() {
+      const { rentPerSqm, livingAreaSqm } = this.inputs;
+      if (livingAreaSqm > 0 && rentPerSqm > 0) {
+        this.inputs.totalMonthlyRent = Math.round(rentPerSqm * livingAreaSqm);
+      }
     },
 
     // Hält equityRatioPct als abgeleiteten Wert in sync — calculator.js nutzt weiterhin
@@ -65,14 +94,16 @@ export function appState() {
     recalculate() {
       try {
         this.results = runComparison(this.inputs);
+        this.results.breakevenSavingsRate = findBreakevenSavingsRate(this.inputs);
       } catch {
         this.results = null;
       }
-      // Charts nach Alpine-Tick rendern, damit die Canvas-Elemente im DOM sind
+      // Charts + Input-Resize nach Alpine-Tick (DOM muss aktuell sein)
       this.$nextTick(() => {
         if (this.results) {
           this._charts = renderCharts(this.results, this._charts);
         }
+        resizeAllUnitInputs();
       });
     },
 
@@ -115,8 +146,101 @@ export function appState() {
   };
 }
 
-// alpine:init wird von Alpine gefeuert bevor es den DOM verarbeitet —
-// exakt das richtige Fenster um Komponenten zu registrieren.
-document.addEventListener('alpine:init', () => {
+// Alpine-Direktive x-eur: Eurobetrag mit 1.000er-Punkt anzeigen (385.000),
+// intern als Number speichern. Auf Fokus: rohe Zahl zur Bearbeitung.
+function registerAlpineExtensions() {
+  window.Alpine.directive('eur', (el, { expression }, { evaluateLater, effect, evaluate }) => {
+    const get = evaluateLater(expression);
+    const fmt = n => Math.round(+n || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    const parse = s => {
+      const n = parseFloat(s.replace(/\./g, '').replace(',', '.'));
+      return isNaN(n) ? null : n;
+    };
+
+    // Reaktiv: zeige formatierten Wert sobald das Feld nicht fokussiert ist
+    effect(() => {
+      get(val => {
+        if (document.activeElement !== el) {
+          el.value = fmt(val);
+          resizeInput(el);
+        }
+      });
+    });
+
+    // Fokus: rohe Zahl anzeigen (keine Punkte), alles markieren
+    el.addEventListener('focus', () => {
+      get(val => { el.value = val ? String(+val) : ''; });
+      el.select();
+      resizeInput(el);
+    });
+
+    // Tipp: Alpine-State laufend aktualisieren (Tausend-Punkte als Trenner tolerieren)
+    el.addEventListener('input', () => {
+      const n = parse(el.value);
+      if (n !== null) evaluate(`${expression} = ${n}`);
+      resizeInput(el);
+    });
+
+    // Blur: formatiert darstellen und State sicherstellen
+    el.addEventListener('blur', () => {
+      const n = parse(el.value);
+      if (n !== null) {
+        evaluate(`${expression} = ${n}`);
+        el.value = fmt(n);
+      } else {
+        get(val => { el.value = fmt(val); });
+      }
+      resizeInput(el);
+    });
+  });
+}
+
+// Registrierung robust gegen Race Condition zwischen ES-Modul-Import-Chain
+// und Alpine's defer-Script: beide Fälle abdecken.
+function registerAlpineComponent() {
+  registerAlpineExtensions();
   window.Alpine.data('appState', appState);
+}
+
+if (window.Alpine) {
+  registerAlpineComponent();
+} else {
+  document.addEventListener('alpine:init', registerAlpineComponent);
+}
+
+// Inputs in .input-wrap auf Ziffernbreite schrumpfen,
+// damit die Einheit direkt hinter der Zahl sitzt.
+// Span-Mirror: exakte Textbreite im echten Browser-Font (kein Canvas-Fallback-Problem).
+let _sizer = null;
+function resizeInput(input) {
+  if (!_sizer) {
+    _sizer = document.createElement('span');
+    Object.assign(_sizer.style, {
+      position: 'fixed', top: '-9999px', left: '-9999px',
+      visibility: 'hidden', pointerEvents: 'none', whiteSpace: 'pre',
+    });
+    document.body.appendChild(_sizer);
+  }
+  const cs = getComputedStyle(input);
+  _sizer.style.font = cs.font;
+  // Komma als Dezimaltrenner berücksichtigen (de-AT Locale)
+  _sizer.textContent = (input.value || '0').replace('.', ',');
+  const textW = _sizer.getBoundingClientRect().width;
+  const padH = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+  input.style.width = `${Math.ceil(textW + padH + 4)}px`;
+}
+
+export function resizeAllUnitInputs() {
+  document.querySelectorAll('.input-wrap input').forEach(resizeInput);
+}
+
+// Klick auf den Wrap-Bereich (rechts neben der Zahl) → Input fokussieren
+document.addEventListener('click', e => {
+  const wrap = e.target.closest('.input-wrap');
+  if (wrap && e.target === wrap) wrap.querySelector('input')?.focus();
+});
+
+// Benutzer-Tipp-Events: direkt reagieren
+document.addEventListener('input', e => {
+  if (e.target.closest('.input-wrap')) resizeInput(e.target);
 });

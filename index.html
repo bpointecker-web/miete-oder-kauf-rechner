@@ -47,13 +47,17 @@
       @click="activeTab = 'finanzierung'">Finanzierung</button>
     <button class="tab-btn" role="tab"
       :aria-selected="activeTab === 'kosten'"
-      @click="activeTab = 'kosten'">Eigentümerkosten</button>
+      @click="activeTab = 'kosten'">Laufende Kosten Eigentum</button>
     <button class="tab-btn" role="tab"
       :aria-selected="activeTab === 'miete'"
       @click="activeTab = 'miete'">Miete</button>
     <button class="tab-btn" role="tab"
       :aria-selected="activeTab === 'annahmen'"
       @click="activeTab = 'annahmen'">Annahmen</button>
+    <button class="tab-btn" role="tab"
+      :aria-selected="activeTab === 'ergebnis'"
+      :class="{ active: activeTab === 'ergebnis' }"
+      @click="activeTab = 'ergebnis'">Ergebnis</button>
   </nav>
 
   <main>
@@ -66,18 +70,21 @@
         <div class="field-row">
           <div class="field">
             <label>Kaufpreis gesamt</label>
-            <input type="number" x-model.number="inputs.purchasePrice" min="50000" step="5000">
-            <p class="hint"><span class="field-tag required">Pflichtfeld</span> € ohne Nebenkosten</p>
+            <div class="input-wrap"><input type="text" inputmode="numeric" x-eur="inputs.purchasePrice"><span class="input-unit">€</span></div>
+            <p class="hint"><span class="field-tag required">Pflichtfeld</span> ohne Nebenkosten</p>
           </div>
           <div class="field">
             <label>Wohnfläche</label>
-            <input type="number" x-model.number="inputs.livingAreaSqm" min="20" step="5">
-            <p class="hint"><span class="field-tag required">Pflichtfeld</span> m²</p>
+            <div class="input-wrap"><input type="number" x-model.number="inputs.livingAreaSqm" min="20" step="5"><span class="input-unit">m²</span></div>
+            <p class="hint"><span class="field-tag required">Pflichtfeld</span></p>
           </div>
           <div class="field">
             <label>Preis pro m²</label>
-            <input type="number" readonly :value="inputs.livingAreaSqm > 0 ? Math.round(inputs.purchasePrice / inputs.livingAreaSqm) : 0">
-            <p class="hint">€/m² (berechnet)</p>
+            <div class="input-wrap">
+              <input type="text" readonly :value="inputs.livingAreaSqm > 0 ? Math.round(inputs.purchasePrice / inputs.livingAreaSqm).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') : 0">
+              <span class="input-unit">€/m²</span>
+            </div>
+            <p class="hint">berechnet</p>
           </div>
         </div>
       </div>
@@ -87,7 +94,7 @@
         <div class="field-row">
           <div class="field" x-data="{ open: false }">
             <label>Grunderwerbsteuer</label>
-            <input type="number" x-model.number="inputs.transferTaxPct" min="0" step="0.1">
+            <div class="input-wrap"><input type="number" x-model.number="inputs.transferTaxPct" min="0" step="0.1"><span class="input-unit">%</span></div>
             <p class="hint">
               <span class="field-tag optional">Default: 3,5 %</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zur Grunderwerbsteuer">i</button>
@@ -99,7 +106,7 @@
           </div>
           <div class="field" x-data="{ open: false }">
             <label>Grundbucheintragung</label>
-            <input type="number" x-model.number="inputs.landRegisterPct" min="0" step="0.1">
+            <div class="input-wrap"><input type="number" x-model.number="inputs.landRegisterPct" min="0" step="0.1"><span class="input-unit">%</span></div>
             <p class="hint">
               <span class="field-tag optional">Default: 1,1 %</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zur Grundbucheintragung">i</button>
@@ -110,7 +117,7 @@
           </div>
           <div class="field" x-data="{ open: false }">
             <label>Makler (Kauf)</label>
-            <input type="number" x-model.number="inputs.brokerBuyPct" min="0" step="0.1">
+            <div class="input-wrap"><input type="number" x-model.number="inputs.brokerBuyPct" min="0" step="0.1"><span class="input-unit">%</span></div>
             <p class="hint">
               <span class="field-tag optional">Default: 3,0 %</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zur Maklerprovision">i</button>
@@ -121,7 +128,7 @@
           </div>
           <div class="field" x-data="{ open: false }">
             <label>Notar/Rechtsanwalt</label>
-            <input type="number" x-model.number="inputs.notaryPct" min="0" step="0.1">
+            <div class="input-wrap"><input type="number" x-model.number="inputs.notaryPct" min="0" step="0.1"><span class="input-unit">%</span></div>
             <p class="hint">
               <span class="field-tag optional">Default: 1,5 %</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zu Notar/RA">i</button>
@@ -132,9 +139,11 @@
           </div>
           <div class="field">
             <label>Nebenkosten gesamt</label>
-            <input type="number" readonly
-              :value="((inputs.transferTaxPct + inputs.landRegisterPct + inputs.brokerBuyPct + inputs.notaryPct) * inputs.pricePerSqm * inputs.livingAreaSqm / 100).toFixed(0)">
-            <p class="hint">€ (berechnet)</p>
+            <div class="input-wrap">
+              <input type="text" readonly :value="Math.round((inputs.transferTaxPct + inputs.landRegisterPct + inputs.brokerBuyPct + inputs.notaryPct) * inputs.purchasePrice / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')">
+              <span class="input-unit">€</span>
+            </div>
+            <p class="hint">berechnet</p>
           </div>
         </div>
       </div>
@@ -144,7 +153,7 @@
         <div class="field-row" style="grid-template-columns: 1fr">
           <div class="field" x-data="{ open: false }">
             <label>Wertsteigerung p.a.</label>
-            <input type="number" x-model.number="inputs.appreciationPct" step="0.1">
+            <div class="input-wrap"><input type="number" x-model.number="inputs.appreciationPct" step="0.1"><span class="input-unit">%</span></div>
             <p class="hint">
               <span class="field-tag optional">Default: je Region – siehe Infotext</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Warum 2,5 %?">i</button>
@@ -174,13 +183,16 @@
         <div class="field-row">
           <div class="field">
             <label>Eigenkapital gesamt</label>
-            <input type="number" x-model.number="inputs.equityAmount" min="0" step="5000">
-            <p class="hint"><span class="field-tag required">Pflichtfeld</span> € verfügbares Eigenkapital</p>
+            <div class="input-wrap"><input type="text" inputmode="numeric" x-eur="inputs.equityAmount"><span class="input-unit">€</span></div>
+            <p class="hint"><span class="field-tag required">Pflichtfeld</span></p>
           </div>
           <div class="field">
             <label>Eigenkapitalquote</label>
-            <input type="number" readonly :value="inputs.equityRatioPct?.toFixed(1)">
-            <p class="hint">% des Kaufpreises (berechnet)</p>
+            <div class="input-wrap">
+              <input type="text" readonly :value="inputs.equityRatioPct?.toFixed(1).replace('.',',')">
+              <span class="input-unit">%</span>
+            </div>
+            <p class="hint">des Kaufpreises (berechnet)</p>
           </div>
         </div>
 
@@ -191,7 +203,7 @@
         <div class="field-row">
           <div class="field" x-data="{ open: false }">
             <label>Pfandrechtseintragung</label>
-            <input type="number" x-model.number="inputs.mortgageLienPct" min="0" step="0.1">
+            <div class="input-wrap"><input type="number" x-model.number="inputs.mortgageLienPct" min="0" step="0.1"><span class="input-unit">%</span></div>
             <p class="hint">
               <span class="field-tag optional">Default: 1,2 %</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zur Pfandrechtseintragung">i</button>
@@ -202,7 +214,7 @@
           </div>
           <div class="field" x-data="{ open: false }">
             <label>Bankbearbeitung</label>
-            <input type="number" x-model.number="inputs.bankProcessingPct" min="0" step="0.1">
+            <div class="input-wrap"><input type="number" x-model.number="inputs.bankProcessingPct" min="0" step="0.1"><span class="input-unit">%</span></div>
             <p class="hint">
               <span class="field-tag optional">Default: 1,5 %</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zur Bankbearbeitung">i</button>
@@ -223,43 +235,114 @@
               @click="setRateModel('fixed')">Fixzins</button>
             <button :class="{ active: inputs.rateModel === 'variable' }"
               @click="setRateModel('variable')">Variabel</button>
+            <button :class="{ active: inputs.rateModel === 'hybrid' }"
+              @click="setRateModel('hybrid')">Fix &amp; Variabel</button>
           </div>
         </div>
-        <div class="field-row">
-          <div class="field" x-data="{ open: false }">
-            <label x-text="inputs.rateModel === 'fixed' ? 'Fixzins' : 'Startzins'"></label>
-            <input type="number" x-model.number="inputs.interestRatePct" min="0" step="0.1">
-            <p class="hint">
-              <span class="field-tag optional">Default: 3,5 % p.a.</span>
-              <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Woher kommt der Zinssatz?">i</button>
-            </p>
-            <div class="info-panel" x-show="open">
-              Stand Juni 2026 (Quellen: optifin.at, capitalo.at, infina.at): Fixzins für 20–25 Jahre liegt bei ca. 3,2–3,5 % p.a., für 10 Jahre ab ca. 3,4 %.<br>
-              Orientierung: Fixzins ≈ EUR-Swap-Rate (Laufzeit) + Bankmarge. Aktuell 20J-Swap ~2,3 % + Marge ~0,7–1,2 % = ~3,0–3,5 %. Je höher das Eigenkapital und die Bonität, desto niedriger die Marge.
-            </div>
-          </div>
+        <!-- Laufzeit ist modellübergreifend immer sichtbar -->
+        <div class="field-row" style="margin-bottom:.25rem;">
           <div class="field">
-            <label>Laufzeit</label>
-            <input type="number" x-model.number="inputs.loanTermYears" min="5" max="35" step="1">
+            <label x-text="inputs.rateModel === 'hybrid' ? 'Gesamtlaufzeit' : 'Laufzeit'"></label>
+            <div class="input-wrap"><input type="number" x-model.number="inputs.loanTermYears" min="5" max="35" step="1"><span class="input-unit">J</span></div>
             <p class="hint"><span class="field-tag optional">Default: 30 Jahre</span></p>
           </div>
-          <div class="field">
-            <label>Sondertilgung</label>
-            <input type="number" x-model.number="inputs.annualExtraRepayment" min="0" step="500">
-            <p class="hint"><span class="field-tag optional">Default: 0 €/Jahr</span></p>
-          </div>
         </div>
-        <template x-if="inputs.rateModel === 'variable'">
+        <!-- Fixzins / Variabel: einfaches Layout -->
+        <template x-if="inputs.rateModel !== 'hybrid'">
           <div class="field-row">
-            <div class="field">
-              <label>Zinswechsel nach</label>
-              <input type="number" x-model.number="inputs.variableSwitchYear" min="1" step="1">
-              <p class="hint"><span class="field-tag optional">Default: 10 Jahre</span></p>
+            <div class="field" x-data="{ open: false }">
+              <label x-text="inputs.rateModel === 'fixed' ? 'Fixzins' : 'Variabler Zinssatz'"></label>
+              <div class="input-wrap"><input type="number" x-model.number="inputs.interestRatePct" min="0" step="0.1"><span class="input-unit">%</span></div>
+              <p class="hint">
+                <span class="field-tag optional">Default: 3,3–3,5 % p.a.</span>
+                <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Woher kommt der Zinssatz?">i</button>
+              </p>
+              <div class="info-panel" x-show="open">
+                <template x-if="inputs.rateModel === 'fixed'">
+                  <span>
+                    <strong>Fixzins</strong> – für die gesamte Laufzeit fix vereinbart.<br>
+                    Stand Juni 2026: 20–25 Jahre ca. 3,2–3,5 % p.a., 10 Jahre ab ca. 3,4 % (Quellen: optifin.at, capitalo.at).<br>
+                    Orientierung: EUR-Swap-Rate + Bankmarge (0,7–1,2 %).
+                  </span>
+                </template>
+                <template x-if="inputs.rateModel === 'variable'">
+                  <span>
+                    <strong>Variabler Zinssatz</strong> – folgt dem 3-Monats-EURIBOR + Bankmarge.<br>
+                    Stand Juni 2026: EURIBOR 3M ~2,6 % + Marge ~0,7–0,9 % ≈ 3,3–3,5 %. Dieses Modell rechnet mit einem konstanten Satz – tatsächliche Schwankungen sind nicht vorhersehbar.
+                  </span>
+                </template>
+              </div>
             </div>
-            <div class="field">
-              <label>Zins nach Wechsel</label>
-              <input type="number" x-model.number="inputs.variableRatePct" min="0" step="0.1">
-              <p class="hint"><span class="field-tag optional">Default: 5,0 % p.a.</span></p>
+            <div class="field" x-data="{ open: false }">
+              <label>Sondertilgung</label>
+              <div class="input-wrap"><input type="text" inputmode="numeric" x-eur="inputs.annualExtraRepayment"><span class="input-unit">€/J</span></div>
+              <p class="hint">
+                <span class="field-tag optional">Default: 0</span>
+                <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Rechtliches zu Sondertilgungen">i</button>
+              </p>
+              <div class="info-panel" x-show="open">
+                <strong>Österreichisches Recht (HIKrG § 16):</strong><br>
+                <strong>Fixzins:</strong> Sondertilgungen sind möglich, aber die Bank darf eine Vorfälligkeitsentschädigung verlangen – gedeckelt auf 1 % der vorzeitig getilgten Summe (0,5 % wenn Restlaufzeit &lt; 1 Jahr).<br>
+                <em>Warum ist das für Banken schlecht?</em> Die Bank refinanziert Fixzinskredite über den Kapitalmarkt (EUR-Swap-Geschäfte) für die volle Laufzeit. Tilgst du früher, sitzt sie auf den Absicherungskosten – erhält aber keine Zinsen mehr von dir. Sind die Marktzinsen inzwischen gesunken, muss sie dein Geld zu niedrigeren Sätzen anlegen als ursprünglich kalkuliert. Die Vorfälligkeitsentschädigung gleicht genau diesen Verlust aus.<br>
+                <strong>Variabel:</strong> Sondertilgungen sind jederzeit ohne Entschädigung möglich; Bank kann jedoch 3 Monate Ankündigungsfrist verlangen.<br>
+                <strong>Praxis:</strong> Viele Banken erlauben 10.000 €/Jahr kostenfrei – aber das ist Vertragsrecht, nicht Gesetz. Im Kreditvertrag prüfen!
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- Fix & Variabel: Felder in der Reihenfolge Gesamtlaufzeit → Fixzins → Fixphase → Variabelzins → Restlaufzeit -->
+        <template x-if="inputs.rateModel === 'hybrid'">
+          <div>
+            <div class="field-row">
+              <div class="field" x-data="{ open: false }">
+                <label>Fixzins</label>
+                <div class="input-wrap"><input type="number" x-model.number="inputs.interestRatePct" min="0" step="0.1"><span class="input-unit">%</span></div>
+                <p class="hint">
+                  <span class="field-tag optional">Default: 3,4 % p.a.</span>
+                  <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Woher kommt der Zinssatz?">i</button>
+                </p>
+                <div class="info-panel" x-show="open">
+                  <strong>Fix &amp; Variabel</strong> – typisches Kombi-Modell österreichischer Banken.<br>
+                  Fixzins: EUR-Swap-Rate für die Fixphasen-Laufzeit + Bankmarge (0,7–1,2 %).<br>
+                  Variabler Zins danach: EURIBOR 3M + Marge – als Schätzwert eingeben.
+                </div>
+              </div>
+              <div class="field">
+                <label>Laufzeit Fixzinsphase</label>
+                <div class="input-wrap"><input type="number" x-model.number="inputs.variableSwitchYear" min="1" :max="inputs.loanTermYears - 1" step="1"><span class="input-unit">J</span></div>
+                <p class="hint"><span class="field-tag optional">Default: 10 Jahre</span></p>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>Variabler Zinssatz</label>
+                <div class="input-wrap"><input type="number" x-model.number="inputs.variableRatePct" min="0" step="0.1"><span class="input-unit">%</span></div>
+                <p class="hint"><span class="field-tag optional">Default: 3,5 % p.a.</span></p>
+              </div>
+              <div class="field">
+                <label>Laufzeit variabel</label>
+                <div class="input-wrap">
+                  <input type="text" :value="inputs.loanTermYears - inputs.variableSwitchYear" readonly tabindex="-1" style="background:var(--color-bg);color:var(--color-muted);cursor:default;">
+                  <span class="input-unit">J</span>
+                </div>
+                <p class="hint"><span class="field-tag optional">berechnet</span></p>
+              </div>
+              <div class="field" x-data="{ open: false }">
+                <label>Sondertilgung</label>
+                <div class="input-wrap"><input type="text" inputmode="numeric" x-eur="inputs.annualExtraRepayment"><span class="input-unit">€/J</span></div>
+                <p class="hint">
+                  <span class="field-tag optional">Default: 0</span>
+                  <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Rechtliches zu Sondertilgungen">i</button>
+                </p>
+                <div class="info-panel" x-show="open">
+                  <strong>Österreichisches Recht (HIKrG § 16):</strong><br>
+                  <strong>Fixzins:</strong> Sondertilgungen sind möglich, aber die Bank darf eine Vorfälligkeitsentschädigung verlangen – gedeckelt auf 1 % der vorzeitig getilgten Summe (0,5 % wenn Restlaufzeit &lt; 1 Jahr).<br>
+                <em>Warum ist das für Banken schlecht?</em> Die Bank refinanziert Fixzinskredite über den Kapitalmarkt (EUR-Swap-Geschäfte) für die volle Laufzeit. Tilgst du früher, sitzt sie auf den Absicherungskosten – erhält aber keine Zinsen mehr von dir. Sind die Marktzinsen inzwischen gesunken, muss sie dein Geld zu niedrigeren Sätzen anlegen als ursprünglich kalkuliert. Die Vorfälligkeitsentschädigung gleicht genau diesen Verlust aus.<br>
+                  <strong>Variabel:</strong> Sondertilgungen sind jederzeit ohne Entschädigung möglich; Bank kann jedoch 3 Monate Ankündigungsfrist verlangen.<br>
+                  <strong>Praxis:</strong> Viele Banken erlauben 10.000 €/Jahr kostenfrei – aber das ist Vertragsrecht, nicht Gesetz. Im Kreditvertrag prüfen!
+                </div>
+              </div>
             </div>
           </div>
         </template>
@@ -274,8 +357,8 @@
         <p class="form-section-title">Laufende Kosten (€/m²/Monat)</p>
         <div class="field-row">
           <div class="field" x-data="{ open: false }">
-            <label>Eigentümerkosten</label>
-            <input type="number" x-model.number="inputs.ownerCostsPerSqm" min="0" step="0.05">
+            <label>Instandhaltung &amp; Rücklage</label>
+            <div class="input-wrap"><input type="number" x-model.number="inputs.ownerCostsPerSqm" min="0" step="0.05"><span class="input-unit">€/m²</span></div>
             <p class="hint">
               <span class="field-tag optional">Default: 2,75 €/m²/Mon.</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Aufschlüsselung">i</button>
@@ -291,14 +374,34 @@
           </div>
           <div class="field" x-data="{ open: false }">
             <label>Betriebskosten</label>
-            <input type="number" x-model.number="inputs.operatingCostsPerSqm" min="0" step="0.05">
+            <div class="input-wrap"><input type="number" x-model.number="inputs.operatingCostsPerSqm" min="0" step="0.05"><span class="input-unit">€/m²</span></div>
             <p class="hint">
-              <span class="field-tag optional">Default: 2,20 €/m²/Mon.</span>
+              <span class="field-tag optional">Default: 2,50 €/m²/Mon.</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Was ist enthalten?">i</button>
             </p>
             <div class="info-panel" x-show="open">
-              Enthält: Wasser/Abwasser, Müll, Hausbetreuung, Aufzug, allg. Strom. Entspricht dem AT-Durchschnitt laut WKO/Immobilienwirtschaft (Stand 2024). Gilt sowohl für Käufer als auch für Mieter (beim Mieter in der Bruttomiete enthalten).
+              Enthält: Wasser/Abwasser, Müll, Hausbetreuung, Aufzug, allg. Strom.<br><br>
+              <strong>Aktuelle Zahlen (Statistik Austria, Q1 2025):</strong> Ø 2,52 €/m²/Mon. für private Mietwohnungen in Österreich. Bandbreite je nach Bundesland und Gebäudestandard: 2,20–2,80 €/m².<br><br>
+              Gilt im Modell für Käufer und Mieter gleichermaßen (beim Mieter in der Bruttomiete enthalten).
             </div>
+          </div>
+        </div>
+        <div class="field-row" style="margin-top:.25rem;">
+          <div class="field">
+            <label>Instandhaltung gesamt</label>
+            <div class="input-wrap">
+              <input type="text" readonly :value="(inputs.ownerCostsPerSqm * inputs.livingAreaSqm).toFixed(2).replace('.',',')">
+              <span class="input-unit">€/Mon.</span>
+            </div>
+            <p class="hint">berechnet</p>
+          </div>
+          <div class="field">
+            <label>Betriebskosten gesamt</label>
+            <div class="input-wrap">
+              <input type="text" readonly :value="(inputs.operatingCostsPerSqm * inputs.livingAreaSqm).toFixed(2).replace('.',',')">
+              <span class="input-unit">€/Mon.</span>
+            </div>
+            <p class="hint">berechnet</p>
           </div>
         </div>
       </div>
@@ -313,18 +416,19 @@
           <div class="field-row">
             <div class="field">
               <label>Maklerprovision Verkauf</label>
-              <input type="number" x-model.number="inputs.saleBrokerFeePct" min="0" step="0.1">
+              <div class="input-wrap"><input type="number" x-model.number="inputs.saleBrokerFeePct" min="0" step="0.1"><span class="input-unit">%</span></div>
               <p class="hint"><span class="field-tag optional">Default: 3,0 %</span> des Verkaufspreises</p>
             </div>
             <div class="field" x-data="{ open: false }">
               <label>ImmoESt-Satz</label>
-              <input type="number" x-model.number="inputs.immoEstPct" min="0" step="1">
+              <div class="input-wrap"><input type="number" x-model.number="inputs.immoEstPct" min="0" step="1"><span class="input-unit">%</span></div>
               <p class="hint">
                 <span class="field-tag optional">Default: 30 %</span>
                 <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Wann fällt ImmoESt an?">i</button>
               </p>
               <div class="info-panel" x-show="open">
-                Immobilienertragsteuer (ImmoESt) auf den Wertgewinn (§ 30 EStG). Gilt für Verkäufe nach dem 31.3.2012. Hauptwohnsitzbefreiung (Checkbox unten) setzt die Steuer auf 0, wenn die Immobilie mind. 2 Jahre Hauptwohnsitz war.
+                <strong>Immobilienertragsteuer (ImmoESt) – 30 % auf den Wertgewinn (§ 30 EStG):</strong><br>
+                Die Hauptwohnsitzbefreiung (Checkbox) setzt die Steuer auf 0 €, wenn die Immobilie entweder seit dem Kauf durchgehend (mind. 2 Jahre) oder innerhalb der letzten 10 Jahre vor dem Verkauf mind. 5 Jahre durchgehend als Hauptwohnsitz genutzt wurde.
               </div>
             </div>
             <div class="field-check" style="align-self:end; padding-bottom:.5rem;">
@@ -343,27 +447,25 @@
       <div class="form-section">
         <p class="form-section-title">Vergleichsmiete</p>
         <div class="field-row">
-          <div class="field" x-data="{ open: false }">
-            <label>Miete pro m²</label>
-            <input type="number" x-model.number="inputs.rentPerSqm" min="1" step="0.5">
-            <p class="hint">
-              <span class="field-tag optional">Default: aus Bruttorendite</span>
-              <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Wie wird die Miete berechnet?">i</button>
-            </p>
-            <div class="info-panel" x-show="open">
-              Berechnung: Kaufpreis/m² × <strong x-text="inputs.rentalYieldPct?.toFixed(1)"></strong> % Bruttorendite ÷ 12.<br><br>
-              Die Bruttorendite ist ein Schätzwert auf Basis von Mietinseraten (~2025, willhaben.at/immopreise.at). Bruttomiete inkl. Betriebskosten (Kaltmiete + BK). Bitte mit dem tatsächlichen Mietmarkt in der Region vergleichen.
-            </div>
-          </div>
           <div class="field">
             <label>Monatsmiete gesamt</label>
-            <input type="number" readonly
-              :value="(inputs.rentPerSqm * inputs.livingAreaSqm).toFixed(0)">
-            <p class="hint">€/Monat (berechnet)</p>
+            <div class="input-wrap">
+              <input type="text" inputmode="numeric" x-eur="inputs.totalMonthlyRent">
+              <span class="input-unit">€/Mon.</span>
+            </div>
+            <p class="hint"><span class="field-tag required">Pflichtfeld</span> inkl. Betriebskosten</p>
+          </div>
+          <div class="field">
+            <label>Miete pro m²</label>
+            <div class="input-wrap">
+              <input type="text" readonly :value="inputs.rentPerSqm > 0 ? inputs.rentPerSqm.toFixed(2).replace('.', ',') : '0'">
+              <span class="input-unit">€/m²</span>
+            </div>
+            <p class="hint">berechnet</p>
           </div>
           <div class="field">
             <label>Mietkaution</label>
-            <input type="number" x-model.number="inputs.depositMonths" min="0" max="6" step="1">
+            <div class="input-wrap"><input type="number" x-model.number="inputs.depositMonths" min="0" max="6" step="1"><span class="input-unit">Mon.</span></div>
             <p class="hint"><span class="field-tag optional">Default: 3 Monatsmieten</span></p>
           </div>
         </div>
@@ -382,7 +484,7 @@
         <div class="field-row">
           <div class="field" x-data="{ open: false }">
             <label>Inflation p.a.</label>
-            <input type="number" x-model.number="inputs.inflationPct" step="0.1">
+            <div class="input-wrap"><input type="number" x-model.number="inputs.inflationPct" step="0.1"><span class="input-unit">%</span></div>
             <p class="hint">
               <span class="field-tag optional">Default: 2,0 % p.a.</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Woher kommt 2 %?">i</button>
@@ -393,18 +495,29 @@
           </div>
           <div class="field" x-data="{ open: false }">
             <label>Anlagerendite p.a.</label>
-            <input type="number" x-model.number="inputs.investmentReturnPct" step="0.1">
+            <div class="input-wrap"><input type="number" x-model.number="inputs.investmentReturnPct" step="0.1"><span class="input-unit">%</span></div>
             <p class="hint">
-              <span class="field-tag optional">Default: 6,0 % p.a.</span>
-              <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Woher kommt 6 %?">i</button>
+              <span class="field-tag optional">Default: 7,0 % p.a.</span>
+              <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Woher kommt 7 %?">i</button>
             </p>
             <div class="info-panel" x-show="open">
-              Nominal, Mieter-Portfolio (z.B. globaler Aktien-ETF). MSCI World (EUR, netto) historisch ~7–9 % p.a. (1970–2024). 6 % als konservativer Planungswert nach ETF-Kosten (~0,2 % TER) und Sicherheitsabschlag für die Zukunft. Keine Garantie – historische Renditen sind kein Versprechen.
+              <strong>Wie wird der Default abgeleitet?</strong><br>
+              <strong>Nominell</strong> — d.h. vor Inflation. MSCI World (EUR, netto) historisch ~7–9 % p.a. (1970–2024). 7 % nach ETF-Kosten (~0,2 % TER) ist der Referenzwert von Gerd Kommer. Bei 2 % Inflation entspricht das einer <strong>Realrendite von ~5 %</strong>.<br><br>
+
+              <strong>Historische Einordnung:</strong><br>
+              · 1990–2000: Boom (Dotcom) — MSCI World +18 % p.a.<br>
+              · 2000–2003: Crash — MSCI World −15 % p.a.<br>
+              · 2003–2007: Erholung — +15 % p.a.<br>
+              · 2008–2009: Finanzkrise — −40 % in 2 Jahren<br>
+              · 2009–2021: Längste Hausse der Geschichte — +14 % p.a.<br>
+              · 2022: Korrektur durch Zinswende — −18 %<br><br>
+
+              <strong>Fazit:</strong> 7 % ist ein vernünftiger Planungswert, aber kein Versprechen. Wer konservativ rechnen will: 5–6 %. Wer den historischen Durchschnitt annimmt: 7–8 %.
             </div>
           </div>
           <div class="field" x-data="{ open: false }">
             <label>KESt auf Gewinne</label>
-            <input type="number" x-model.number="inputs.kestPct" min="0" max="100" step="0.5">
+            <div class="input-wrap"><input type="number" x-model.number="inputs.kestPct" min="0" max="100" step="0.5"><span class="input-unit">%</span></div>
             <p class="hint">
               <span class="field-tag optional">Default: 27,5 %</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Wie wird die KESt angewendet?">i</button>
@@ -417,28 +530,55 @@
       </div>
 
       <div class="form-section">
-        <p class="form-section-title">Betrachtungshorizont</p>
+        <p class="form-section-title">Sparverhalten Mieter</p>
         <div class="field-row">
-          <div class="field">
-            <label>Horizont</label>
-            <input type="number" x-model.number="inputs.horizonYears" min="5" max="35" step="1">
-            <p class="hint"><span class="field-tag optional">Default: 30 Jahre</span></p>
+          <div class="field" x-data="{ open: false }">
+            <label>Sparquote Mieter</label>
+            <div class="input-wrap"><input type="number" x-model.number="inputs.renterSavingsRatePct" min="0" max="100" step="5"><span class="input-unit">%</span></div>
+            <p class="hint">
+              <span class="field-tag optional">Default: 100 %</span>
+              <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Was bedeutet Sparquote?">i</button>
+            </p>
+            <div class="info-panel" x-show="open">
+              Wenn der Käufer mehr zahlt als der Mieter, hat der Mieter jeden Monat Geld übrig. Das Modell geht davon aus, dass er diesen Überschuss anlegt.<br><br>
+              In der Realität sparen die wenigsten 100 % — ein Teil fließt in Lifestyle, Urlaub oder Konsum. Der Käufer hingegen spart zwangsläufig: die Kreditrate enthält immer eine Tilgungskomponente, egal ob er will oder nicht.<br><br>
+              <strong>Empfehlung:</strong> 100 % ist der theoretisch faire Vergleich. 60–80 % bildet die Realität besser ab. Am besten beide Szenarien durchspielen.
+            </div>
           </div>
         </div>
       </div>
 
       <div class="form-section">
-        <p class="form-section-title">Vorabpauschale (Österreich)</p>
+        <p class="form-section-title">Betrachtungshorizont</p>
+        <div class="field-row">
+          <div class="field">
+            <label>Horizont</label>
+            <div class="input-wrap"><input type="number" x-model.number="inputs.horizonYears" min="5" max="35" step="1"><span class="input-unit">J</span></div>
+            <p class="hint"><span class="field-tag optional">Default: 30 Jahre</span></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section" x-data="{ openVP: false }">
+        <p class="form-section-title">
+          Laufende Fondsbesteuerung (Österreich)
+          <button class="info-btn" @click="openVP = !openVP" :aria-expanded="openVP" title="Wie funktioniert das in Österreich?">i</button>
+        </p>
+        <div class="info-panel" x-show="openVP" style="margin-bottom:.75rem;">
+          <strong>Meldefonds (z.B. Vanguard FTSE All-World, iShares MSCI World):</strong> Der Fonds meldet jährlich seine „ausschüttungsgleichen Erträge" an die OeKB. Darauf fällt KESt (27,5 %) an — auch ohne Ausschüttung. Das Modell nähert diesen Effekt als jährlichen Prozentsatz des Portfoliowerts an.<br><br>
+          <strong>Nicht-Meldefonds:</strong> Pauschale Strafbesteuerung: 27,5 % auf 90 % des Kursgewinns, mindestens 27,5 % auf 10 % des Jahresendwerts. Sehr nachteilig — solche ETFs sollte man meiden.<br><br>
+          <strong>Empfehlung:</strong> Für einen typischen thesaurierenden MSCI-World-Meldefonds liegt der effektive Jahres-Haircut bei ca. 0,3–0,7 % des Portfoliowerts. 0,5 % ist ein plausibler Mittelwert. Wenn deaktiviert, wird KESt vereinfacht nur am Ende auf den Gesamtgewinn gerechnet.
+        </div>
         <div class="field-check">
           <input type="checkbox" id="vorabpauschale" x-model="inputs.applyVorabpauschale">
-          <label for="vorabpauschale">Vorabpauschale-Steuereffekt berücksichtigen</label>
+          <label for="vorabpauschale">Jährliche Fondsbesteuerung berücksichtigen</label>
         </div>
         <template x-if="inputs.applyVorabpauschale">
           <div class="field-row" style="margin-top:.5rem;">
             <div class="field">
-              <label>Haircut</label>
-              <input type="number" x-model.number="inputs.vorabpauschaleHaircutPct" min="0" step="0.1">
-              <p class="hint"><span class="field-tag optional">Default: 0,5 %</span> des Portfoliowerts</p>
+              <label>Jahres-Haircut</label>
+              <div class="input-wrap"><input type="number" x-model.number="inputs.vorabpauschaleHaircutPct" min="0" step="0.1"><span class="input-unit">%</span></div>
+              <p class="hint"><span class="field-tag optional">Default: 0,5 %</span> des Portfoliowerts p.a.</p>
             </div>
           </div>
         </template>
@@ -446,89 +586,126 @@
 
     </section>
 
-  </main>
+    <!-- ── Tab: Ergebnis ── -->
+    <section class="tab-panel" :class="{ active: activeTab === 'ergebnis' }" role="tabpanel" style="padding: 0;">
+      <template x-if="results">
+        <div>
+          <section class="results-panel" style="margin: 0; border-radius: 0;">
+            <p class="results-winner" x-text="winnerText()"></p>
 
-  <!-- ── Ergebnisübersicht (C2) ── -->
-  <template x-if="results">
-    <section class="results-panel">
-      <p class="results-winner" x-text="winnerText()"></p>
+            <div class="results-table-wrap"><table class="results-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th class="col-buyer">Käufer</th>
+                  <th class="col-renter">Mieter</th>
+                  <th>Differenz</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="row-label">Nettovermögen nominal</td>
+                  <td class="col-buyer" x-text="formatEur(results.buyerNetWealthNominal)"></td>
+                  <td class="col-renter" x-text="formatEur(results.renterNetWealthNominal)"></td>
+                  <td :class="results.differenceNominal >= 0 ? 'diff-positive' : 'diff-negative'"
+                      x-text="formatEur(results.differenceNominal)"></td>
+                </tr>
+                <tr>
+                  <td class="row-label">Nettovermögen real
+                    <span class="hint-inline">(inflationsbereinigt, <span x-text="inputs.inflationPct"></span>% p.a.)</span>
+                  </td>
+                  <td class="col-buyer" x-text="formatEur(results.buyerNetWealthReal)"></td>
+                  <td class="col-renter" x-text="formatEur(results.renterNetWealthReal)"></td>
+                  <td :class="results.differenceReal >= 0 ? 'diff-positive' : 'diff-negative'"
+                      x-text="formatEur(results.differenceReal)"></td>
+                </tr>
+              </tbody>
+            </table></div>
 
-      <div class="results-table-wrap"><table class="results-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th class="col-buyer">Käufer</th>
-            <th class="col-renter">Mieter</th>
-            <th>Differenz</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="row-label">Nettovermögen nominal</td>
-            <td class="col-buyer" x-text="formatEur(results.buyerNetWealthNominal)"></td>
-            <td class="col-renter" x-text="formatEur(results.renterNetWealthNominal)"></td>
-            <td :class="results.differenceNominal >= 0 ? 'diff-positive' : 'diff-negative'"
-                x-text="formatEur(results.differenceNominal)"></td>
-          </tr>
-          <tr>
-            <td class="row-label">Nettovermögen real
-              <span class="hint-inline">(inflationsbereinigt, <span x-text="inputs.inflationPct"></span>% p.a.)</span>
-            </td>
-            <td class="col-buyer" x-text="formatEur(results.buyerNetWealthReal)"></td>
-            <td class="col-renter" x-text="formatEur(results.renterNetWealthReal)"></td>
-            <td :class="results.differenceReal >= 0 ? 'diff-positive' : 'diff-negative'"
-                x-text="formatEur(results.differenceReal)"></td>
-          </tr>
-        </tbody>
-      </table></div>
+            <p class="results-breakeven">
+              <template x-if="results.breakevenYear !== null">
+                <span>Breakeven: Kaufen lohnt sich ab <strong x-text="'Jahr ' + results.breakevenYear"></strong>.</span>
+              </template>
+              <template x-if="results.breakevenYear === null">
+                <span>Kein Breakeven im Betrachtungshorizont von <span x-text="inputs.horizonYears"></span> Jahren.</span>
+              </template>
+              <template x-if="results.breakevenSavingsRate === null">
+                <span style="display:block;margin-top:.3rem;opacity:.8">Kaufen ist bei jeder Sparquote vorteilhafter.</span>
+              </template>
+              <template x-if="results.breakevenSavingsRate === 0">
+                <span style="display:block;margin-top:.3rem;opacity:.8">Mieten ist bei jeder Sparquote vorteilhafter.</span>
+              </template>
+              <template x-if="results.breakevenSavingsRate > 0">
+                <span style="display:block;margin-top:.3rem;opacity:.8">Mieten lohnt sich nur ab einer Sparquote von mind. <strong x-text="results.breakevenSavingsRate + ' %'"></strong>.</span>
+              </template>
+            </p>
 
-      <p class="results-breakeven">
-        <template x-if="results.breakevenYear !== null">
-          <span>Breakeven: Kaufen lohnt sich ab <strong x-text="'Jahr ' + results.breakevenYear"></strong>.</span>
-        </template>
-        <template x-if="results.breakevenYear === null">
-          <span>Kein Breakeven im Betrachtungshorizont von <span x-text="inputs.horizonYears"></span> Jahren.</span>
-        </template>
-      </p>
+            <div class="kmf-indicator" x-data="{ openKMF: false, get val() { return inputs.totalMonthlyRent > 0 ? Math.round(inputs.purchasePrice / (inputs.totalMonthlyRent * 12) * 10) / 10 : null; } }">
+              <template x-if="val !== null">
+                <div>
+                  <div style="display:flex; align-items:center; flex-wrap:wrap; gap:.25rem;">
+                    Kauf-Miet-Faktor:
+                    <strong x-text="val.toFixed(1).replace('.', ',')"></strong>
+                    <span class="kmf-badge" :class="val <= 20 ? 'kmf-ok' : val <= 30 ? 'kmf-warn' : 'kmf-bad'"
+                      x-text="val <= 20 ? '≤ 20 — günstig' : val <= 30 ? '20–30 — mittel' : '> 30 — teuer'"></span>
+                    <button class="info-btn" @click="openKMF = !openKMF" :aria-expanded="openKMF" title="Was bedeutet der Kauf-Miet-Faktor?">i</button>
+                  </div>
+                  <div class="info-panel kmf-info-panel" x-show="openKMF" style="margin-top:.5rem;">
+                    <strong>Kauf-Miet-Faktor</strong> = Kaufpreis ÷ Jahreskaltmiete. Gibt an, wie viele Jahresmieten nötig sind, um den reinen Kaufpreis zu decken. Je höher der Wert, desto teurer ist die Immobilie relativ zu den Mieteinnahmen.<br><br>
+                    <strong class="kmf-ok-text">≤ 20 — Günstig (Kauf-Terrain):</strong> Die Bruttomietrendite liegt bei ≥ 5 %. Selbst nach Abzug von Instandhaltung und Betriebskosten bleibt meist eine Nettorendite, die das aktuelle Zinsniveau deckt und mit dem Kapitalmarkt konkurrieren kann. Kaufen schlägt Mieten hier rechnerisch oft deutlich.<br><br>
+                    <strong class="kmf-warn-text">20 bis 30 — Mittel (Die Grauzone):</strong> Das klassische Mittelfeld. Ob sich der Kauf lohnt, hängt jetzt massiv von den individuellen Kreditkonditionen, der Laufzeit und der zukünftigen Wertsteigerung ab. Genau hier liefert die Detailberechnung dieses Kalkulators die Antwort.<br><br>
+                    <strong class="kmf-bad-text">&gt; 30 — Teuer (Spekulativ):</strong> Die Bruttomietrendite rutscht unter ~3,3 %, die Nettorendite nach Kosten oft auf magere 1–2 %. Die ersparte Miete deckt die Finanzierungskosten bei Weitem nicht mehr. Das gebundene Eigenkapital würde im ETF-Portfolio (konservativ kalkuliert mit ~6 % p.a.) deutlich besser performen. Damit Kaufen trotzdem gewinnt, muss die Immobilie dauerhaft und stark an Wert steigen — ein Szenario, das der Historie widerspricht: Langfristige Daten zeigen, dass der reale Wertzuwachs von Immobilien (nach Inflation) über Jahrzehnte betrachtet gegen null tendiert. Boom-Phasen sind die Ausnahme, nicht die Regel. Zur Einordnung: In Lagen wie Wien liegt der Faktor aktuell oft bei 35 bis 45.<br><br>
+                    <em>In Anlehnung an Dr. Gerd Kommer, „Kaufen oder mieten?" (2021) und aktuelle Marktdaten.</em>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </section>
+
+          <div class="charts-panel" style="margin: 0; padding: 1rem; gap: 1rem;">
+            <div class="chart-wrap">
+              <canvas id="chart-wealth"></canvas>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="chart-cashflow"></canvas>
+            </div>
+          </div>
+
+          <div class="sensitivity-panel">
+            <p class="sensitivity-title">Was-wäre-wenn — Annahmen direkt anpassen</p>
+
+            <div class="sensitivity-row">
+              <div class="sens-label">
+                <span>Wertsteigerung Immobilie</span>
+                <span class="sens-value" x-text="inputs.appreciationPct.toFixed(1).replace('.', ',') + ' % p.a.'"></span>
+              </div>
+              <input type="range" class="sens-slider" x-model.number="inputs.appreciationPct" min="0" max="6" step="0.5">
+              <div class="sens-ticks"><span>0 %</span><span>3 %</span><span>6 %</span></div>
+            </div>
+
+            <div class="sensitivity-row">
+              <div class="sens-label">
+                <span>Zinssatz (Kredit)</span>
+                <span class="sens-value" x-text="inputs.interestRatePct.toFixed(2).replace('.', ',') + ' % p.a.'"></span>
+              </div>
+              <input type="range" class="sens-slider" x-model.number="inputs.interestRatePct" min="1" max="7" step="0.25">
+              <div class="sens-ticks"><span>1 %</span><span>4 %</span><span>7 %</span></div>
+            </div>
+
+            <div class="sensitivity-row">
+              <div class="sens-label">
+                <span>Anlagerendite (ETF)</span>
+                <span class="sens-value" x-text="inputs.investmentReturnPct.toFixed(1).replace('.', ',') + ' % p.a.'"></span>
+              </div>
+              <input type="range" class="sens-slider" x-model.number="inputs.investmentReturnPct" min="2" max="12" step="0.5">
+              <div class="sens-ticks"><span>2 %</span><span>7 %</span><span>12 %</span></div>
+            </div>
+          </div>
+        </div>
+      </template>
     </section>
-  </template>
 
-  <!-- ── Diagramme (D1 + D2) ── -->
-  <template x-if="results">
-    <div class="charts-panel">
-      <div class="chart-wrap">
-        <canvas id="chart-wealth"></canvas>
-      </div>
-      <div class="chart-wrap">
-        <canvas id="chart-cashflow"></canvas>
-      </div>
-    </div>
-  </template>
-
-  <!-- ── Sticky Bottom-Bar (Kern-KPIs) ── -->
-  <div class="bottom-bar">
-    <div class="kpi">
-      <span class="kpi-label">Käufer nach <span x-text="inputs.horizonYears"></span>J</span>
-      <span class="kpi-value buyer"
-        x-text="results ? formatEur(results.buyerNetWealthNominal) : '…'"></span>
-    </div>
-    <div class="kpi">
-      <span class="kpi-label">Mieter nach <span x-text="inputs.horizonYears"></span>J</span>
-      <span class="kpi-value renter"
-        x-text="results ? formatEur(results.renterNetWealthNominal) : '…'"></span>
-    </div>
-    <div class="kpi">
-      <span class="kpi-label">Differenz (nominal)</span>
-      <span class="kpi-value"
-        :style="results && results.differenceNominal >= 0 ? 'color:var(--color-buyer)' : 'color:var(--color-renter)'"
-        x-text="results ? formatEur(results.differenceNominal) : '…'"></span>
-    </div>
-    <div class="kpi">
-      <span class="kpi-label">Breakeven</span>
-      <span class="kpi-value"
-        x-text="results ? (results.breakevenYear !== null ? 'Jahr ' + results.breakevenYear : 'kein') : '…'"></span>
-    </div>
-  </div>
+  </main>
 
 </body>
 </html>

@@ -24,12 +24,6 @@ export function calculateAnnuityPayment(principal, annualRatePct, remainingMonth
 /**
  * Tilgungsplan für ein Annuitätendarlehen, aggregiert auf Jahresebene.
  *
- * Unterstützt `rateModel="fixed"` (Step A2) und `rateModel="variable"` (Step A3):
- * bei "variable" gilt bis einschließlich `variableSwitchYear` der `interestRatePct`-Zins;
- * danach wird die Annuität auf Basis der Restschuld, der Restlaufzeit
- * (`loanTermYears - variableSwitchYear`) und `variableRatePct` neu berechnet
- * (siehe Spec §2.2 Edge-Case-Tabelle, "Zinswechsel (variabel)").
- *
  * Ist die Restschuld vor Beginn eines Jahres bereits 0 (z.B. weil `horizonYears`
  * länger als `loanTermYears` ist), liefert das Jahr 0-Werte (siehe Spec §2.2
  * Edge-Case-Tabelle, "Horizont > Kreditlaufzeit").
@@ -37,10 +31,8 @@ export function calculateAnnuityPayment(principal, annualRatePct, remainingMonth
  * @param {object} params
  * @param {number} params.loanAmount - Kreditsumme
  * @param {number} params.loanTermYears - Vertragslaufzeit in Jahren
- * @param {"fixed"|"variable"} [params.rateModel="fixed"] - Zinsmodell
- * @param {number} params.interestRatePct - Zins p.a. in Prozent (Fixzins bzw. Startzins variabel)
- * @param {number} [params.variableSwitchYear] - Jahr, nach dem der Zins wechselt (nur "variable")
- * @param {number} [params.variableRatePct] - Zins p.a. nach dem Wechsel (nur "variable")
+ * @param {"fixed"|"variable"} [params.rateModel="fixed"] - Zinsmodell (nur für Label, Berechnung identisch)
+ * @param {number} params.interestRatePct - Zins p.a. in Prozent
  * @param {number} [params.annualExtraRepayment=0] - Sondertilgung am Jahresende, gecappt bei Restschuld
  * @param {number} params.horizonYears - Betrachtungshorizont in Jahren
  * @returns {Array<{year: number, monthlyPayment: number, interestPaid: number, principalPaid: number, endBalance: number}>}
@@ -62,7 +54,8 @@ export function buildAmortizationSchedule({
   const schedule = [];
 
   for (let year = 1; year <= horizonYears; year++) {
-    if (rateModel === 'variable' && year === variableSwitchYear + 1) {
+    // Hybrid: nach der Fixphase Annuität auf Basis Restschuld + Restlaufzeit neu berechnen
+    if (rateModel === 'hybrid' && year === variableSwitchYear + 1) {
       const remainingMonths = (loanTermYears - variableSwitchYear) * 12;
       monthlyRate = variableRatePct / 100 / 12;
       payment = calculateAnnuityPayment(balance, variableRatePct, remainingMonths);
@@ -197,7 +190,10 @@ export function simulateMonthlyPortfolios(inputs, amort, owner, startCapital) {
     applyVorabpauschale = false,
     vorabpauschaleHaircutPct = 0,
     kestPct = 0,
+    renterSavingsRatePct = 100,
   } = inputs;
+
+  const renterSavingsRate = renterSavingsRatePct / 100;
 
   const baseMonthlyRent = rentPerSqm * livingAreaSqm;
   const inflationFactor = 1 + inflationPct / 100;
@@ -221,8 +217,12 @@ export function simulateMonthlyPortfolios(inputs, amort, owner, startCapital) {
     for (let month = 0; month < 12; month++) {
       buyerValue = buyerValue * monthlyGrowthFactor + buyerSaving;
       buyerCostBasis += buyerSaving;
-      renterValue = renterValue * monthlyGrowthFactor + renterSaving;
-      renterCostBasis += renterSaving;
+      // Nur der investierte Anteil fließt ins Portfolio — bei Sparquote < 100 % wird
+      // der Rest konsumiert (nicht angelegt). Bei negativem renterSaving (Miete > Budget)
+      // greift die Sparquote nicht: der Fehlbetrag muss vollständig aus dem Portfolio.
+      const renterInvested = renterSaving > 0 ? renterSaving * renterSavingsRate : renterSaving;
+      renterValue = renterValue * monthlyGrowthFactor + renterInvested;
+      renterCostBasis += renterInvested;
     }
 
     if (applyVorabpauschale) {
@@ -296,6 +296,30 @@ export function applySaleCosts(propertyValue, originalPrice, remainingDebt, brok
  * @param {number[]} renterSeries - Mieter-Nettovermögen pro Jahr (Index 0..N)
  * @returns {number | null} Jahr (0-basiert, gleicher Index wie die Serien) oder `null`
  */
+/**
+ * Ermittelt per Binärsuche die minimale Sparquote (0–100 %), ab der Mieten vorteilhafter ist.
+ * null  = Kaufen gewinnt selbst bei 100 % Sparquote (Mieten lohnt sich nie).
+ * 0     = Mieten gewinnt sogar ohne jegliches Anlegen.
+ */
+export function findBreakevenSavingsRate(inputs) {
+  const at100 = runComparison({ ...inputs, renterSavingsRatePct: 100 });
+  if (at100.differenceNominal >= 0) return null;
+
+  const at0 = runComparison({ ...inputs, renterSavingsRatePct: 0 });
+  if (at0.differenceNominal < 0) return 0;
+
+  let lo = 0, hi = 100;
+  for (let i = 0; i < 20; i++) {
+    const mid = (lo + hi) / 2;
+    if (runComparison({ ...inputs, renterSavingsRatePct: mid }).differenceNominal < 0) {
+      hi = mid; // Mieter gewinnt → Schwelle liegt tiefer
+    } else {
+      lo = mid; // Käufer gewinnt → Schwelle liegt höher
+    }
+  }
+  return Math.round((lo + hi) / 2);
+}
+
 export function findBreakevenYear(buyerSeries, renterSeries) {
   for (let year = 0; year < buyerSeries.length; year++) {
     if (buyerSeries[year] >= renterSeries[year]) {
