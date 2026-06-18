@@ -110,7 +110,7 @@ test('buildAmortizationSchedule: variabler Zinswechsel - Rate vor/nach Wechsel k
   const params = {
     loanAmount: 200000,
     loanTermYears: 30,
-    rateModel: 'variable',
+    rateModel: 'hybrid',
     interestRatePct: 3.5,
     variableSwitchYear: 10,
     variableRatePct: 5.0,
