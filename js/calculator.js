@@ -160,11 +160,11 @@ export function simulateBuyerOwnerCosts({
  * 1-basiert auf Jahre und `owner` 0-basiert beginnt). Miete in Jahr y wird analog
  * mit `(1+inflationPct/100)^(y-1)` indexiert.
  *
- * Optionaler Vorabpauschale-Haircut (Spec §2.5, bewusst konservativ): ist
- * `applyVorabpauschale` aktiv, wird am Jahresende eine KESt auf
- * `vorabpauschaleHaircutPct` des Mieter-Portfoliowerts zu Jahresbeginn fällig,
- * direkt vom Portfolio abgezogen und der Kostenbasis zugeschlagen (bereits
- * versteuerter Anteil zählt nicht erneut als Gewinn).
+ * Laufende Fondsbesteuerung (ausschüttungsgleiche Erträge): Am Jahresende wird
+ * KESt auf `dividendYieldPct` des Portfoliowerts zu Jahresbeginn fällig —
+ * modelliert die jährliche Pflichtbesteuerung bei österreichischen Meldefonds.
+ * Direkt vom Portfolio abgezogen, Kostenbasis erhöht (bereits versteuerter
+ * Anteil zählt nicht erneut als Gewinn beim Endverkauf).
  *
  * @param {object} inputs
  * @param {number} inputs.rentPerSqm - Miete €/m²/Monat (Jahr 0, brutto inkl. BK)
@@ -172,9 +172,8 @@ export function simulateBuyerOwnerCosts({
  * @param {number} inputs.inflationPct - Inflation p.a. in Prozent (Mietsteigerung)
  * @param {number} inputs.investmentReturnPct - Anlagerendite Mieter-Portfolio p.a. in Prozent
  * @param {number} inputs.horizonYears - Betrachtungshorizont in Jahren
- * @param {boolean} [inputs.applyVorabpauschale=false] - Vorabpauschale-Haircut aktiv?
- * @param {number} [inputs.vorabpauschaleHaircutPct=0] - Anteil des Jahresanfangswerts, der als Vorabpauschale versteuert wird
- * @param {number} [inputs.kestPct=0] - KESt-Satz in Prozent (für Vorabpauschale-Haircut)
+ * @param {number} [inputs.dividendYieldPct=1.5] - Ausschüttungsgleiche Erträge des Meldefonds in % des NAV p.a.
+ * @param {number} [inputs.kestPct=0] - KESt-Satz in Prozent
  * @param {Array<{monthlyPayment: number}>} amort - Ergebnis von `buildAmortizationSchedule` (Jahre 1..N)
  * @param {Array<{monthlyOwnerCosts: number}>} owner - Ergebnis von `simulateBuyerOwnerCosts` (Jahre 0..N)
  * @param {{buyer: number, renter: number}} startCapital - Startwert je Portfolio (Mieter-Wert bereits abzgl. Kaution)
@@ -187,8 +186,7 @@ export function simulateMonthlyPortfolios(inputs, amort, owner, startCapital) {
     inflationPct,
     investmentReturnPct,
     horizonYears,
-    applyVorabpauschale = false,
-    vorabpauschaleHaircutPct = 0,
+    dividendYieldPct = 1.5,
     kestPct = 0,
     renterSavingsRatePct = 100,
   } = inputs;
@@ -225,12 +223,11 @@ export function simulateMonthlyPortfolios(inputs, amort, owner, startCapital) {
       renterCostBasis += renterInvested;
     }
 
-    if (applyVorabpauschale) {
-      const renterValueAtYearStart = renterPortfolioByYear[year - 1].value;
-      const vorabpauschaleTax = renterValueAtYearStart * (vorabpauschaleHaircutPct / 100) * (kestPct / 100);
-      renterValue -= vorabpauschaleTax;
-      renterCostBasis += vorabpauschaleTax;
-    }
+    // Jährliche KeSt auf ausschüttungsgleiche Erträge (Pflicht bei Meldefonds AT)
+    const renterValueAtYearStart = renterPortfolioByYear[year - 1].value;
+    const annualFundTax = renterValueAtYearStart * (dividendYieldPct / 100) * (kestPct / 100);
+    renterValue -= annualFundTax;
+    renterCostBasis += annualFundTax;
 
     buyerPortfolioByYear.push({ year, value: buyerValue, costBasis: buyerCostBasis });
     renterPortfolioByYear.push({ year, value: renterValue, costBasis: renterCostBasis });

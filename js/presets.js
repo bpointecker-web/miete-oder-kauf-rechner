@@ -132,8 +132,6 @@ export function createDefaultInputs(region) {
     inflationPct: 2.0,
     investmentReturnPct: 7.0,
     renterSavingsRatePct: 100,
-    applyVorabpauschale: false,
-    vorabpauschaleHaircutPct: 0.5,
     kestPct: 27.5,
     horizonYears: 30,
     simulateSale: true,

@@ -523,7 +523,7 @@
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Wie wird die KESt angewendet?">i</button>
             </p>
             <div class="info-panel" x-show="open">
-              Gesetzlicher Satz auf realisierte Kapitalerträge (§ 27a EStG). Im Modell vereinfacht: wird am Ende des Horizonts auf den Gesamtgewinn des Portfolios angewendet, nicht jährlich. Die jährliche Vorabpauschale kann separat unter „Vorabpauschale" aktiviert werden.
+              Gesetzlicher Satz auf realisierte Kapitalerträge (§ 27a EStG). Im Modell: wird am Ende des Horizonts auf den Gesamtgewinn des Portfolios angewendet. Zusätzlich wird jährlich KeSt auf 1,5 % des Portfoliowerts eingerechnet — das modelliert die Pflichtbesteuerung auf ausschüttungsgleiche Erträge bei österreichischen Meldefonds (thesaurierende ETFs wie MSCI World oder FTSE All-World).
             </div>
           </div>
         </div>
@@ -559,30 +559,6 @@
         </div>
       </div>
 
-      <div class="form-section" x-data="{ openVP: false }">
-        <p class="form-section-title">
-          Laufende Fondsbesteuerung (Österreich)
-          <button class="info-btn" @click="openVP = !openVP" :aria-expanded="openVP" title="Wie funktioniert das in Österreich?">i</button>
-        </p>
-        <div class="info-panel" x-show="openVP" style="margin-bottom:.75rem;">
-          <strong>Meldefonds (z.B. Vanguard FTSE All-World, iShares MSCI World):</strong> Der Fonds meldet jährlich seine „ausschüttungsgleichen Erträge" an die OeKB. Darauf fällt KESt (27,5 %) an — auch ohne Ausschüttung. Das Modell nähert diesen Effekt als jährlichen Prozentsatz des Portfoliowerts an.<br><br>
-          <strong>Nicht-Meldefonds:</strong> Pauschale Strafbesteuerung: 27,5 % auf 90 % des Kursgewinns, mindestens 27,5 % auf 10 % des Jahresendwerts. Sehr nachteilig — solche ETFs sollte man meiden.<br><br>
-          <strong>Empfehlung:</strong> Für einen typischen thesaurierenden MSCI-World-Meldefonds liegt der effektive Jahres-Haircut bei ca. 0,3–0,7 % des Portfoliowerts. 0,5 % ist ein plausibler Mittelwert. Wenn deaktiviert, wird KESt vereinfacht nur am Ende auf den Gesamtgewinn gerechnet.
-        </div>
-        <div class="field-check">
-          <input type="checkbox" id="vorabpauschale" x-model="inputs.applyVorabpauschale">
-          <label for="vorabpauschale">Jährliche Fondsbesteuerung berücksichtigen</label>
-        </div>
-        <template x-if="inputs.applyVorabpauschale">
-          <div class="field-row" style="margin-top:.5rem;">
-            <div class="field">
-              <label>Jahres-Haircut</label>
-              <div class="input-wrap"><input type="number" x-model.number="inputs.vorabpauschaleHaircutPct" min="0" step="0.1"><span class="input-unit">%</span></div>
-              <p class="hint"><span class="field-tag optional">Default: 0,5 %</span> des Portfoliowerts p.a.</p>
-            </div>
-          </div>
-        </template>
-      </div>
 
     </section>
 

@@ -33,8 +33,7 @@ const GOLDEN_MASTER_INPUTS = {
   depositMonths: 3,
   inflationPct: 2.0,
   investmentReturnPct: 6.0,
-  applyVorabpauschale: false,
-  vorabpauschaleHaircutPct: 0.5,
+  dividendYieldPct: 1.5,
   kestPct: 27.5,
   horizonYears: 30,
   simulateSale: true,
@@ -612,11 +611,11 @@ test('runComparison: "Golden Master" Referenzszenario (Default Wien, 30 Jahre)',
   // Kredit bei Laufzeit = Horizont voll getilgt ist und das Käufer-Portfolio 0 bleibt;
   // nur die Mieter-Seite aendert sich (investiert 77.000 statt zuvor 120.351).
   assert.ok(Math.abs(results.buyerNetWealthNominal - 783336.61) < 0.01, `buyerNetWealthNominal: ${results.buyerNetWealthNominal}`);
-  assert.ok(Math.abs(results.renterNetWealthNominal - 1035781.69) < 0.01, `renterNetWealthNominal: ${results.renterNetWealthNominal}`);
-  assert.ok(Math.abs(results.differenceNominal - -252445.08) < 0.01, `differenceNominal: ${results.differenceNominal}`);
+  assert.ok(Math.abs(results.renterNetWealthNominal - 970758.12) < 0.01, `renterNetWealthNominal: ${results.renterNetWealthNominal}`);
+  assert.ok(Math.abs(results.differenceNominal - -187421.51) < 0.01, `differenceNominal: ${results.differenceNominal}`);
   assert.ok(Math.abs(results.buyerNetWealthReal - 432457.34) < 0.01, `buyerNetWealthReal: ${results.buyerNetWealthReal}`);
-  assert.ok(Math.abs(results.renterNetWealthReal - 571824.92) < 0.01, `renterNetWealthReal: ${results.renterNetWealthReal}`);
-  assert.ok(Math.abs(results.differenceReal - -139367.58) < 0.01, `differenceReal: ${results.differenceReal}`);
+  assert.ok(Math.abs(results.renterNetWealthReal - 535927.30) < 0.01, `renterNetWealthReal: ${results.renterNetWealthReal}`);
+  assert.ok(Math.abs(results.differenceReal - -103469.96) < 0.01, `differenceReal: ${results.differenceReal}`);
   // Bei den Default-Annahmen (Anlagerendite 6% > Wertsteigerung 2,5%) bleibt der
   // Mieter ueber den gesamten Horizont vorne -> kein Breakeven
   assert.equal(results.breakevenYear, null);
