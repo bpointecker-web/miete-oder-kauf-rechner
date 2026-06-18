@@ -101,7 +101,7 @@ export function createDefaultInputs(region) {
     // Kaufnebenkosten (Prozent vom Kaufpreis)
     transferTaxPct: 3.5,
     landRegisterPct: 1.1,
-    brokerBuyPct: 3.0,
+    brokerBuyPct: 3.6,
     notaryPct: 1.5,
 
     // Finanzierung
@@ -137,7 +137,7 @@ export function createDefaultInputs(region) {
     kestPct: 27.5,
     horizonYears: 30,
     simulateSale: true,
-    saleBrokerFeePct: 3.0,
+    saleBrokerFeePct: 3.6,
     immoEstPct: 30,
     primaryResidenceExempt: true,
 
