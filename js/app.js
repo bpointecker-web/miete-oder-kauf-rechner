@@ -20,6 +20,8 @@ export function appState() {
 
     // ── Chart-Instanzen (intern, werden bei jedem Update ersetzt) ──
     _charts: null,
+    // Generationszähler: verhindert dass mehrere queued rAFs sich gegenseitig überschreiben
+    _chartGen: 0,
 
     // ── UI-Zustand ──
     activeTab: 'immobilie',
@@ -41,9 +43,12 @@ export function appState() {
       // dass der Browser Layout fertig hat bevor Chart.js Canvas-Dimensionen liest
       this.$watch('activeTab', tab => {
         if (tab === 'ergebnis' && this.results) {
+          const gen = ++this._chartGen;
           this.$nextTick(() => {
             requestAnimationFrame(() => {
-              this._charts = renderCharts(this.results, this._charts);
+              if (gen === this._chartGen) {
+                this._charts = renderCharts(this.results, this._charts);
+              }
             });
           });
         }
@@ -105,14 +110,17 @@ export function appState() {
       }
       // Charts nur rendern wenn Ergebnis-Tab aktiv — sonst ist der Canvas display:none
       // und Chart.js liest 0px-Dimensionen. Tab-Wechsel übernimmt das Rendern sonst.
-      this.$nextTick(() => {
-        if (this.results && this.activeTab === 'ergebnis') {
+      if (this.results && this.activeTab === 'ergebnis') {
+        const gen = ++this._chartGen;
+        this.$nextTick(() => {
           requestAnimationFrame(() => {
-            this._charts = renderCharts(this.results, this._charts);
+            if (gen === this._chartGen) {
+              this._charts = renderCharts(this.results, this._charts);
+            }
           });
-        }
-        resizeAllUnitInputs();
-      });
+        });
+      }
+      this.$nextTick(() => resizeAllUnitInputs());
     },
 
     setRegion(regionKey) {
