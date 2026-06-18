@@ -454,6 +454,11 @@ body {
   margin-top: .2rem;
 }
 
+/* ── Sehr kleine Screens (iPhone SE, alte Android) ── */
+@media (max-width: 399px) {
+  .field-row { grid-template-columns: 1fr; }
+}
+
 /* ── Desktop ── */
 @media (min-width: 680px) {
   body { max-width: 1200px; margin: 0 auto; }
