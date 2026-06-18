@@ -37,10 +37,15 @@ export function appState() {
       this.$watch('inputs.totalMonthlyRent', () => this.syncRentPerSqm());
       this.$watch('inputs.livingAreaSqm', () => this.syncTotalMonthlyRentFromArea());
       this.$watch('inputs', () => this.recalculate(), { deep: true });
-      // Charts neu rendern wenn Ergebnis-Tab sichtbar wird (war vorher display:none)
+      // Charts neu rendern wenn Ergebnis-Tab sichtbar wird — rAF stellt sicher,
+      // dass der Browser Layout fertig hat bevor Chart.js Canvas-Dimensionen liest
       this.$watch('activeTab', tab => {
         if (tab === 'ergebnis' && this.results) {
-          this.$nextTick(() => { this._charts = renderCharts(this.results, this._charts); });
+          this.$nextTick(() => {
+            requestAnimationFrame(() => {
+              this._charts = renderCharts(this.results, this._charts);
+            });
+          });
         }
       });
       this.recalculate();
@@ -98,10 +103,13 @@ export function appState() {
       } catch {
         this.results = null;
       }
-      // Charts + Input-Resize nach Alpine-Tick (DOM muss aktuell sein)
+      // Charts nur rendern wenn Ergebnis-Tab aktiv — sonst ist der Canvas display:none
+      // und Chart.js liest 0px-Dimensionen. Tab-Wechsel übernimmt das Rendern sonst.
       this.$nextTick(() => {
-        if (this.results) {
-          this._charts = renderCharts(this.results, this._charts);
+        if (this.results && this.activeTab === 'ergebnis') {
+          requestAnimationFrame(() => {
+            this._charts = renderCharts(this.results, this._charts);
+          });
         }
         resizeAllUnitInputs();
       });
