@@ -15,6 +15,7 @@
   <header class="site-header">
     <h1>Mieten vs. Kaufen</h1>
     <p>Mieten ist verbranntes Geld? Zahlen statt Bauchgefühl – rechne es selbst durch. Was Kaufen vs. Mieten für dich wirklich bedeutet.</p>
+    <p style="margin-top:.5rem; font-size:.75rem; color:rgba(181,212,244,.55);">Konzipiert für <strong style="color:rgba(181,212,244,.8);">selbstgenutztes Wohneigentum</strong> (Hauptwohnsitz, Österreich). Vermietungsszenarien sind nicht modelliert.</p>
   </header>
 
   <!-- ── Region-Auswahl ── -->
@@ -436,6 +437,11 @@
               <label for="primaryResidence">Hauptwohnsitzbefreiung (→ 0% ImmoESt)</label>
             </div>
           </div>
+          <template x-if="!inputs.primaryResidenceExempt">
+            <div class="warnings" style="margin-top:.75rem;">
+              <strong>Eingeschränkte Aussagekraft ohne Hauptwohnsitzbefreiung:</strong> Dieses Modell ist für selbstgenutztes Wohneigentum konzipiert. Ohne Befreiung (z.&nbsp;B. Zweitwohnsitz oder Investment) fehlen im Vergleich: Mieteinnahmen, AfA (1,5&nbsp;% p.a. auf den Gebäudewert) und Abzugsfähigkeit der Kreditzinsen als Werbungskosten. Das Ergebnis ist in diesem Fall nur bedingt aussagekräftig.
+            </div>
+          </template>
         </template>
       </div>
 
