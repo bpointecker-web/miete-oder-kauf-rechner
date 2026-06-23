@@ -4,15 +4,16 @@ import { REGIONS, createDefaultInputs } from '../js/presets.js';
 import { runComparison } from '../js/calculator.js';
 
 const REQUIRED_FIELDS = [
-  'region', 'pricePerSqm', 'livingAreaSqm',
+  'region', 'purchasePrice', 'pricePerSqm', 'livingAreaSqm',
   'transferTaxPct', 'landRegisterPct', 'brokerBuyPct', 'notaryPct',
   'equityAmount', 'equityRatioPct', 'mortgageLienPct', 'bankProcessingPct',
   'rateModel', 'interestRatePct', 'variableSwitchYear', 'variableRatePct',
   'loanTermYears', 'annualExtraRepayment',
-  'ownerCostsPerSqm', 'operatingCostsPerSqm', 'appreciationPct',
-  'rentPerSqm', 'depositMonths',
-  'inflationPct', 'investmentReturnPct', 'applyVorabpauschale',
-  'vorabpauschaleHaircutPct', 'kestPct', 'horizonYears',
+  'maintenancePctOfValue', 'operatingCostsPerSqm', 'renovationCost', 'renovationYear',
+  'appreciationPct',
+  'rentPerSqm', 'totalMonthlyRent', 'depositMonths',
+  'inflationPct', 'investmentReturnPct', 'renterSavingsRatePct',
+  'kestPct', 'horizonYears',
   'simulateSale', 'saleBrokerFeePct', 'immoEstPct', 'primaryResidenceExempt',
 ];
 
@@ -25,25 +26,25 @@ test('createDefaultInputs: alle Regionen liefern vollstaendige inputs-Objekte', 
   }
 });
 
-test('createDefaultInputs: rentPerSqm aus pricePerSqm x rentalYieldPct, appreciationPct aus Eurostat', () => {
-  // Arrange — Wien-Werte kommen aus REGIONS (live aus regional-generated.js)
-  const wien = REGIONS['wien'];
-  const inputs = createDefaultInputs('wien');
+test('createDefaultInputs: Variante B — nur appreciationPct ist regional, Preis/Miete sind feste AT-Ø-Defaults', () => {
+  // Arrange — Designentscheidung: Regionswechsel aendert ausschliesslich appreciationPct.
+  // Kaufpreis und Miete sind Pflichtfelder, die der Nutzer ohnehin selbst eingibt,
+  // und starten daher fuer ALLE Regionen mit denselben AT-Ø-Defaults.
+  const wien = createDefaultInputs('wien');
+  const linz = createDefaultInputs('linz');
 
-  // Assert rentPerSqm: pricePerSqm * rentalYieldPct% / 12, auf Cent gerundet
-  const expectedRent = Math.round((wien.pricePerSqm * wien.rentalYieldPct) / 100 / 12 * 100) / 100;
-  assert.ok(
-    Math.abs(inputs.rentPerSqm - expectedRent) < 0.0001,
-    `Wien rentPerSqm: ${inputs.rentPerSqm}, erwartet: ${expectedRent}`
-  );
-  assert.equal(inputs.pricePerSqm, wien.pricePerSqm);
+  // Assert: Preis & Miete regionsunabhaengig (feste AT-Defaults: 4.000 €/m², 10 €/m²)
+  assert.equal(wien.pricePerSqm, 4000);
+  assert.equal(wien.rentPerSqm, 10.0);
+  assert.equal(wien.pricePerSqm, linz.pricePerSqm, 'pricePerSqm darf nicht regional variieren');
+  assert.equal(wien.rentPerSqm, linz.rentPerSqm, 'rentPerSqm darf nicht regional variieren');
 
-  // appreciationPct kommt aus Eurostat-Daten (nicht mehr hartkodiert).
-  // Pruefe nur: ist ein sinnvoller positiver Prozentwert.
-  assert.ok(inputs.appreciationPct > 0 && inputs.appreciationPct < 20,
-    `appreciationPct sollte positiver Prozentwert sein, war: ${inputs.appreciationPct}`
+  // Assert: appreciationPct ist der EINZIGE regionale Wert, gespeist aus REGIONS
+  assert.equal(wien.appreciationPct, REGIONS['wien'].appreciationPct);
+  assert.equal(linz.appreciationPct, REGIONS['linz'].appreciationPct);
+  assert.ok(wien.appreciationPct > 0 && wien.appreciationPct < 20,
+    `appreciationPct sollte plausibler Prozentwert sein, war: ${wien.appreciationPct}`
   );
-  assert.equal(inputs.appreciationPct, wien.appreciationPct);
 });
 
 test('createDefaultInputs: runComparison laeuft fuer alle 6 Regionen ohne Fehler', () => {

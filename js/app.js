@@ -6,6 +6,7 @@ import { createDefaultInputs, REGIONS, defaultFixedRate } from './presets.js';
 import { runComparison, findBreakevenSavingsRate } from './calculator.js';
 import { renderCharts } from './charts.js';
 
+
 /**
  * Erzeugt den Alpine-Komponentenzustand.
  * Wird von index.html via x-data="appState()" eingebunden.
@@ -56,11 +57,15 @@ export function appState() {
       this.recalculate();
     },
 
-    // Hält pricePerSqm als abgeleiteten Wert in sync — calculator.js nutzt weiterhin pricePerSqm
+    // Hält pricePerSqm als abgeleiteten Wert in sync — calculator.js rekonstruiert
+    // daraus den Kaufpreis (pricePerSqm × Fläche). Bewusst volle Präzision speichern
+    // (nicht runden!), sonst weicht der verrechnete Kaufpreis vom exakt eingegebenen
+    // purchasePrice ab (z.B. 285.000/70 → gerundet 4.071 → 284.970). Gerundet wird
+    // nur in der Anzeige (siehe "Preis pro m²"-Feld in index.html).
     syncPricePerSqm() {
       const { purchasePrice, livingAreaSqm } = this.inputs;
       if (livingAreaSqm > 0 && purchasePrice > 0) {
-        this.inputs.pricePerSqm = Math.round(purchasePrice / livingAreaSqm);
+        this.inputs.pricePerSqm = purchasePrice / livingAreaSqm;
       }
     },
 
@@ -104,9 +109,15 @@ export function appState() {
     recalculate() {
       try {
         this.results = runComparison(this.inputs);
-        this.results.breakevenSavingsRate = findBreakevenSavingsRate(this.inputs);
       } catch {
         this.results = null;
+      }
+      if (this.results) {
+        try {
+          this.results.breakevenSavingsRate = findBreakevenSavingsRate(this.inputs);
+        } catch {
+          this.results.breakevenSavingsRate = null;
+        }
       }
       // Charts nur rendern wenn Ergebnis-Tab aktiv — sonst ist der Canvas display:none
       // und Chart.js liest 0px-Dimensionen. Tab-Wechsel übernimmt das Rendern sonst.
@@ -124,10 +135,8 @@ export function appState() {
     },
 
     setRegion(regionKey) {
-      const equityAmount = this.inputs.equityAmount;
-      this.inputs = createDefaultInputs(regionKey);
-      this.inputs.equityAmount = equityAmount;
-      this.syncEquityRatio();
+      this.inputs.region = regionKey;
+      this.inputs.appreciationPct = REGIONS[regionKey].appreciationPct;
     },
 
     // Hilfsmethode: Zins-Modell umschalten (fix/variabel)

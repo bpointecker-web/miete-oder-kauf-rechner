@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "miete-oder-kauf",
+      "name": "mietrechner",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", ".", "--listen", "3333", "--no-clipboard"],
-      "port": 3333
+      "runtimeArgs": ["serve", ".", "--listen", "3334", "--no-clipboard"],
+      "port": 3334
     }
   ]
 }

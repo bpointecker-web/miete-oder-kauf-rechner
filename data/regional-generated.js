@@ -29,7 +29,7 @@ export const REGIONAL_DATA = {
         "rentalYieldPct": 2.9,
         "appreciationPct": 3,
         "appreciationNote": "A-Lage: Inflation+Reallohn-Basis (2,5 %) + Aufschlag 0,5 % für strukturellen Flächenmangel und anhaltenden Netto-Zuzug. Eurostat 10J-Schnitt (inkl. Corona-Boom) steht in computed.appreciationPct.",
-        "source": "Schaetzwert ~2025 (immopreise.at, Bandbreite Bestandswohnungen). TODO: mit konkreter Median-Quelle + Datum belegen.",
+        "source": "selfimmo.at/wohnungsboerse.net Mai 2026: 5.512 EUR/m2 (Angebotspreise); RE/MAX ImmoSpiegel 2025: 5.512 EUR/m2. Miete abgeleitet: 2,9 % Rendite = ~13,3 EUR/m2/Mon. (plausibel, WKO-Bandbreite Wien: 8-14 EUR/m2).",
         "asOf": "2026-06"
       },
       "computed": {
@@ -41,15 +41,15 @@ export const REGIONAL_DATA = {
     "graz": {
       "label": "Graz",
       "anchor": {
-        "pricePerSqm": 4500,
-        "rentalYieldPct": 2.9,
+        "pricePerSqm": 4200,
+        "rentalYieldPct": 2.6,
         "appreciationPct": 2.5,
         "appreciationNote": "Konservativer Langfrist-Default.",
-        "source": "Schaetzwert, Mitte der Bandbreite 4.000-5.000 EUR/m2. TODO: Quelle + Datum.",
+        "source": "selfimmo.at/wohnungsboerse.net Mai 2026: 4.406 EUR/m2 (Angebotspreise); soldd.com Sept 2025: 3.800-4.500 Bandbreite; WKO Preisspiegel 2026: 3.690 EUR/m2 (Transaktionen). Miete: WKO 2026: 8,05 EUR/m2; Rendite 2,6 % ergibt ~9,1 EUR/m2.",
         "asOf": "2026-06"
       },
       "computed": {
-        "pricePerSqm": 4500,
+        "pricePerSqm": 4200,
         "appreciationPct": 5.38,
         "indexScaleFactor": 1
       }
@@ -57,15 +57,15 @@ export const REGIONAL_DATA = {
     "linz": {
       "label": "Linz",
       "anchor": {
-        "pricePerSqm": 3800,
-        "rentalYieldPct": 3.2,
+        "pricePerSqm": 3500,
+        "rentalYieldPct": 2.9,
         "appreciationPct": 2,
         "appreciationNote": "Konservativer Langfrist-Default.",
-        "source": "Schaetzwert, laut Spezifikation keine belastbare Quelle gefunden. TODO: Quelle + Datum.",
+        "source": "WKO Preisspiegel 2026: 3.125 EUR/m2 (Transaktionen); soldd.com Sept 2025: 3.000-4.000 Bandbreite. Miete: WKO 2026: 7,77 EUR/m2; Rendite 2,9 % ergibt ~8,5 EUR/m2.",
         "asOf": "2026-06"
       },
       "computed": {
-        "pricePerSqm": 3800,
+        "pricePerSqm": 3500,
         "appreciationPct": 5.38,
         "indexScaleFactor": 1
       }
@@ -73,15 +73,15 @@ export const REGIONAL_DATA = {
     "salzburg": {
       "label": "Salzburg",
       "anchor": {
-        "pricePerSqm": 5800,
-        "rentalYieldPct": 2.9,
+        "pricePerSqm": 6500,
+        "rentalYieldPct": 2.1,
         "appreciationPct": 3,
         "appreciationNote": "A-Lage: Inflation+Reallohn-Basis (2,5 %) + Aufschlag 0,5 % für extreme geografische Flächenbegrenzung (Gebirge, Grenze) und hohe internationale Nachfrage.",
-        "source": "Schaetzwert, Mitte der Bandbreite 5.000-6.500 EUR/m2. TODO: Quelle + Datum.",
+        "source": "selfimmo.at/wohnungsboerse.net Mai 2026: 7.349 EUR/m2 (Angebotspreise); WKO Preisspiegel 2026: 5.484 EUR/m2 (Transaktionen); Mitte ca. 6.500 EUR/m2. Miete: WKO 2026: 11,24 EUR/m2; Rendite 2,1 % ergibt ~11,4 EUR/m2.",
         "asOf": "2026-06"
       },
       "computed": {
-        "pricePerSqm": 5800,
+        "pricePerSqm": 6500,
         "appreciationPct": 5.38,
         "indexScaleFactor": 1
       }
@@ -89,15 +89,15 @@ export const REGIONAL_DATA = {
     "innsbruck": {
       "label": "Innsbruck",
       "anchor": {
-        "pricePerSqm": 6000,
-        "rentalYieldPct": 2.8,
+        "pricePerSqm": 6500,
+        "rentalYieldPct": 2.4,
         "appreciationPct": 3,
         "appreciationNote": "A-Lage: Inflation+Reallohn-Basis (2,5 %) + Aufschlag 0,5 % für alpine Flächenknappheit, internationale Uni-Stadt und Tourismus-Nachfrage.",
-        "source": "Schaetzwert, Mitte der Bandbreite 5.700-6.500 EUR/m2. TODO: Quelle + Datum.",
+        "source": "selfimmo.at/wohnungsboerse.net Mai 2026: 7.464 EUR/m2 (Angebotspreise); soldd.com Sept 2025: 5.400-5.700; Mitte ca. 6.500 EUR/m2. Miete: WKO 2026: 12,92 EUR/m2; Rendite 2,4 % ergibt ~13,0 EUR/m2.",
         "asOf": "2026-06"
       },
       "computed": {
-        "pricePerSqm": 6000,
+        "pricePerSqm": 6500,
         "appreciationPct": 5.38,
         "indexScaleFactor": 1
       }
@@ -105,15 +105,15 @@ export const REGIONAL_DATA = {
     "oesterreich": {
       "label": "Österreich-Ø",
       "anchor": {
-        "pricePerSqm": 3200,
-        "rentalYieldPct": 3.4,
+        "pricePerSqm": 4000,
+        "rentalYieldPct": 3.0,
         "appreciationPct": 2,
         "appreciationNote": "Konservativer Langfrist-Default.",
-        "source": "Schaetzwert, Mitte der Bandbreite 3.000-3.500 EUR/m2. TODO: Quelle + Datum.",
+        "source": "Statistik Austria Medianpreis Eigentumswohnungen 2025: 4.162 EUR/m2; soldd.com Sept 2025: ~4.200 EUR/m2. Miete: Rendite 3,0 % ergibt ~10 EUR/m2 (plausibel für Bundesschnitt).",
         "asOf": "2026-06"
       },
       "computed": {
-        "pricePerSqm": 3200,
+        "pricePerSqm": 4000,
         "appreciationPct": 5.38,
         "indexScaleFactor": 1
       }

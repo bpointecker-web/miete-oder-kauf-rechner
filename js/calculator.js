@@ -108,13 +108,15 @@ export function buildAmortizationSchedule({
  * (Architektur §5) als Startpunkt benötigt.
  *
  * - `propertyValue` wächst jährlich mit `appreciationPct` (darf negativ sein, Spec §2.3).
- * - `monthlyOwnerCosts` (Eigentümer- + Betriebskosten zusammen, €/m²/Monat × Fläche)
- *   wächst jährlich mit `inflationPct`.
+ * - `monthlyMaintenance` = maintenancePctOfValue % des aktuellen Immobilienwerts / 12:
+ *   wächst mit der Wertsteigerung (nicht nur Inflation), weil Instandhaltung an den
+ *   Immobilienwert gekoppelt ist (teurere Wohnung → teurer zu erhalten).
+ * - `monthlyOperating` (Betriebskosten) wächst weiterhin mit Inflation.
  *
  * @param {object} inputs
  * @param {number} inputs.pricePerSqm - Kaufpreis €/m²
  * @param {number} inputs.livingAreaSqm - Wohnfläche m²
- * @param {number} inputs.ownerCostsPerSqm - Eigentümerkosten €/m²/Monat
+ * @param {number} inputs.maintenancePctOfValue - Instandhaltung % des Immobilienwerts p.a.
  * @param {number} inputs.operatingCostsPerSqm - Betriebskosten €/m²/Monat
  * @param {number} inputs.appreciationPct - Wertsteigerung Immobilie p.a. in Prozent (kann < 0 sein)
  * @param {number} inputs.inflationPct - Inflation p.a. in Prozent
@@ -124,23 +126,26 @@ export function buildAmortizationSchedule({
 export function simulateBuyerOwnerCosts({
   pricePerSqm,
   livingAreaSqm,
-  ownerCostsPerSqm,
+  maintenancePctOfValue,
   operatingCostsPerSqm,
   appreciationPct,
   inflationPct,
   horizonYears,
 }) {
   const purchasePrice = pricePerSqm * livingAreaSqm;
-  const baseMonthlyOwnerCosts = (ownerCostsPerSqm + operatingCostsPerSqm) * livingAreaSqm;
   const appreciationFactor = 1 + appreciationPct / 100;
   const inflationFactor = 1 + inflationPct / 100;
+  const baseMonthlyOperating = operatingCostsPerSqm * livingAreaSqm;
 
   const series = [];
   for (let year = 0; year <= horizonYears; year++) {
+    const propertyValue = purchasePrice * Math.pow(appreciationFactor, year);
+    const monthlyMaintenance = propertyValue * (maintenancePctOfValue / 100) / 12;
+    const monthlyOperating = baseMonthlyOperating * Math.pow(inflationFactor, year);
     series.push({
       year,
-      propertyValue: purchasePrice * Math.pow(appreciationFactor, year),
-      monthlyOwnerCosts: baseMonthlyOwnerCosts * Math.pow(inflationFactor, year),
+      propertyValue,
+      monthlyOwnerCosts: monthlyMaintenance + monthlyOperating,
     });
   }
 
@@ -189,6 +194,8 @@ export function simulateMonthlyPortfolios(inputs, amort, owner, startCapital) {
     dividendYieldPct = 1.5,
     kestPct = 0,
     renterSavingsRatePct = 100,
+    renovationCost = 0,
+    renovationYear = 15,
   } = inputs;
 
   const renterSavingsRate = renterSavingsRatePct / 100;
@@ -206,6 +213,12 @@ export function simulateMonthlyPortfolios(inputs, amort, owner, startCapital) {
   const renterPortfolioByYear = [{ year: 0, value: renterValue, costBasis: renterCostBasis }];
 
   for (let year = 1; year <= horizonYears; year++) {
+    // Sanierungsstau: einmalige Kosten am Jahresanfang vom Käufer-Portfolio abziehen.
+    // Wächst nicht mit Inflation (nominaler Fixbetrag, wie vom Nutzer eingegeben).
+    if (renovationCost > 0 && year === renovationYear) {
+      buyerValue -= renovationCost;
+    }
+
     const buyerMonthlyCost = amort[year - 1].monthlyPayment + owner[year - 1].monthlyOwnerCosts;
     const rentMonthly = baseMonthlyRent * Math.pow(inflationFactor, year - 1);
     const sharedBudget = Math.max(buyerMonthlyCost, rentMonthly);
@@ -454,7 +467,7 @@ export function runComparison(inputs) {
   const owner = simulateBuyerOwnerCosts({
     pricePerSqm: inputs.pricePerSqm,
     livingAreaSqm: inputs.livingAreaSqm,
-    ownerCostsPerSqm: inputs.ownerCostsPerSqm,
+    maintenancePctOfValue: inputs.maintenancePctOfValue,
     operatingCostsPerSqm: inputs.operatingCostsPerSqm,
     appreciationPct: inputs.appreciationPct,
     inflationPct: inputs.inflationPct,
@@ -502,8 +515,12 @@ export function runComparison(inputs) {
     renterNetWealthNominal.push(renterPortfolioAfterTax[year].valueAfterTax + derived.deposit);
 
     // Cashflow-Serie: Kosten "während" dieses Jahres (Jahr N nutzt die letzten verfügbaren Werte)
+    // Sanierungsstau: auf 12 Monate verteilt → sichtbarer Buckel im Cashflow-Chart
     const costIndex = Math.min(year, amort.length - 1);
-    buyerMonthlyCost.push(amort[costIndex].monthlyPayment + owner[costIndex].monthlyOwnerCosts);
+    const renovationMonthly = (inputs.renovationCost > 0 && year === inputs.renovationYear)
+      ? inputs.renovationCost / 12
+      : 0;
+    buyerMonthlyCost.push(amort[costIndex].monthlyPayment + owner[costIndex].monthlyOwnerCosts + renovationMonthly);
     renterMonthlyCost.push(baseMonthlyRent * Math.pow(inflationFactor, costIndex));
   }
 

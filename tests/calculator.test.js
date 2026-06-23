@@ -26,7 +26,7 @@ const GOLDEN_MASTER_INPUTS = {
   interestRatePct: 3.5,
   loanTermYears: 30,
   annualExtraRepayment: 0,
-  ownerCostsPerSqm: 2.75,
+  maintenancePctOfValue: 1.2,
   operatingCostsPerSqm: 2.2,
   appreciationPct: 2.5,
   rentPerSqm: 13.5,
@@ -201,17 +201,18 @@ test('buildAmortizationSchedule: Horizont laenger als Laufzeit liefert 0-Zeilen 
   assert.deepEqual(schedule[6], { year: 7, monthlyPayment: 0, interestPaid: 0, principalPaid: 0, endBalance: 0 });
 });
 
-test('simulateBuyerOwnerCosts: Jahr 0 ergibt Kaufpreis und unindexierte Kosten = Satz x Flaeche', () => {
+test('simulateBuyerOwnerCosts: Jahr 0 = Instandhaltung (% vom Wert) + Betriebskosten (€/m²)', () => {
   // Arrange
   const inputs = {
     pricePerSqm: 5500,
     livingAreaSqm: 70,
-    ownerCostsPerSqm: 2.75,
+    maintenancePctOfValue: 1.2,
     operatingCostsPerSqm: 2.2,
     appreciationPct: 2.5,
     inflationPct: 2.0,
     horizonYears: 5,
   };
+  const purchasePrice = 5500 * 70; // 385.000
 
   // Act
   const series = simulateBuyerOwnerCosts(inputs);
@@ -219,31 +220,36 @@ test('simulateBuyerOwnerCosts: Jahr 0 ergibt Kaufpreis und unindexierte Kosten =
   // Assert
   const year0 = series[0];
   assert.equal(year0.year, 0);
-  assert.equal(year0.propertyValue, 5500 * 70); // 385.000
+  assert.equal(year0.propertyValue, purchasePrice);
+  // Instandhaltung = 1,2 % des Werts p.a. / 12; Betriebskosten = 2,2 €/m² × 70
+  const expectedMaintenance = purchasePrice * (1.2 / 100) / 12; // 385
+  const expectedOperating = 2.2 * 70;                            // 154
   assert.ok(
-    Math.abs(year0.monthlyOwnerCosts - (2.75 + 2.2) * 70) < 0.001,
-    `Jahr 0: Kosten sollten (2.75+2.2)*70=346.5 sein, sind ${year0.monthlyOwnerCosts}`
+    Math.abs(year0.monthlyOwnerCosts - (expectedMaintenance + expectedOperating)) < 0.001,
+    `Jahr 0: Kosten sollten ${expectedMaintenance + expectedOperating} sein, sind ${year0.monthlyOwnerCosts}`
   );
 });
 
-test('simulateBuyerOwnerCosts: Kosten werden ueber mehrere Jahre mit der Inflation indexiert', () => {
+test('simulateBuyerOwnerCosts: Instandhaltung waechst mit dem Wert, Betriebskosten mit der Inflation', () => {
   // Arrange
   const inputs = {
     pricePerSqm: 5500,
     livingAreaSqm: 70,
-    ownerCostsPerSqm: 2.75,
+    maintenancePctOfValue: 1.2,
     operatingCostsPerSqm: 2.2,
     appreciationPct: 2.5,
     inflationPct: 2.0,
     horizonYears: 5,
   };
-  const baseCosts = (2.75 + 2.2) * 70;
+  const purchasePrice = 5500 * 70;
 
   // Act
   const series = simulateBuyerOwnerCosts(inputs);
 
-  // Assert
-  const expectedYear5 = baseCosts * Math.pow(1.02, 5);
+  // Assert — Instandhaltung folgt der Wertsteigerung (2,5 %), Betriebskosten der Inflation (2 %)
+  const maintenanceYear5 = purchasePrice * Math.pow(1.025, 5) * (1.2 / 100) / 12;
+  const operatingYear5 = 2.2 * 70 * Math.pow(1.02, 5);
+  const expectedYear5 = maintenanceYear5 + operatingYear5;
   assert.ok(
     Math.abs(series[5].monthlyOwnerCosts - expectedYear5) < 0.001,
     `Jahr 5: erwartet ${expectedYear5}, erhalten ${series[5].monthlyOwnerCosts}`
@@ -255,7 +261,7 @@ test('simulateBuyerOwnerCosts: negative Wertsteigerung senkt den Immobilienwert 
   const inputs = {
     pricePerSqm: 5500,
     livingAreaSqm: 70,
-    ownerCostsPerSqm: 2.75,
+    maintenancePctOfValue: 1.2,
     operatingCostsPerSqm: 2.2,
     appreciationPct: -1.0,
     inflationPct: 2.0,
@@ -606,16 +612,17 @@ test('runComparison: "Golden Master" Referenzszenario (Default Wien, 30 Jahre)',
   // Act
   const results = runComparison(inputs);
 
-  // Assert: Bottom-Line-Kennzahlen (eingefroren, Stand A11 — neu kalibriert nach
-  // Umstellung "Eigenkapital = gesamtes Bargeld"). Käufer-Werte unveraendert, da der
-  // Kredit bei Laufzeit = Horizont voll getilgt ist und das Käufer-Portfolio 0 bleibt;
-  // nur die Mieter-Seite aendert sich (investiert 77.000 statt zuvor 120.351).
+  // Assert: Bottom-Line-Kennzahlen (eingefroren, Stand A12 — neu kalibriert nach
+  // Umstellung Instandhaltung "€/m²" → "% des aktuellen Immobilienwerts"
+  // (maintenancePctOfValue 1,2 %). Käufer-Werte unveraendert, da das Käufer-Portfolio
+  // 0 bleibt und der Käufer-Nettowert nicht von den laufenden Kosten abhaengt; nur die
+  // Mieter-Seite steigt, weil die hoeheren Eigentuemerkosten das geteilte Budget anheben.
   assert.ok(Math.abs(results.buyerNetWealthNominal - 783336.61) < 0.01, `buyerNetWealthNominal: ${results.buyerNetWealthNominal}`);
-  assert.ok(Math.abs(results.renterNetWealthNominal - 970758.12) < 0.01, `renterNetWealthNominal: ${results.renterNetWealthNominal}`);
-  assert.ok(Math.abs(results.differenceNominal - -187421.51) < 0.01, `differenceNominal: ${results.differenceNominal}`);
+  assert.ok(Math.abs(results.renterNetWealthNominal - 1185823.07) < 0.01, `renterNetWealthNominal: ${results.renterNetWealthNominal}`);
+  assert.ok(Math.abs(results.differenceNominal - -402486.46) < 0.01, `differenceNominal: ${results.differenceNominal}`);
   assert.ok(Math.abs(results.buyerNetWealthReal - 432457.34) < 0.01, `buyerNetWealthReal: ${results.buyerNetWealthReal}`);
-  assert.ok(Math.abs(results.renterNetWealthReal - 535927.30) < 0.01, `renterNetWealthReal: ${results.renterNetWealthReal}`);
-  assert.ok(Math.abs(results.differenceReal - -103469.96) < 0.01, `differenceReal: ${results.differenceReal}`);
+  assert.ok(Math.abs(results.renterNetWealthReal - 654658.40) < 0.01, `renterNetWealthReal: ${results.renterNetWealthReal}`);
+  assert.ok(Math.abs(results.differenceReal - -222201.06) < 0.01, `differenceReal: ${results.differenceReal}`);
   // Bei den Default-Annahmen (Anlagerendite 6% > Wertsteigerung 2,5%) bleibt der
   // Mieter ueber den gesamten Horizont vorne -> kein Breakeven
   assert.equal(results.breakevenYear, null);

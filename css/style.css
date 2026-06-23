@@ -1,6 +1,10 @@
 /* Style A — Fintech Dark: dunkler Header, blau-getöntes Layout, farbige KPIs */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html {
+  background: #042C53;
+}
+
 :root {
   /* Helle Seite (Body/Formulare) */
   --color-bg:            #f0f4f9;
@@ -33,7 +37,7 @@
 
 body {
   font-family: system-ui, -apple-system, sans-serif;
-  background: var(--color-bg);
+  background: transparent;
   color: var(--color-text);
   font-size: 1rem;
   line-height: 1.5;
@@ -43,13 +47,14 @@ body {
 
 /* ── Header ── */
 .site-header {
-  background: var(--color-dark-1);
+  background: linear-gradient(160deg, var(--color-dark-2) 0%, var(--color-dark-1) 100%);
   padding: 1.125rem 1rem 1rem;
 }
 .site-header h1 {
-  font-size: 1.3rem;
+  font-size: 1.45rem;
   font-weight: 700;
   color: #fff;
+  letter-spacing: -.01em;
 }
 .site-header p {
   font-size: .875rem;
@@ -60,7 +65,7 @@ body {
 
 /* ── Region-Picker ── */
 .region-bar {
-  background: var(--color-dark-2);
+  background: linear-gradient(160deg, var(--color-dark-2) 0%, var(--color-dark-1) 100%);
   padding: .625rem 1rem;
   display: flex;
   align-items: center;
@@ -115,6 +120,8 @@ body {
 .tab-btn[aria-selected="true"] {
   color: var(--color-dark-active);
   border-bottom-color: var(--color-buyer);
+  background: rgba(133,183,235,.09);
+  border-radius: var(--radius) var(--radius) 0 0;
 }
 .tab-btn:hover { color: #fff; }
 
@@ -122,7 +129,13 @@ body {
 .tab-panel { display: none; padding: 1rem; }
 .tab-panel.active { display: block; }
 
-.form-section { margin-bottom: 1.5rem; }
+.form-section {
+  margin-bottom: 1.25rem;
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: .875rem 1rem;
+  box-shadow: 0 1px 3px rgba(4,44,83,.07), 0 1px 2px rgba(4,44,83,.04);
+}
 .form-section-title {
   font-size: .6875rem;
   font-weight: 700;
@@ -167,7 +180,7 @@ body {
 .field select:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(55,138,221,.15);
+  box-shadow: 0 0 0 4px rgba(55,138,221,.22);
 }
 .field-row {
   display: grid;
@@ -187,7 +200,7 @@ body {
 }
 .input-wrap:focus-within {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(55,138,221,.15);
+  box-shadow: 0 0 0 4px rgba(55,138,221,.22);
 }
 .input-wrap input {
   flex: 0 0 auto;
@@ -299,8 +312,8 @@ body {
 .results-table th.col-buyer { color: var(--color-buyer); }
 .results-table th.col-renter { color: var(--color-renter); }
 .results-table td { color: rgba(181,212,244,.85); }
-.results-table td.col-buyer { color: var(--color-buyer); font-weight: 600; }
-.results-table td.col-renter { color: var(--color-renter); font-weight: 600; }
+.results-table td.col-buyer { color: var(--color-buyer); font-weight: 700; font-size: 1rem; }
+.results-table td.col-renter { color: var(--color-renter); font-weight: 700; font-size: 1rem; }
 .results-table td.diff-positive { color: var(--color-diff); font-weight: 700; }
 .results-table td.diff-negative { color: #f87171; font-weight: 700; }
 .results-table .row-label { color: var(--color-dark-text); font-weight: 500; }
