@@ -11,20 +11,73 @@
 </head>
 <body x-data="appState" x-cloak>
 
-  <!-- ── Header ── -->
-  <header class="site-header">
-    <h1>Mieten vs. Kaufen</h1>
-    <p>Mieten ist verbranntes Geld? Zahlen statt Bauchgefühl – rechne es selbst durch. Was Kaufen vs. Mieten für dich wirklich bedeutet.</p>
-  </header>
+  <!-- ── Header + dezente Info-Trigger ── -->
+  <div x-data="{ panel: null }">
+    <header class="site-header">
+      <h1>Mieten vs. Kaufen</h1>
+      <p>Mieten ist verbranntes Geld? Zahlen statt Bauchgefühl – rechne es selbst durch. Was Kaufen vs. Mieten für dich wirklich bedeutet.</p>
+      <div class="header-links">
+        <button class="header-link" :class="{ active: panel === 'howto' }"
+          @click="panel = panel === 'howto' ? null : 'howto'">So funktioniert's</button>
+        <button class="header-link" :class="{ active: panel === 'method' }"
+          @click="panel = panel === 'method' ? null : 'method'">Methodik &amp; Quellen</button>
+      </div>
+    </header>
 
-  <!-- ── Region-Auswahl ── -->
-  <div class="region-bar">
-    <label for="region-select">Region</label>
-    <select id="region-select" @change="setRegion($event.target.value)">
-      <template x-for="r in regions" :key="r.key">
-        <option :value="r.key" :selected="inputs.region === r.key" x-text="r.label"></option>
-      </template>
-    </select>
+    <!-- Aufklapp-Panel: So funktioniert's -->
+    <div class="info-drawer" x-show="panel === 'howto'" x-cloak>
+      <ol class="howto-steps">
+        <li><strong>Immobilie</strong> — Kaufpreis, Fläche, erwartete Wertsteigerung.</li>
+        <li><strong>Finanzierung</strong> — Eigenmittel, Zinssatz, Laufzeit.</li>
+        <li><strong>Laufende Kosten</strong> — Instandhaltung &amp; Betriebskosten.</li>
+        <li><strong>Miete</strong> — die Miete, die du als Alternative zahlen würdest.</li>
+        <li><strong>Annahmen</strong> — Inflation, Anlagerendite, Sparquote, Horizont.</li>
+        <li><strong>Ergebnis</strong> — der Vermögensvergleich unter deinen Eingaben.</li>
+      </ol>
+      <p class="howto-foot">Die Felder sind mit sinnvollen Österreich-Durchschnittswerten vorbelegt — passe sie an deine Situation an.</p>
+    </div>
+
+    <!-- Aufklapp-Panel: Methodik & Quellen -->
+    <div class="info-drawer" x-show="panel === 'method'" x-cloak>
+      <div class="methodik-grid">
+        <div class="methodik-block">
+          <h3>Vergleichsmethode</h3>
+          <p>Opportunity-Cost-Vermögensvergleich (in Anlehnung an Gerd Kommer, „Kaufen oder mieten?", 2021). Beide Seiten starten mit demselben verfügbaren Kapital — der Käufer setzt es für Eigenkapital und Kaufnebenkosten ein, der Mieter investiert es ins Portfolio. Monatliche Kostendifferenzen werden laufend nach­investiert oder entnommen. Am Ende des Horizonts werden die Nettovermögen verglichen.</p>
+        </div>
+        <div class="methodik-block">
+          <h3>Berücksichtigte Kosten</h3>
+          <p><strong>Käufer (einmalig):</strong> Grunderwerbsteuer (3,5 %), Grundbucheintragung Eigentumsrecht (1,1 %), Makler (einstellbar), Notar/Rechtsanwalt, Pfandrechtseintragung (1,2 % der Kreditsumme), Bankbearbeitungsgebühr.</p>
+          <p><strong>Käufer (laufend):</strong> Annuität (fix oder variabel), Instandhaltungsrücklage (% des aktuellen Immobilienwerts), Betriebskosten, optionaler Sanierungsstau.</p>
+          <p><strong>Käufer (Verkauf, optional):</strong> Maklerprovision, Immobilienertragsteuer 30 % (entfällt bei Hauptwohnsitzbefreiung gem. § 30 Abs. 2 Z 1 EStG).</p>
+          <p><strong>Mieter:</strong> Bruttomiete (indexiert mit Inflation), Mietkaution (gebundenes Kapital), KESt 27,5 % auf realisierte Gewinne am Ende des Horizonts (§ 27a EStG).</p>
+        </div>
+        <div class="methodik-block">
+          <h3>Vereinfachungen</h3>
+          <ul>
+            <li>Mietsteigerung = Inflationsrate (kein eigenständiger Parameter).</li>
+            <li>KESt wird vereinfachend am Ende auf den Gesamtgewinn angewendet — laufende Besteuerung ausschüttungsgleicher Erträge bei Meldefonds (ca. 0,3–0,4 % p.a. Effekt) wird nicht separat modelliert.</li>
+            <li>Kein Versicherungsmantel, keine AfA, keine Mieteinnahmen, keine steuerliche Absetzbarkeit von Kreditzinsen (für Eigennutzung nicht relevant).</li>
+            <li>Sanierungskosten als Einmalbetrag im gewählten Jahr, keine Verteilung über mehrere Jahre.</li>
+            <li>Variabler Zins: einfacher einmaliger Wechsel nach X Jahren, kein stochastisches Zinsmodell.</li>
+          </ul>
+        </div>
+        <div class="methodik-block">
+          <h3>Quellen &amp; Stand</h3>
+          <ul>
+            <li><strong>Zinssätze:</strong> optifin.at, capitalo.at, infina.at — Stand Juni 2026</li>
+            <li><strong>Kaufnebenkosten:</strong> § 26 Abs. 1 GBG, GrEStG 1987, österr. Maklergesetz</li>
+            <li><strong>Betriebskosten:</strong> Statistik Austria, Wohnkostenerhebung Q1 2025 (Ø 2,52 €/m²/Mon.)</li>
+            <li><strong>Wertsteigerung:</strong> OeNB Wohnimmobilienpreisindex; konservative Langfrist-Schätzwerte</li>
+            <li><strong>Anlagerendite:</strong> MSCI World (EUR, netto) 1970–2024; Referenzwert Gerd Kommer</li>
+            <li><strong>Instandhaltung:</strong> Gerd Kommer „Kaufen oder mieten?" (2021); US-„1 % Rule"</li>
+          </ul>
+          <p class="methodik-stand">Stand: Juni 2026. Zinssätze, Gebühren und Marktdaten ändern sich — eigene Recherche empfohlen.</p>
+        </div>
+      </div>
+      <p class="methodik-disclaimer">
+        Dieser Rechner ist ein Hilfsmittel für informierte Entscheidungen und ersetzt keine individuelle Finanz- oder Steuerberatung. Die Ergebnisse basieren ausschließlich auf den eingegebenen Annahmen und zeigen mögliche Szenarien — keine Garantien oder Empfehlungen.
+      </p>
+    </div>
   </div>
 
   <!-- ── Warnungen — nur auf Ergebnis-Tab ── -->
@@ -112,7 +165,7 @@
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zur Grundbucheintragung">i</button>
             </p>
             <div class="info-panel" x-show="open">
-              Eintragungsgebühr nach § 26 Abs. 1 GBG (1 % des Kaufpreises) plus Eingabegebühr (~22 € pauschal, hier vernachlässigt). Wird vom Grundbuchgericht eingehoben, nicht verhandelbar.
+              Eintragungsgebühr nach § 26 Abs. 1 GBG: <strong>1,1 % des Kaufpreises</strong> (Eigentumsrecht). Wird vom Grundbuchgericht eingehoben, nicht verhandelbar.
             </div>
           </div>
           <div class="field" x-data="{ open: false }">
@@ -155,19 +208,22 @@
             <label>Wertsteigerung p.a.</label>
             <div class="input-wrap"><input type="number" x-model.number="inputs.appreciationPct" step="0.1"><span class="input-unit">%</span></div>
             <p class="hint">
-              <span class="field-tag optional">Default: je Region – siehe Infotext</span>
-              <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Warum 2,5 %?">i</button>
+              <span class="field-tag optional">Richtwert: 2,0–3,0 %</span>
+              <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Wie viel Wertsteigerung ansetzen?">i</button>
             </p>
             <div class="info-panel" x-show="open">
-              <strong>Wie wird der Default abgeleitet?</strong><br>
+              <strong>Typische Werte je Standort:</strong><br>
+              · Wien, Salzburg, Innsbruck: <strong>3,0 %</strong><br>
+              · Graz: <strong>2,5 %</strong><br>
+              · Linz, Österreich-Ø: <strong>2,0 %</strong><br><br>
+
+              <strong>Wie wird das abgeleitet?</strong><br>
               Zwei langfristige Treiber: EZB-Inflationsziel (~2,0 % p.a.) + reales Lohnwachstum (~0,5–1,0 % p.a.) = <strong>2,5–3,0 % nominal</strong>. Wohnen muss leistbar bleiben — Preise können der Lohnentwicklung nicht dauerhaft davonlaufen.<br><br>
 
               <strong>Historische Einordnung (OeNB):</strong><br>
               · 1990–2010: nahezu deckungsgleich mit der Inflation (~2 % p.a.)<br>
               · 2010–2022: Boom durch EZB-Nullzinsen (+6–10 %/Jahr in Ballungsräumen)<br>
-              · ab 2023: Normalisierung durch Zinswende und KIM-Verordnung<br><br>
-
-              <strong>Standort-Zuschlag:</strong> A-Lagen mit Flächenmangel und Zuzug (Wien, Salzburg, Innsbruck) +0,5 % → 3,0 %. Periphere Lagen mit Abwanderung eher 1,0–2,0 %.
+              · ab 2023: Normalisierung durch Zinswende und KIM-Verordnung
             </div>
           </div>
         </div>
@@ -179,22 +235,82 @@
     <section class="tab-panel" :class="{ active: activeTab === 'finanzierung' }" role="tabpanel">
 
       <div class="form-section">
-        <p class="form-section-title">Eigenkapital</p>
-        <div class="field-row">
-          <div class="field">
-            <label>Eigenkapital gesamt</label>
-            <div class="input-wrap"><input type="text" inputmode="numeric" x-eur="inputs.equityAmount"><span class="input-unit">€</span></div>
-            <p class="hint"><span class="field-tag required">Pflichtfeld</span></p>
-          </div>
-          <div class="field">
-            <label>Eigenkapitalquote</label>
-            <div class="input-wrap">
-              <input type="text" readonly :value="inputs.equityRatioPct?.toFixed(1).replace('.',',')">
-              <span class="input-unit">%</span>
-            </div>
-            <p class="hint">des Kaufpreises (berechnet)</p>
-          </div>
+        <p class="form-section-title">Eigenmittel</p>
+        <div class="field">
+          <label>Eigenmittel verfügbar</label>
+          <div class="input-wrap"><input type="text" inputmode="numeric" x-eur="inputs.equityAmount"><span class="input-unit">€</span></div>
+          <p class="hint">
+            <span class="field-tag required">Pflichtfeld</span>
+            Wie viel Geld hast du für den Kauf insgesamt zur Seite gelegt?
+          </p>
         </div>
+
+        <!-- Rechenweg: warum der Kredit höher als 80 % des Kaufpreises ist -->
+        <template x-if="results && results.derived">
+          <div>
+            <div class="equity-calc">
+              <div class="calc-row">
+                <span class="calc-op"></span>
+                <span class="calc-label">Kaufpreis ohne Nebenkosten</span>
+                <span class="calc-amount" x-text="formatEur(results.derived.purchasePrice)"></span>
+              </div>
+              <div class="calc-row">
+                <span class="calc-op">+</span>
+                <span class="calc-label">Kauf- &amp; Finanzierungsnebenkosten</span>
+                <span class="calc-amount" x-text="formatEur(results.derived.closingCosts + results.derived.financingCosts)"></span>
+              </div>
+              <div class="calc-row calc-sum">
+                <span class="calc-op">=</span>
+                <span class="calc-label">Gesamtbedarf</span>
+                <span class="calc-amount" x-text="formatEur(results.derived.purchasePrice + results.derived.closingCosts + results.derived.financingCosts)"></span>
+              </div>
+              <div class="calc-row">
+                <span class="calc-op">−</span>
+                <span class="calc-label">Eigenmittel verfügbar</span>
+                <span class="calc-amount" x-text="formatEur(results.derived.equity)"></span>
+              </div>
+              <div class="calc-row calc-sum calc-final">
+                <span class="calc-op">=</span>
+                <span class="calc-label">Benötigter Kredit</span>
+                <span class="calc-amount" x-text="formatEur(results.derived.loanAmount)"></span>
+              </div>
+            </div>
+
+            <!-- Einordnung: jede Kennzahl mit ihrem eigenen %-Bezug -->
+            <div class="equity-stats">
+              <div class="eq-stat">
+                <span class="eq-stat-label">Eigenmittel verfügbar</span>
+                <span class="eq-stat-value" x-text="formatEur(results.derived.equity)"></span>
+                <span class="eq-stat-pct" x-text="(results.derived.equity / results.derived.purchasePrice * 100).toFixed(1).replace('.', ',') + ' % des Kaufpreises'"></span>
+              </div>
+              <div class="eq-stat">
+                <span class="eq-stat-label">Echte Anzahlung (nach Nebenkosten)</span>
+                <span class="eq-stat-value" x-text="formatEur(results.derived.downPayment)"></span>
+                <span class="eq-stat-pct" x-text="(results.derived.downPayment / results.derived.purchasePrice * 100).toFixed(1).replace('.', ',') + ' % des Kaufpreises'"></span>
+              </div>
+              <div class="eq-stat">
+                <span class="eq-stat-label">Benötigter Kredit</span>
+                <span class="eq-stat-value" x-text="formatEur(results.derived.loanAmount)"></span>
+                <span class="eq-stat-pct" x-text="(results.derived.loanAmount / results.derived.purchasePrice * 100).toFixed(1).replace('.', ',') + ' % des Kaufpreises'"></span>
+              </div>
+            </div>
+
+            <!-- Freundliche Warnung: viel Kredit, wenig echte Anzahlung -->
+            <template x-if="results.derived.downPayment >= 0 && results.derived.downPayment / results.derived.purchasePrice < 0.10">
+              <p class="eq-warn">
+                Nach Nebenkosten bleiben nur
+                <strong x-text="(results.derived.downPayment / results.derived.purchasePrice * 100).toFixed(1).replace('.', ',') + ' %'"></strong>
+                des Kaufpreises als echte Anzahlung — das ist eine sehr hohe Finanzierung. Österreichische Banken vergeben meist max. 90 % der Kaufsumme als Kredit.
+              </p>
+            </template>
+            <!-- Stärkere Warnung: Eigenmittel decken nicht einmal die Nebenkosten -->
+            <template x-if="results.derived.downPayment < 0">
+              <p class="eq-warn">
+                Deine Eigenmittel decken nicht einmal die Nebenkosten — für die Anzahlung bleibt nichts übrig. Das wäre eine Über-100-%-Finanzierung, die kaum eine Bank vergibt. Bitte mehr Eigenmittel ansetzen.
+              </p>
+            </template>
+          </div>
+        </template>
 
       </div>
 
@@ -209,7 +325,8 @@
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zur Pfandrechtseintragung">i</button>
             </p>
             <div class="info-panel" x-show="open">
-              Gebühr für die Eintragung des Pfandrechts (Hypothek) im Grundbuch nach § 26 Abs. 1 GBG — 1,2 % der Kreditsumme. Gesetzlich festgelegt, nicht verhandelbar. Wird direkt an das Grundbuchgericht entrichtet.
+              Gebühr für die Eintragung des Pfandrechts (Hypothek) im Grundbuch nach § 26 Abs. 1 GBG — <strong>1,2 % der Kreditsumme</strong>. Gesetzlich festgelegt, nicht verhandelbar. Wird direkt an das Grundbuchgericht entrichtet.<br>
+              <em>Hinweis: In der Praxis lässt die Bank oft ein höheres Pfandrecht eintragen als den tatsächlichen Kreditbetrag (z.&nbsp;B. 130–150 % der Kreditsumme). In diesem Fall erhöht sich die Gebühr entsprechend.</em>
             </div>
           </div>
           <div class="field" x-data="{ open: false }">
@@ -364,12 +481,14 @@
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Aufschlüsselung">i</button>
             </p>
             <div class="info-panel" x-show="open">
-              Prozent des <strong>aktuellen Immobilienwerts</strong> pro Jahr — wächst also mit der Wertsteigerung der Immobilie (realistischer als ein fixer €/m²-Betrag). Aufschlüsselung:<br>
+              <strong>Langfristige Pauschale</strong> als Prozent des aktuellen Immobilienwerts — wächst mit der Wertsteigerung (realistischer als ein fixer €/m²-Betrag). Aufschlüsselung:<br>
               · Instandhaltungsrücklage ~0,7 %/Jahr<br>
               · Gebäudeversicherung ~0,2 %/Jahr<br>
               · Grundsteuer ~0,1 %/Jahr<br>
               · Hausverwaltung/Sonstiges ~0,2 %/Jahr<br><br>
-              Literaturwerte: Gerd Kommer empfiehlt 1–1,5 % p.a.; US-Faustregel „1 % Rule" gilt auch in AT als untere Grenze für ältere Bestände.
+              Literaturwerte: Gerd Kommer empfiehlt 1–1,5 % p.a.; US-Faustregel „1 % Rule" gilt in AT als untere Grenze für ältere Bestände.<br><br>
+              <strong>Teure Lagen:</strong> Bei hohen Kaufpreisen wächst der absolute Betrag entsprechend — 1,2 % von 600.000 € sind 7.200 €/Jahr. Prüfen, ob das für die konkrete Immobilie realistisch ist; ggf. auf 0,8–1,0 % senken.<br><br>
+              <strong>Doppelzählungsgefahr:</strong> Wer zusätzlich eine Großsanierung im Feld „Sanierungskosten" modelliert, riskiert doppelte Buchung — die laufende Pauschale enthält bereits eine Rücklage dafür. Empfehlung: Sanierungskosten nur dann ergänzen, wenn bekannter Stau vorliegt, der über die laufende Rücklage hinausgeht (z.&nbsp;B. vernachlässigte Substanz beim Kauf).
             </div>
           </div>
           <div class="field" x-data="{ open: false }">
@@ -413,7 +532,7 @@
             <label>Sanierungskosten</label>
             <div class="input-wrap"><input type="text" inputmode="numeric" x-eur="inputs.renovationCost"><span class="input-unit">€</span></div>
             <p class="hint">
-              <span class="field-tag optional">Default: 0 (deaktiviert)</span>
+              <span class="field-tag optional">Optional, Standard: 0 €</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Worum geht es?">i</button>
             </p>
             <div class="info-panel" x-show="open">
@@ -438,6 +557,9 @@
           <input type="checkbox" id="simulateSale" x-model="inputs.simulateSale">
           <label for="simulateSale">Verkaufskosten am Ende berücksichtigen</label>
         </div>
+        <p class="hint" style="margin-top:.4rem;">
+          Für einen fairen Vergleich wird angenommen, dass beide Seiten ihr Vermögen am Ende des Horizonts verfügbar machen — der Käufer durch Verkauf der Immobilie, der Mieter durch Auflösung des Portfolios. Wenn du die Option deaktivierst, wird der Immobilienwert ohne Abzug von Makler und ImmoESt angesetzt.
+        </p>
         <template x-if="inputs.simulateSale">
           <div class="field-row">
             <div class="field">
@@ -459,7 +581,7 @@
             </div>
             <div class="field-check" style="align-self:end; padding-bottom:.5rem;">
               <input type="checkbox" id="primaryResidence" x-model="inputs.primaryResidenceExempt">
-              <label for="primaryResidence">Hauptwohnsitzbefreiung (→ 0% ImmoESt)</label>
+              <label for="primaryResidence">Hauptwohnsitzbefreiung erfüllt (→ 0 % ImmoESt)</label>
             </div>
           </div>
         </template>
@@ -530,6 +652,7 @@
             <p class="hint">
               <span class="field-tag optional">Default: 7,0 % p.a.</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Woher kommt 7 %?">i</button>
+              <br>Langfristiger nominaler Planungswert — kein garantierter Jahresertrag. Aktienrenditen schwanken stark. Prüfe im Ergebnis-Tab auch konservative Szenarien (z.&nbsp;B. 4–5 %).
             </p>
             <div class="info-panel" x-show="open">
               <strong>Wie wird der Default abgeleitet?</strong><br>
@@ -543,7 +666,7 @@
               · 2009–2021: Längste Hausse der Geschichte — +14 % p.a.<br>
               · 2022: Korrektur durch Zinswende — −18 %<br><br>
 
-              <strong>Fazit:</strong> 7 % ist ein vernünftiger Planungswert, aber kein Versprechen. Wer konservativ rechnen will: 5–6 %. Wer den historischen Durchschnitt annimmt: 7–8 %.
+              <strong>Fazit:</strong> 7 % ist ein vernünftiger langfristiger Planungswert, aber kein Versprechen — einzelne Jahre können stark abweichen. Wer konservativ rechnen will: 4–5 %. Wer den historischen Durchschnitt ansetzt: 7–8 %. Der Anlagerendite-Slider im Ergebnis-Tab zeigt, wie sensitiv das Ergebnis auf diese Annahme reagiert.
             </div>
           </div>
           <div class="field" x-data="{ open: false }">
@@ -554,9 +677,10 @@
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Wie wird die KESt angewendet?">i</button>
             </p>
             <div class="info-panel" x-show="open">
-              Gesetzlicher Satz auf realisierte Kapitalerträge (§ 27a EStG). Im Modell: wird am Ende des Horizonts auf den Gesamtgewinn des Portfolios angewendet. Zusätzlich wird jährlich KeSt auf 1,5 % des Portfoliowerts eingerechnet — das modelliert die Pflichtbesteuerung auf ausschüttungsgleiche Erträge bei österreichischen Meldefonds (thesaurierende ETFs wie MSCI World oder FTSE All-World).<br><br>
-              <strong>Versicherungsmantel</strong> (fondsgebundene Lebensversicherung): zahlt stattdessen 4 % Versicherungssteuer auf jede Einzahlung, dafür keine laufende KeSt auf ausschüttungsgleiche Erträge. Wer über einen Versicherungsmantel investiert, kann hier einen niedrigeren effektiven Satz eingeben — die 4 % Versicherungssteuer auf Einzahlungen bleibt dabei unberücksichtigt.<br><br>
-              <strong>Tagesgeld / Sparbuch:</strong> Zinsen unterliegen 25 % KeSt (§ 27a Abs. 1 Z 1 EStG), nicht 27,5 %.
+              Gesetzlicher Satz auf realisierte Kapitalerträge (§ 27a EStG). Im Modell wird die KESt am Ende des Horizonts auf den Gesamtgewinn des Portfolios angewendet — symmetrisch für Käufer- und Mieterportfolio.<br><br>
+              <strong>Vereinfachung:</strong> Die laufende Besteuerung ausschüttungsgleicher Erträge bei österreichischen Meldefonds (thesaurierende ETFs wie MSCI World) wird nicht separat modelliert. Sie kann die effektive Nachsteuerrendite um ca. 0,3–0,4 Prozentpunkte p.a. senken.<br><br>
+              <strong>Versicherungsmantel</strong> (fondsgebundene Lebensversicherung): zahlt stattdessen 4 % Versicherungssteuer auf jede Einzahlung, dafür keine laufende KESt. Wer über einen Versicherungsmantel investiert, kann hier einen niedrigeren effektiven Satz eingeben.<br><br>
+              <strong>Tagesgeld / Sparbuch:</strong> Zinsen unterliegen 25 % KESt (§ 27a Abs. 1 Z 1 EStG), nicht 27,5 %.
             </div>
           </div>
         </div>
@@ -645,25 +769,37 @@
                 <span style="display:block;margin-top:.3rem;opacity:.8">Mieten ist bei jeder Sparquote vorteilhafter.</span>
               </template>
               <template x-if="results.breakevenSavingsRate > 0">
-                <span style="display:block;margin-top:.3rem;opacity:.8">Mieten lohnt sich nur ab einer Sparquote von mind. <strong x-text="results.breakevenSavingsRate + ' %'"></strong>.</span>
+                <span style="display:block;margin-top:.3rem;opacity:.8">Wenn du mindestens <strong x-text="results.breakevenSavingsRate + ' %'"></strong> der monatlichen Mietersparnis investierst, liegt Mieten in diesem Szenario vorne.</span>
               </template>
             </p>
 
-            <div class="kmf-indicator" x-data="{ openKMF: false, get val() { return inputs.totalMonthlyRent > 0 ? Math.round(inputs.purchasePrice / (inputs.totalMonthlyRent * 12) * 10) / 10 : null; } }">
+            <div class="kmf-indicator" x-data="{
+                openKMF: false,
+                get netRent() { return inputs.totalMonthlyRent - inputs.operatingCostsPerSqm * inputs.livingAreaSqm; },
+                get val() { return this.netRent > 0 ? Math.round(inputs.purchasePrice / (this.netRent * 12) * 10) / 10 : null; }
+              }">
+              <template x-if="netRent <= 0 && inputs.totalMonthlyRent > 0">
+                <p class="hint" style="color: var(--color-warn);">Kauf-Miet-Faktor nicht berechenbar — geschätzte Kaltmiete (Bruttomiete minus Betriebskosten) ist 0 oder negativ. Bitte Betriebskosten prüfen.</p>
+              </template>
               <template x-if="val !== null">
                 <div>
                   <div style="display:flex; align-items:center; flex-wrap:wrap; gap:.25rem;">
                     Kauf-Miet-Faktor:
                     <strong x-text="val.toFixed(1).replace('.', ',')"></strong>
                     <span class="kmf-badge" :class="val <= 20 ? 'kmf-ok' : val <= 30 ? 'kmf-warn' : 'kmf-bad'"
-                      x-text="val <= 20 ? '≤ 20 — günstig' : val <= 30 ? '20–30 — mittel' : '> 30 — teuer'"></span>
+                      x-text="val <= 20 ? '≤ 20 — niedriger Faktor' : val <= 30 ? '20–30 — mittlerer Faktor' : '> 30 — hoher Faktor'"></span>
                     <button class="info-btn" @click="openKMF = !openKMF" :aria-expanded="openKMF" title="Was bedeutet der Kauf-Miet-Faktor?">i</button>
                   </div>
+                  <p class="hint" style="margin-top:.25rem;">
+                    Basis: geschätzte Kaltmiete <strong x-text="Math.round(netRent).toLocaleString('de-AT') + ' €/Monat'"></strong>
+                    <span style="opacity:.7;" x-text="'(' + Math.round(inputs.totalMonthlyRent).toLocaleString('de-AT') + ' € Bruttomiete − ' + Math.round(inputs.operatingCostsPerSqm * inputs.livingAreaSqm).toLocaleString('de-AT') + ' € Betriebskosten)'"></span>
+                  </p>
                   <div class="info-panel kmf-info-panel" x-show="openKMF" style="margin-top:.5rem;">
-                    <strong>Kauf-Miet-Faktor</strong> = Kaufpreis ÷ Jahreskaltmiete. Gibt an, wie viele Jahresmieten nötig sind, um den reinen Kaufpreis zu decken. Je höher der Wert, desto teurer ist die Immobilie relativ zu den Mieteinnahmen.<br><br>
-                    <strong class="kmf-ok-text">≤ 20 — Günstig (Kauf-Terrain):</strong> Die Bruttomietrendite liegt bei ≥ 5 %. Selbst nach Abzug von Instandhaltung und Betriebskosten bleibt meist eine Nettorendite, die das aktuelle Zinsniveau deckt und mit dem Kapitalmarkt konkurrieren kann. Kaufen schlägt Mieten hier rechnerisch oft deutlich.<br><br>
-                    <strong class="kmf-warn-text">20 bis 30 — Mittel (Die Grauzone):</strong> Das klassische Mittelfeld. Ob sich der Kauf lohnt, hängt jetzt massiv von den individuellen Kreditkonditionen, der Laufzeit und der zukünftigen Wertsteigerung ab. Genau hier liefert die Detailberechnung dieses Kalkulators die Antwort.<br><br>
-                    <strong class="kmf-bad-text">&gt; 30 — Teuer (Spekulativ):</strong> Die Bruttomietrendite rutscht unter ~3,3 %, die Nettorendite nach Kosten oft auf magere 1–2 %. Die ersparte Miete deckt die Finanzierungskosten bei Weitem nicht mehr. Das gebundene Eigenkapital würde im ETF-Portfolio (konservativ kalkuliert mit ~6 % p.a.) deutlich besser performen. Damit Kaufen trotzdem gewinnt, muss die Immobilie dauerhaft und stark an Wert steigen — ein Szenario, das der Historie widerspricht: Langfristige Daten zeigen, dass der reale Wertzuwachs von Immobilien (nach Inflation) über Jahrzehnte betrachtet gegen null tendiert. Boom-Phasen sind die Ausnahme, nicht die Regel. Zur Einordnung: In Lagen wie Wien liegt der Faktor aktuell oft bei 35 bis 45.<br><br>
+                    <strong>Kauf-Miet-Faktor</strong> = Kaufpreis ÷ Jahreskaltmiete. Gibt an, wie viele Jahresmieten nötig sind, um den reinen Kaufpreis zu decken. Je höher der Wert, desto teurer ist die Immobilie relativ zu den Mieteinnahmen.<br>
+                    <em style="font-size:.8125rem;">Kaltmiete = eingegebene Bruttomiete minus Betriebskosten (aus Tab „Laufende Kosten Eigentum").</em><br><br>
+                    <strong class="kmf-ok-text">≤ 20 — Niedriger Faktor:</strong> Die Bruttomietrendite liegt bei ≥ 5 %. Selbst nach Abzug von Instandhaltung und Betriebskosten bleibt eine Nettorendite, die das aktuelle Zinsniveau erreichen oder übertreffen kann. Ob Kaufen oder Mieten vorteilhafter ist, hängt trotzdem von Zins, Wertsteigerung und Sparverhalten ab.<br><br>
+                    <strong class="kmf-warn-text">20 bis 30 — Mittlerer Faktor:</strong> Das klassische Mittelfeld. Ob sich der Kauf lohnt, hängt von den individuellen Kreditkonditionen, der Laufzeit und der zukünftigen Wertsteigerung ab. Genau hier liefert die Detailberechnung dieses Kalkulators die entscheidenden Informationen.<br><br>
+                    <strong class="kmf-bad-text">&gt; 30 — Hoher Faktor:</strong> Die Bruttomietrendite liegt unter ~3,3 %. Das bedeutet nicht automatisch, dass Kaufen falsch ist — Wertsteigerung, persönliche Situation und Zinskonditionen spielen ebenfalls eine Rolle. Das Ergebnis hängt bei hohen Faktoren aber stark von der angenommenen Kapitalmarktrendite und der Immobilien-Wertsteigerung ab. Zur Einordnung: In Lagen wie Wien liegt der Faktor aktuell oft bei 35 bis 45.<br><br>
                     <em>In Anlehnung an Dr. Gerd Kommer, „Kaufen oder mieten?" (2021) und aktuelle Marktdaten.</em>
                   </div>
                 </div>

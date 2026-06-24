@@ -165,11 +165,9 @@ export function simulateBuyerOwnerCosts({
  * 1-basiert auf Jahre und `owner` 0-basiert beginnt). Miete in Jahr y wird analog
  * mit `(1+inflationPct/100)^(y-1)` indexiert.
  *
- * Laufende Fondsbesteuerung (ausschüttungsgleiche Erträge): Am Jahresende wird
- * KESt auf `dividendYieldPct` des Portfoliowerts zu Jahresbeginn fällig —
- * modelliert die jährliche Pflichtbesteuerung bei österreichischen Meldefonds.
- * Direkt vom Portfolio abgezogen, Kostenbasis erhöht (bereits versteuerter
- * Anteil zählt nicht erneut als Gewinn beim Endverkauf).
+ * Vereinfachung: Laufende Besteuerung ausschüttungsgleicher Erträge bei
+ * österreichischen Meldefonds wird nicht modelliert — nur End-KESt auf den
+ * realisierten Gesamtgewinn. Gilt symmetrisch für beide Portfolios.
  *
  * @param {object} inputs
  * @param {number} inputs.rentPerSqm - Miete €/m²/Monat (Jahr 0, brutto inkl. BK)
@@ -177,7 +175,6 @@ export function simulateBuyerOwnerCosts({
  * @param {number} inputs.inflationPct - Inflation p.a. in Prozent (Mietsteigerung)
  * @param {number} inputs.investmentReturnPct - Anlagerendite Mieter-Portfolio p.a. in Prozent
  * @param {number} inputs.horizonYears - Betrachtungshorizont in Jahren
- * @param {number} [inputs.dividendYieldPct=1.5] - Ausschüttungsgleiche Erträge des Meldefonds in % des NAV p.a.
  * @param {number} [inputs.kestPct=0] - KESt-Satz in Prozent
  * @param {Array<{monthlyPayment: number}>} amort - Ergebnis von `buildAmortizationSchedule` (Jahre 1..N)
  * @param {Array<{monthlyOwnerCosts: number}>} owner - Ergebnis von `simulateBuyerOwnerCosts` (Jahre 0..N)
@@ -191,7 +188,6 @@ export function simulateMonthlyPortfolios(inputs, amort, owner, startCapital) {
     inflationPct,
     investmentReturnPct,
     horizonYears,
-    dividendYieldPct = 1.5,
     kestPct = 0,
     renterSavingsRatePct = 100,
     renovationCost = 0,
@@ -235,12 +231,6 @@ export function simulateMonthlyPortfolios(inputs, amort, owner, startCapital) {
       renterValue = renterValue * monthlyGrowthFactor + renterInvested;
       renterCostBasis += renterInvested;
     }
-
-    // Jährliche KeSt auf ausschüttungsgleiche Erträge (Pflicht bei Meldefonds AT)
-    const renterValueAtYearStart = renterPortfolioByYear[year - 1].value;
-    const annualFundTax = renterValueAtYearStart * (dividendYieldPct / 100) * (kestPct / 100);
-    renterValue -= annualFundTax;
-    renterCostBasis += annualFundTax;
 
     buyerPortfolioByYear.push({ year, value: buyerValue, costBasis: buyerCostBasis });
     renterPortfolioByYear.push({ year, value: renterValue, costBasis: renterCostBasis });

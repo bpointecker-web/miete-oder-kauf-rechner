@@ -4,7 +4,7 @@ import { REGIONS, createDefaultInputs } from '../js/presets.js';
 import { runComparison } from '../js/calculator.js';
 
 const REQUIRED_FIELDS = [
-  'region', 'purchasePrice', 'pricePerSqm', 'livingAreaSqm',
+  'purchasePrice', 'pricePerSqm', 'livingAreaSqm',
   'transferTaxPct', 'landRegisterPct', 'brokerBuyPct', 'notaryPct',
   'equityAmount', 'equityRatioPct', 'mortgageLienPct', 'bankProcessingPct',
   'rateModel', 'interestRatePct', 'variableSwitchYear', 'variableRatePct',
@@ -17,50 +17,39 @@ const REQUIRED_FIELDS = [
   'simulateSale', 'saleBrokerFeePct', 'immoEstPct', 'primaryResidenceExempt',
 ];
 
-test('createDefaultInputs: alle Regionen liefern vollstaendige inputs-Objekte', () => {
-  for (const region of Object.keys(REGIONS)) {
-    const inputs = createDefaultInputs(region);
-    for (const field of REQUIRED_FIELDS) {
-      assert.ok(field in inputs, `Region "${region}": Pflichtfeld "${field}" fehlt`);
-    }
+test('createDefaultInputs: liefert vollstaendiges inputs-Objekt mit allen Pflichtfeldern', () => {
+  const inputs = createDefaultInputs();
+  for (const field of REQUIRED_FIELDS) {
+    assert.ok(field in inputs, `Pflichtfeld "${field}" fehlt`);
   }
 });
 
-test('createDefaultInputs: Variante B — nur appreciationPct ist regional, Preis/Miete sind feste AT-Ø-Defaults', () => {
-  // Arrange — Designentscheidung: Regionswechsel aendert ausschliesslich appreciationPct.
-  // Kaufpreis und Miete sind Pflichtfelder, die der Nutzer ohnehin selbst eingibt,
-  // und starten daher fuer ALLE Regionen mit denselben AT-Ø-Defaults.
-  const wien = createDefaultInputs('wien');
-  const linz = createDefaultInputs('linz');
+test('createDefaultInputs: AT-Defaults sind plausibel', () => {
+  const inputs = createDefaultInputs();
 
-  // Assert: Preis & Miete regionsunabhaengig (feste AT-Defaults: 4.000 €/m², 10 €/m²)
-  assert.equal(wien.pricePerSqm, 4000);
-  assert.equal(wien.rentPerSqm, 10.0);
-  assert.equal(wien.pricePerSqm, linz.pricePerSqm, 'pricePerSqm darf nicht regional variieren');
-  assert.equal(wien.rentPerSqm, linz.rentPerSqm, 'rentPerSqm darf nicht regional variieren');
-
-  // Assert: appreciationPct ist der EINZIGE regionale Wert, gespeist aus REGIONS
-  assert.equal(wien.appreciationPct, REGIONS['wien'].appreciationPct);
-  assert.equal(linz.appreciationPct, REGIONS['linz'].appreciationPct);
-  assert.ok(wien.appreciationPct > 0 && wien.appreciationPct < 20,
-    `appreciationPct sollte plausibler Prozentwert sein, war: ${wien.appreciationPct}`
-  );
+  assert.equal(inputs.pricePerSqm, 4000);
+  assert.equal(inputs.rentPerSqm, 10.0);
+  assert.equal(inputs.livingAreaSqm, 70);
+  assert.ok(inputs.appreciationPct >= 1 && inputs.appreciationPct <= 5,
+    `appreciationPct sollte zwischen 1 und 5 % liegen, war: ${inputs.appreciationPct}`);
+  assert.ok(inputs.purchasePrice > 0 && Number.isFinite(inputs.purchasePrice));
 });
 
-test('createDefaultInputs: runComparison laeuft fuer alle 6 Regionen ohne Fehler', () => {
-  for (const region of Object.keys(REGIONS)) {
-    const inputs = createDefaultInputs(region);
-    const results = runComparison(inputs);
-    // Kein NaN, kein Infinity in den Kernwerten
-    assert.ok(Number.isFinite(results.buyerNetWealthNominal), `${region}: buyerNetWealthNominal nicht endlich`);
-    assert.ok(Number.isFinite(results.renterNetWealthNominal), `${region}: renterNetWealthNominal nicht endlich`);
-    assert.ok(Number.isFinite(results.differenceNominal), `${region}: differenceNominal nicht endlich`);
+test('createDefaultInputs: runComparison laeuft ohne Fehler durch', () => {
+  const inputs = createDefaultInputs();
+  const results = runComparison(inputs);
+  assert.ok(Number.isFinite(results.buyerNetWealthNominal), 'buyerNetWealthNominal nicht endlich');
+  assert.ok(Number.isFinite(results.renterNetWealthNominal), 'renterNetWealthNominal nicht endlich');
+  assert.ok(Number.isFinite(results.differenceNominal), 'differenceNominal nicht endlich');
+});
+
+test('REGIONS: enthaelt alle 6 oesterreichischen Regionen mit plausiblen Richtwerten', () => {
+  const expected = ['wien', 'graz', 'linz', 'salzburg', 'innsbruck', 'oesterreich'];
+  for (const key of expected) {
+    assert.ok(key in REGIONS, `Region "${key}" fehlt in REGIONS`);
+    const r = REGIONS[key];
+    assert.ok(typeof r.label === 'string' && r.label.length > 0, `${key}: label fehlt`);
+    assert.ok(r.appreciationPct >= 1 && r.appreciationPct <= 5,
+      `${key}: appreciationPct ${r.appreciationPct} ausserhalb plausiblem Bereich`);
   }
-});
-
-test('createDefaultInputs: unbekannte Region wirft Fehler', () => {
-  assert.throws(
-    () => createDefaultInputs('tokio'),
-    /Unbekannte Region/
-  );
 });

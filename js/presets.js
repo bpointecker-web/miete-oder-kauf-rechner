@@ -52,26 +52,19 @@ const AT_DEFAULTS = {
 };
 
 /**
- * Liefert ein vollständiges `inputs`-Objekt für eine Region.
- * Kaufpreis und Miete starten mit AT-Ø-Defaults; appreciationPct ist regional.
+ * Liefert ein vollständiges `inputs`-Objekt mit AT-Ø-Defaults.
+ * Wertsteigerung startet bei 2,5 % — typisch für Österreich-Mittelfeld.
+ * Richtwerte je Stadt: Wien/Salzburg/Innsbruck 3,0 %, Graz 2,5 %, Linz/AT-Ø 2,0 %.
  *
- * @param {keyof typeof REGIONS} region - z.B. `'wien'`
  * @returns {object} vollständiges inputs-Objekt
- * @throws {Error} bei unbekannter Region
  */
-export function createDefaultInputs(region) {
-  const preset = REGIONS[region];
-  if (!preset) {
-    throw new Error(`Unbekannte Region: "${region}". Gültig: ${Object.keys(REGIONS).join(', ')}`);
-  }
-
+export function createDefaultInputs() {
   const { pricePerSqm, rentPerSqm, livingAreaSqm } = AT_DEFAULTS;
   const purchasePrice = pricePerSqm * livingAreaSqm;
   const loanTermYears = 30;
 
   return {
     // Immobilie & Kauf
-    region,
     purchasePrice,
     pricePerSqm,
     livingAreaSqm,
@@ -99,7 +92,7 @@ export function createDefaultInputs(region) {
     operatingCostsPerSqm: 2.50,
     renovationCost: 0,
     renovationYear: 15,
-    appreciationPct: preset.appreciationPct,  // einziger regionaler Wert
+    appreciationPct: 2.5,  // AT-Ø Mittelfeld; Wien/Sbg/Ibk 3,0 %, Graz 2,5 %, Linz/AT-Ø 2,0 %
 
     // Miete
     rentPerSqm,

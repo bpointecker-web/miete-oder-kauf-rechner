@@ -2,7 +2,7 @@
  * Alpine-Komponente: UI-Zustand und Verdrahtung mit dem Rechenkern.
  * Einzige Datei, die DOM/Alpine kennt — calculator.js bleibt rein.
  */
-import { createDefaultInputs, REGIONS, defaultFixedRate } from './presets.js';
+import { createDefaultInputs, defaultFixedRate } from './presets.js';
 import { runComparison, findBreakevenSavingsRate } from './calculator.js';
 import { renderCharts } from './charts.js';
 
@@ -14,7 +14,7 @@ import { renderCharts } from './charts.js';
 export function appState() {
   return {
     // ── Eingaben (einzige Schreibquelle via x-model) ──
-    inputs: createDefaultInputs('wien'),
+    inputs: createDefaultInputs(),
 
     // ── Abgeleitete Ergebnisse (read-only, via x-effect berechnet) ──
     results: null,
@@ -26,7 +26,6 @@ export function appState() {
 
     // ── UI-Zustand ──
     activeTab: 'immobilie',
-    regions: Object.entries(REGIONS).map(([key, r]) => ({ key, label: r.label })),
 
     // Wird beim Initialisieren von Alpine automatisch aufgerufen
     init() {
@@ -134,11 +133,6 @@ export function appState() {
       this.$nextTick(() => resizeAllUnitInputs());
     },
 
-    setRegion(regionKey) {
-      this.inputs.region = regionKey;
-      this.inputs.appreciationPct = REGIONS[regionKey].appreciationPct;
-    },
-
     // Hilfsmethode: Zins-Modell umschalten (fix/variabel)
     setRateModel(model) {
       this.inputs.rateModel = model;
@@ -166,7 +160,7 @@ export function appState() {
       if (Math.abs(diff) < 1) return `Nach ${years} Jahren sind Kaufen und Mieten nominell gleichwertig.`;
       const winner = diff > 0 ? 'Kaufen' : 'Mieten';
       const abs = this.formatEur(Math.abs(diff));
-      return `${winner} ist nach ${years} Jahren nominell um ${abs} vorteilhafter.`;
+      return `Unter deinen Annahmen ist ${winner} nach ${years} Jahren nominell um ${abs} vorteilhafter.`;
     },
   };
 }

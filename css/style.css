@@ -63,39 +63,6 @@ body {
   line-height: 1.5;
 }
 
-/* ── Region-Picker ── */
-.region-bar {
-  background: linear-gradient(160deg, var(--color-dark-2) 0%, var(--color-dark-1) 100%);
-  padding: .625rem 1rem;
-  display: flex;
-  align-items: center;
-  gap: .75rem;
-  flex-wrap: wrap;
-}
-.region-bar label {
-  font-size: .8125rem;
-  font-weight: 600;
-  color: var(--color-dark-text);
-  white-space: nowrap;
-}
-.region-bar select {
-  flex: 1;
-  min-width: 140px;
-  padding: .375rem .75rem;
-  border: 1px solid var(--color-dark-border);
-  border-radius: var(--radius);
-  font-size: .875rem;
-  background: var(--color-dark-1);
-  color: #fff;
-  cursor: pointer;
-}
-.region-bar select:focus {
-  outline: none;
-  border-color: var(--color-buyer);
-}
-/* Dropdown-Optionen sollen lesbar sein */
-.region-bar select option { background: var(--color-dark-2); color: #fff; }
-
 /* ── Tab-Navigation ── */
 .tabs {
   background: var(--color-dark-2);
@@ -372,6 +339,79 @@ body {
   line-height: 1.55;
 }
 
+/* ── Eigenmittel: Rechenweg (Finanzierung-Tab) ── */
+.equity-calc {
+  margin-top: .625rem;
+  padding: .625rem .75rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-primary);
+  border-radius: var(--radius);
+  font-size: .8125rem;
+}
+.calc-row {
+  display: flex;
+  align-items: baseline;
+  gap: .5rem;
+  padding: .15rem 0;
+  color: var(--color-muted);
+}
+.calc-op {
+  flex: 0 0 .9rem;
+  text-align: center;
+  font-weight: 700;
+}
+.calc-label { flex: 1 1 auto; }
+.calc-amount {
+  flex: 0 0 auto;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--color-text);
+}
+.calc-row.calc-sum {
+  margin-top: .15rem;
+  padding-top: .35rem;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-weight: 600;
+}
+.calc-row.calc-final { font-weight: 700; }
+.calc-row.calc-final .calc-amount { color: var(--color-primary); }
+
+/* ── Eigenmittel: Einordnung (drei Kennzahl-Kacheln) ── */
+.equity-stats {
+  margin-top: .5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: .5rem;
+}
+.eq-stat {
+  display: flex;
+  flex-direction: column;
+  gap: .1rem;
+  padding: .5rem .625rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+.eq-stat-label { font-size: .6875rem; color: var(--color-muted); }
+.eq-stat-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+.eq-stat-pct { font-size: .6875rem; color: var(--color-muted); }
+.eq-warn {
+  margin-top: .5rem;
+  padding: .5rem .625rem;
+  background: var(--color-warning-bg);
+  border-radius: var(--radius);
+  font-size: .8125rem;
+  color: var(--color-warning);
+  line-height: 1.45;
+}
 
 .kmf-indicator {
   font-size: .875rem;
@@ -478,4 +518,129 @@ body {
   .site-header { border-radius: 0; }
   .tab-panel { padding: 1.5rem; }
   .field-row { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+/* ── Dezente Info-Links im Header ── */
+.header-links {
+  display: flex;
+  gap: .5rem;
+  margin-top: .875rem;
+}
+.header-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .3rem .7rem;
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--color-dark-border);
+  border-radius: 999px;
+  color: var(--color-dark-text);
+  font-size: .8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.header-link::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .5;
+}
+.header-link:hover {
+  background: rgba(255,255,255,.12);
+  color: #fff;
+}
+.header-link.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+.header-link.active::before { opacity: 1; }
+
+/* ── Aufklapp-Panel (hell, sitzt unter dem Header) ── */
+.info-drawer {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: inset 0 6px 10px -8px rgba(4,44,83,.18);
+  padding: 1.125rem 1rem 1.25rem;
+  font-size: .875rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+/* So funktioniert's */
+.howto-steps {
+  list-style: none;
+  counter-reset: step;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: .4rem;
+}
+@media (min-width: 680px) {
+  .howto-steps { grid-template-columns: 1fr 1fr; gap: .4rem 1.5rem; }
+}
+.howto-steps li {
+  counter-increment: step;
+  display: flex;
+  align-items: baseline;
+  gap: .6rem;
+  color: var(--color-muted);
+}
+.howto-steps li::before {
+  content: counter(step);
+  flex: 0 0 auto;
+  width: 1.4rem;
+  height: 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  color: var(--color-primary-hover);
+  border-radius: 50%;
+  font-size: .75rem;
+  font-weight: 700;
+}
+.howto-steps li strong { color: var(--color-text); }
+.howto-foot {
+  margin-top: .875rem;
+  padding-top: .75rem;
+  border-top: 1px solid var(--color-border);
+  font-size: .8125rem;
+  color: var(--color-muted);
+}
+
+/* Methodik & Quellen */
+.methodik-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+@media (min-width: 680px) {
+  .methodik-grid { grid-template-columns: 1fr 1fr; }
+}
+.methodik-block h3 {
+  font-size: .6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--color-primary-hover);
+  border-left: 3px solid var(--color-primary);
+  padding-left: .5rem;
+  margin-bottom: .5rem;
+}
+.methodik-block p,
+.methodik-block li { color: var(--color-muted); margin-bottom: .3rem; font-size: .8125rem; }
+.methodik-block ul { padding-left: 1.1rem; }
+.methodik-block li { margin-bottom: .2rem; }
+.methodik-block strong { color: var(--color-text); }
+.methodik-stand { margin-top: .5rem; opacity: .8; font-size: .75rem; font-style: italic; }
+.methodik-disclaimer {
+  margin-top: 1rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: .75rem;
+  font-size: .8125rem;
+  color: var(--color-muted);
+  font-style: italic;
 }

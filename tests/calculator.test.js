@@ -33,7 +33,6 @@ const GOLDEN_MASTER_INPUTS = {
   depositMonths: 3,
   inflationPct: 2.0,
   investmentReturnPct: 6.0,
-  dividendYieldPct: 1.5,
   kestPct: 27.5,
   horizonYears: 30,
   simulateSale: true,
@@ -613,16 +612,15 @@ test('runComparison: "Golden Master" Referenzszenario (Default Wien, 30 Jahre)',
   const results = runComparison(inputs);
 
   // Assert: Bottom-Line-Kennzahlen (eingefroren, Stand A12 — neu kalibriert nach
-  // Umstellung Instandhaltung "€/m²" → "% des aktuellen Immobilienwerts"
-  // (maintenancePctOfValue 1,2 %). Käufer-Werte unveraendert, da das Käufer-Portfolio
-  // 0 bleibt und der Käufer-Nettowert nicht von den laufenden Kosten abhaengt; nur die
-  // Mieter-Seite steigt, weil die hoeheren Eigentuemerkosten das geteilte Budget anheben.
+  // Umstellung Fondsbesteuerung: laufende Fondssteuer (1,5 % × 27,5 %) entfernt,
+  // nur noch End-KESt symmetrisch auf beide Portfolios. Mieter-Wert steigt dadurch,
+  // Käufer-Wert unveraendert (Käufer-Portfolio in diesem Szenario ≈ 0).
   assert.ok(Math.abs(results.buyerNetWealthNominal - 783336.61) < 0.01, `buyerNetWealthNominal: ${results.buyerNetWealthNominal}`);
-  assert.ok(Math.abs(results.renterNetWealthNominal - 1185823.07) < 0.01, `renterNetWealthNominal: ${results.renterNetWealthNominal}`);
-  assert.ok(Math.abs(results.differenceNominal - -402486.46) < 0.01, `differenceNominal: ${results.differenceNominal}`);
+  assert.ok(Math.abs(results.renterNetWealthNominal - 1260300.71) < 0.01, `renterNetWealthNominal: ${results.renterNetWealthNominal}`);
+  assert.ok(Math.abs(results.differenceNominal - -476964.10) < 0.01, `differenceNominal: ${results.differenceNominal}`);
   assert.ok(Math.abs(results.buyerNetWealthReal - 432457.34) < 0.01, `buyerNetWealthReal: ${results.buyerNetWealthReal}`);
-  assert.ok(Math.abs(results.renterNetWealthReal - 654658.40) < 0.01, `renterNetWealthReal: ${results.renterNetWealthReal}`);
-  assert.ok(Math.abs(results.differenceReal - -222201.06) < 0.01, `differenceReal: ${results.differenceReal}`);
+  assert.ok(Math.abs(results.renterNetWealthReal - 695775.33) < 0.01, `renterNetWealthReal: ${results.renterNetWealthReal}`);
+  assert.ok(Math.abs(results.differenceReal - -263317.99) < 0.01, `differenceReal: ${results.differenceReal}`);
   // Bei den Default-Annahmen (Anlagerendite 6% > Wertsteigerung 2,5%) bleibt der
   // Mieter ueber den gesamten Horizont vorne -> kein Breakeven
   assert.equal(results.breakevenYear, null);
