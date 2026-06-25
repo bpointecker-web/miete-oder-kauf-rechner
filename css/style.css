@@ -36,18 +36,19 @@ html {
 }
 
 body {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: transparent;
   color: var(--color-text);
   font-size: 1rem;
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
 [x-cloak] { display: none !important; }
 
 /* ── Header ── */
 .site-header {
-  background: linear-gradient(160deg, var(--color-dark-2) 0%, var(--color-dark-1) 100%);
+  background: linear-gradient(180deg, var(--color-dark-1) 0%, var(--color-dark-2) 100%);
   padding: 1.125rem 1rem 1rem;
 }
 .site-header h1 {
