@@ -89,7 +89,7 @@ export function createDefaultInputs() {
 
     // Laufende Kosten Eigentum
     maintenancePctOfValue: 1.2,
-    operatingCostsPerSqm: 2.50,
+    operatingCostsPerSqm: 2.60,  // Statistik Austria Wohnkostenerhebung Q1 2026
     renovationCost: 0,
     renovationYear: 15,
     appreciationPct: 2.5,  // AT-Ø Mittelfeld; Wien/Sbg/Ibk 3,0 %, Graz 2,5 %, Linz/AT-Ø 2,0 %

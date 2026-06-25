@@ -38,7 +38,10 @@
       <div class="methodik-grid">
         <div class="methodik-block">
           <h3>Vergleichsmethode</h3>
-          <p>Opportunity-Cost-Vermögensvergleich (in Anlehnung an Gerd Kommer, „Kaufen oder mieten?", 2021). Beide Seiten starten mit demselben verfügbaren Kapital — der Käufer setzt es für Eigenkapital und Kaufnebenkosten ein, der Mieter investiert es ins Portfolio. Monatliche Kostendifferenzen werden laufend nach­investiert oder entnommen. Am Ende des Horizonts werden die Nettovermögen verglichen.</p>
+          <p>Opportunity-Cost-Vermögensvergleich. Methodisch fußt der Ansatz auf dem user-cost-of-housing-Modell (Poterba 1984); populär aufbereitet u.&nbsp;a. von Gerd Kommer (2021) und Ben Felix („5 %-Regel").</p>
+          <p>Beide Seiten starten mit denselben verfügbaren Eigenmitteln. Der Käufer nutzt sie für Anzahlung, Kaufnebenkosten und Finanzierungsnebenkosten; der Mieter investiert denselben Betrag abzüglich Mietkaution.</p>
+          <p>Jeden Monat vergleicht der Rechner die laufenden Kosten: Kreditrate plus Eigentümerkosten auf der Käuferseite und Monatsmiete auf der Mieterseite. Wer in einem Monat weniger fürs Wohnen ausgibt, investiert die Differenz im Modell. Beim Mieter kann über die Sparquote eingestellt werden, wie viel dieser Ersparnis tatsächlich angelegt wird.</p>
+          <p>Am Ende des Betrachtungshorizonts werden die Nettovermögen beider Seiten verglichen.</p>
         </div>
         <div class="methodik-block">
           <h3>Berücksichtigte Kosten</h3>
@@ -50,24 +53,47 @@
         <div class="methodik-block">
           <h3>Vereinfachungen</h3>
           <ul>
-            <li>Mietsteigerung = Inflationsrate (kein eigenständiger Parameter).</li>
-            <li>KESt wird vereinfachend am Ende auf den Gesamtgewinn angewendet — laufende Besteuerung ausschüttungsgleicher Erträge bei Meldefonds (ca. 0,3–0,4 % p.a. Effekt) wird nicht separat modelliert.</li>
+            <li>Mietsteigerung = Inflationsrate.</li>
+            <li>KESt wird vereinfachend am Ende auf den Gesamtgewinn angewendet — laufende Besteuerung ausschüttungsgleicher Erträge bei Meldefonds wird nicht separat modelliert; die Höhe hängt vom Fonds und Jahr ab und kann die effektive Nachsteuerrendite dämpfen.</li>
             <li>Kein Versicherungsmantel, keine AfA, keine Mieteinnahmen, keine steuerliche Absetzbarkeit von Kreditzinsen (für Eigennutzung nicht relevant).</li>
             <li>Sanierungskosten als Einmalbetrag im gewählten Jahr, keine Verteilung über mehrere Jahre.</li>
             <li>Variabler Zins: einfacher einmaliger Wechsel nach X Jahren, kein stochastisches Zinsmodell.</li>
+            <li>Der Rechner ist für selbstgenutztes Wohneigentum konzipiert. Bei erfüllter Hauptwohnsitzbefreiung wird keine Immobilienertragsteuer auf den Wertgewinn angesetzt. Für Zweitwohnsitz oder vermietete Immobilien ist das Ergebnis nur eingeschränkt geeignet.</li>
           </ul>
         </div>
         <div class="methodik-block">
           <h3>Quellen &amp; Stand</h3>
+          <p><strong>Gesetzliche Werte</strong></p>
           <ul>
-            <li><strong>Zinssätze:</strong> optifin.at, capitalo.at, infina.at — Stand Juni 2026</li>
-            <li><strong>Kaufnebenkosten:</strong> § 26 Abs. 1 GBG, GrEStG 1987, österr. Maklergesetz</li>
-            <li><strong>Betriebskosten:</strong> Statistik Austria, Wohnkostenerhebung Q1 2025 (Ø 2,52 €/m²/Mon.)</li>
-            <li><strong>Wertsteigerung:</strong> OeNB Wohnimmobilienpreisindex; konservative Langfrist-Schätzwerte</li>
-            <li><strong>Anlagerendite:</strong> MSCI World (EUR, netto) 1970–2024; Referenzwert Gerd Kommer</li>
-            <li><strong>Instandhaltung:</strong> Gerd Kommer „Kaufen oder mieten?" (2021); US-„1 % Rule"</li>
+            <li><strong>GrESt 3,5 %</strong> — <a href="https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10004531" target="_blank" rel="noopener">GrEStG 1987, § 7 / RIS</a></li>
+            <li><strong>Grundbuch 1,1 % / Pfandrecht 1,2 %</strong> — <a href="https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10002667" target="_blank" rel="noopener">GGG Tarifpost 9 / RIS</a></li>
+            <li><strong>KESt 27,5 %</strong> — <a href="https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10004570" target="_blank" rel="noopener">EStG § 27a / RIS</a></li>
+            <li><strong>ImmoESt 30 % / HWS-Befreiung</strong> — <a href="https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10004570" target="_blank" rel="noopener">EStG § 30 / RIS</a></li>
           </ul>
-          <p class="methodik-stand">Stand: Juni 2026. Zinssätze, Gebühren und Marktdaten ändern sich — eigene Recherche empfohlen.</p>
+          <p style="margin-top:.625rem;"><strong>Marktdaten &amp; Modellannahmen</strong></p>
+          <ul>
+            <li><strong>Betriebskosten</strong> — <a href="https://www.statistik.at/statistiken/bevoelkerung-und-soziales/wohnen/wohnkosten" target="_blank" rel="noopener">Statistik Austria</a>, Q1 2026</li>
+            <li><strong>Wertsteigerung</strong> — <a href="https://www.oenb.at/Statistik/Standardisierte-Tabellen/Preise-Wettbewerbsfaehigkeit/immobilien/wohnimmobilienpreisindex.html" target="_blank" rel="noopener">OeNB Wohnimmobilienpreisindex</a></li>
+            <li><strong>Anlagerendite</strong> — MSCI World (EUR, netto) 1970–2024; Gerd Kommer (2021)</li>
+            <li><strong>Inflation 2,0 %</strong> — <a href="https://www.ecb.europa.eu/mopo/strategy/pricestab/html/index.en.html" target="_blank" rel="noopener">EZB Strategie-Review 2021</a></li>
+            <li><strong>Zinssätze</strong> — <a href="https://www.infina.at/kreditvergleich/aktuelle-zinsen/" target="_blank" rel="noopener">INFINA Kreditzinsen Österreich</a>; tatsächliche Konditionen bankabhängig</li>
+            <li><strong>Instandhaltung</strong> — Gerd Kommer „Kaufen oder mieten?" (2021, Campus Verlag); US-„1 % Rule"</li>
+          </ul>
+          <p class="methodik-stand">Stand: Juni 2026. Gesetzliche Werte und Marktdaten ändern sich — eigene Recherche empfohlen.</p>
+        </div>
+        <div class="methodik-block">
+          <h3>Grundlagen &amp; Literatur</h3>
+          <p>Die Opportunitätskosten-Betrachtung von Wohneigentum ist breit erforscht — eine Auswahl:</p>
+          <ul>
+            <li><strong>James Poterba</strong> (1984), QJE — user-cost-of-housing-Modell, akademische Grundlage</li>
+            <li><strong>Robert Shiller</strong> — <a href="http://www.econ.yale.edu/~shiller/data.htm" target="_blank" rel="noopener">Case-Shiller-Index</a>, Langfrist-Immobilienrenditen</li>
+            <li><strong>Beracha, Hardin &amp; Johnson</strong> — <a href="https://business.fau.edu/executive-education/bhj-buy-vs-rent-index/index.php" target="_blank" rel="noopener">BH&amp;J Buy vs. Rent Index</a></li>
+            <li><strong>Gerd Kommer</strong> — „Kaufen oder mieten?" (2021, Campus Verlag)</li>
+            <li><strong>Ben Felix / PWL Capital</strong> — <a href="https://pwlcapital.com/rent-or-own-your-home-5-rule/" target="_blank" rel="noopener">„5 %-Regel"</a></li>
+            <li><strong>Hartmut Walz</strong> — <a href="https://hartmutwalz.de/category/immobilien/" target="_blank" rel="noopener">Finanzblog, Immobilien als Anlageklasse</a></li>
+            <li><strong>Finanztip</strong> — <a href="https://www.finanztip.de/baufinanzierung/mieten-oder-kaufen/" target="_blank" rel="noopener">Mieten oder kaufen</a> (Rechner &amp; Analyse)</li>
+            <li><strong>New York Times</strong> — <a href="https://www.nytimes.com/interactive/2024/upshot/buy-rent-calculator.html" target="_blank" rel="noopener">Rent vs. Buy Calculator</a> (Upshot)</li>
+          </ul>
         </div>
       </div>
       <p class="methodik-disclaimer">
@@ -151,6 +177,7 @@
             <div class="info-panel" x-show="open">
               Gesetzlicher Satz nach § 7 GrEStG 1987. Für normale Käufe zum Marktpreis gilt immer pauschal 3,5 % — unabhängig vom Kaufpreis.<br><br>
               Nur bei Schenkung, Erbschaft oder Übergabe innerhalb der Kernfamilie gilt ein begünstigter Stufentarif (0,5 % / 2 % / 3,5 %) auf den Grundstückswert. Für einen normalen Immobilienkauf ist dieser Fall nicht relevant.
+              <small class="quelle-inline">Quelle: <a href="https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10004531" target="_blank" rel="noopener">GrEStG 1987, § 7 / RIS</a> · Stand: Juni 2026</small>
             </div>
           </div>
           <div class="field" x-data="{ open: false }">
@@ -161,7 +188,8 @@
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zur Grundbucheintragung">i</button>
             </p>
             <div class="info-panel" x-show="open">
-              Eintragungsgebühr nach § 26 Abs. 1 GBG: <strong>1,1 % des Kaufpreises</strong> (Eigentumsrecht). Wird vom Grundbuchgericht eingehoben, nicht verhandelbar.
+              Eintragungsgebühr nach GGG Tarifpost 9: <strong>1,1 % des Kaufpreises</strong> (Eigentumsrecht). Wird vom Grundbuchgericht eingehoben, nicht verhandelbar.
+              <small class="quelle-inline">Quelle: <a href="https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10002667" target="_blank" rel="noopener">GGG Tarifpost 9 / RIS</a> · Stand: Juni 2026</small>
             </div>
           </div>
           <div class="field" x-data="{ open: false }">
@@ -321,8 +349,9 @@
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Details zur Pfandrechtseintragung">i</button>
             </p>
             <div class="info-panel" x-show="open">
-              Gebühr für die Eintragung des Pfandrechts (Hypothek) im Grundbuch nach § 26 Abs. 1 GBG — <strong>1,2 % der Kreditsumme</strong>. Gesetzlich festgelegt, nicht verhandelbar. Wird direkt an das Grundbuchgericht entrichtet.<br>
+              Gebühr für die Eintragung des Pfandrechts (Hypothek) im Grundbuch nach GGG Tarifpost 9 — <strong>1,2 % der Kreditsumme</strong>. Gesetzlich festgelegt, nicht verhandelbar. Wird direkt an das Grundbuchgericht entrichtet.<br>
               <em>Hinweis: In der Praxis lässt die Bank oft ein höheres Pfandrecht eintragen als den tatsächlichen Kreditbetrag (z.&nbsp;B. 130–150 % der Kreditsumme). In diesem Fall erhöht sich die Gebühr entsprechend.</em>
+              <small class="quelle-inline">Quelle: <a href="https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10002667" target="_blank" rel="noopener">GGG Tarifpost 9 / RIS</a> · Stand: Juni 2026</small>
             </div>
           </div>
           <div class="field" x-data="{ open: false }">
@@ -374,8 +403,9 @@
                 <template x-if="inputs.rateModel === 'fixed'">
                   <span>
                     <strong>Fixzins</strong> – für die gesamte Laufzeit fix vereinbart.<br>
-                    Stand Juni 2026: 20–25 Jahre ca. 3,2–3,5 % p.a., 10 Jahre ab ca. 3,4 % (Quellen: optifin.at, capitalo.at).<br>
+                    Stand Juni 2026: 20–25 Jahre ca. 3,2–3,5 % p.a., 10 Jahre ab ca. 3,4 %.<br>
                     Orientierung: EUR-Swap-Rate + Bankmarge (0,7–1,2 %).
+                    <small class="quelle-inline">Quelle: <a href="https://www.infina.at/kreditvergleich/aktuelle-zinsen/" target="_blank" rel="noopener">INFINA Kreditzinsen</a> · Stand: Juni 2026</small>
                   </span>
                 </template>
                 <template x-if="inputs.rateModel === 'variable'">
@@ -419,6 +449,7 @@
                   <strong>Fix &amp; Variabel</strong> – typisches Kombi-Modell österreichischer Banken.<br>
                   Fixzins: EUR-Swap-Rate für die Fixphasen-Laufzeit + Bankmarge (0,7–1,2 %).<br>
                   Variabler Zins danach: EURIBOR 3M + Marge – als Schätzwert eingeben.
+                  <small class="quelle-inline">Quelle: <a href="https://www.infina.at/kreditvergleich/aktuelle-zinsen/" target="_blank" rel="noopener">INFINA Kreditzinsen</a> · Stand: Juni 2026</small>
                 </div>
               </div>
               <div class="field">
@@ -491,13 +522,14 @@
             <label>Betriebskosten</label>
             <div class="input-wrap"><input type="number" x-model.number="inputs.operatingCostsPerSqm" min="0" step="0.05"><span class="input-unit">€/m²</span></div>
             <p class="hint">
-              <span class="field-tag optional">Default: 2,50 €/m²/Mon.</span>
+              <span class="field-tag optional">Default: 2,60 €/m²/Mon.</span>
               <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Was ist enthalten?">i</button>
             </p>
             <div class="info-panel" x-show="open">
               Enthält: Wasser/Abwasser, Müll, Hausbetreuung, Aufzug, allg. Strom.<br><br>
-              <strong>Aktuelle Zahlen (Statistik Austria, Q1 2025):</strong> Ø 2,52 €/m²/Mon. für private Mietwohnungen in Österreich. Bandbreite je nach Bundesland und Gebäudestandard: 2,20–2,80 €/m².<br><br>
+              <strong>Aktuelle Zahlen (Statistik Austria, Q1 2026):</strong> Ø 2,60 €/m²/Mon. für Mietwohnungen in Österreich. Bandbreite je nach Bundesland und Gebäudestandard: 2,20–2,80 €/m².<br><br>
               Gilt im Modell für Käufer und Mieter gleichermaßen (beim Mieter in der Bruttomiete enthalten).
+              <small class="quelle-inline">Quelle: <a href="https://www.statistik.at/statistiken/bevoelkerung-und-soziales/wohnen/wohnkosten" target="_blank" rel="noopener">Statistik Austria, Wohnkostenerhebung</a> · Stand: Q1 2026</small>
             </div>
           </div>
         </div>
@@ -545,47 +577,6 @@
             <p class="hint"><span class="field-tag optional">Default: 15</span></p>
           </div>
         </div>
-      </div>
-
-      <div class="form-section">
-        <p class="form-section-title">Verkauf simulieren</p>
-        <div class="field-check">
-          <input type="checkbox" id="simulateSale" x-model="inputs.simulateSale">
-          <label for="simulateSale">Verkaufskosten am Ende berücksichtigen</label>
-        </div>
-        <p class="hint" style="margin-top:.4rem;">
-          Für einen fairen Vergleich wird angenommen, dass beide Seiten ihr Vermögen am Ende des Horizonts verfügbar machen — der Käufer durch Verkauf der Immobilie, der Mieter durch Auflösung des Portfolios. Wenn du die Option deaktivierst, wird der Immobilienwert ohne Abzug von Makler und ImmoESt angesetzt.
-        </p>
-        <template x-if="inputs.simulateSale">
-          <div class="field-row">
-            <div class="field">
-              <label>Maklerprovision Verkauf</label>
-              <div class="input-wrap"><input type="number" x-model.number="inputs.saleBrokerFeePct" min="0" step="0.1"><span class="input-unit">%</span></div>
-              <p class="hint"><span class="field-tag optional">Default: 3,6 %</span> des Verkaufspreises</p>
-            </div>
-            <div class="field" x-data="{ open: false }">
-              <label>ImmoESt-Satz</label>
-              <div class="input-wrap"><input type="number" x-model.number="inputs.immoEstPct" min="0" step="1"><span class="input-unit">%</span></div>
-              <p class="hint">
-                <span class="field-tag optional">Default: 30 %</span>
-                <button class="info-btn" @click="open = !open" :aria-expanded="open" title="Wann fällt ImmoESt an?">i</button>
-              </p>
-              <div class="info-panel" x-show="open">
-                <strong>Immobilienertragsteuer (ImmoESt) – 30 % auf den Wertgewinn (§ 30 EStG):</strong><br>
-                Die Hauptwohnsitzbefreiung (Checkbox) setzt die Steuer auf 0 €, wenn die Immobilie entweder seit dem Kauf durchgehend (mind. 2 Jahre) oder innerhalb der letzten 10 Jahre vor dem Verkauf mind. 5 Jahre durchgehend als Hauptwohnsitz genutzt wurde.
-              </div>
-            </div>
-            <div class="field-check" style="align-self:end; padding-bottom:.5rem;">
-              <input type="checkbox" id="primaryResidence" x-model="inputs.primaryResidenceExempt">
-              <label for="primaryResidence">Hauptwohnsitzbefreiung erfüllt (→ 0 % ImmoESt)</label>
-            </div>
-          </div>
-        </template>
-        <template x-if="inputs.simulateSale && !inputs.primaryResidenceExempt">
-          <div class="warnings" style="margin-top:.75rem;">
-            <strong>Eingeschränkte Aussagekraft ohne Hauptwohnsitzbefreiung:</strong> Dieses Modell ist für selbstgenutztes Wohneigentum konzipiert. Ohne Befreiung (z.&nbsp;B. Zweitwohnsitz oder Investment) fehlen im Vergleich: Mieteinnahmen, AfA (1,5&nbsp;% p.a. auf den Gebäudewert) und Abzugsfähigkeit der Kreditzinsen als Werbungskosten. Das Ergebnis ist in diesem Fall nur bedingt aussagekräftig.
-          </div>
-        </template>
       </div>
 
     </section>
@@ -640,6 +631,7 @@
             </p>
             <div class="info-panel" x-show="open">
               Symmetrisches EZB-Inflationsziel (seit Strategie-Review 2021). AT-Vergangenheitswert 2015–2024: ~3,1 % (inkl. Energiepreisschock 2022). 2,0 % ist der mittelfristige Erwartungswert; gilt im Modell für Mietsteigerung und Eigentümerkosten-Indexierung.
+              <small class="quelle-inline">Quelle: <a href="https://www.ecb.europa.eu/mopo/strategy/pricestab/html/index.en.html" target="_blank" rel="noopener">EZB Strategie-Review 2021</a> · Stand: Juni 2026</small>
             </div>
           </div>
           <div class="field" x-data="{ open: false }">
@@ -677,6 +669,7 @@
               <strong>Vereinfachung:</strong> Die laufende Besteuerung ausschüttungsgleicher Erträge bei österreichischen Meldefonds (thesaurierende ETFs wie MSCI World) wird nicht separat modelliert. Sie kann die effektive Nachsteuerrendite um ca. 0,3–0,4 Prozentpunkte p.a. senken.<br><br>
               <strong>Versicherungsmantel</strong> (fondsgebundene Lebensversicherung): zahlt stattdessen 4 % Versicherungssteuer auf jede Einzahlung, dafür keine laufende KESt. Wer über einen Versicherungsmantel investiert, kann hier einen niedrigeren effektiven Satz eingeben.<br><br>
               <strong>Tagesgeld / Sparbuch:</strong> Zinsen unterliegen 25 % KESt (§ 27a Abs. 1 Z 1 EStG), nicht 27,5 %.
+              <small class="quelle-inline">Quelle: <a href="https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10004570" target="_blank" rel="noopener">EStG § 27a / RIS</a> · Stand: Juni 2026</small>
             </div>
           </div>
         </div>
@@ -712,6 +705,35 @@
         </div>
       </div>
 
+      <div class="form-section">
+        <p class="form-section-title">Endwert &amp; Verkauf</p>
+        <p class="hint">Damit der Vergleich fair ist, bewertet der Rechner beide Seiten als verfügbares Vermögen: das Mieterportfolio nach KESt, die Immobilie als geschätzten Netto-Verkaufserlös statt als Bruttowert.</p>
+        <p class="hint" style="margin-top:.4rem;">
+          Der Immobilienwert am Ende ergibt sich aus Kaufpreis, angenommener Wertsteigerung und Betrachtungshorizont. Davon werden Restschuld und Verkaufskosten abgezogen.
+        </p>
+        <p class="hint" style="margin-top:0;">
+          Restschuld = der Teil des Kredits, der am Ende noch offen ist.
+        </p>
+        <div style="margin:.75rem 0; padding:.625rem .75rem; background:var(--color-surface); border-radius:.375rem; font-size:.8125rem; line-height:1.8; color:var(--color-text);">
+          <strong>Formel:</strong><br>
+          Geschätzter Verkaufserlös =<br>
+          &nbsp;&nbsp;Immobilienwert am Ende<br>
+          &nbsp;&nbsp;− Restschuld<br>
+          &nbsp;&nbsp;− Verkaufskosten
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Maklerprovision Verkauf</label>
+            <div class="input-wrap"><input type="number" x-model.number="inputs.saleBrokerFeePct" min="0" step="0.1"><span class="input-unit">%</span></div>
+            <p class="hint"><span class="field-tag optional">Default: 3,6 %</span> des Verkaufspreises</p>
+          </div>
+          <div class="field">
+            <label>ImmoESt</label>
+            <p style="font-size:.9375rem; font-weight:600; margin:.375rem 0 .25rem;">0 €</p>
+            <p class="hint"><strong>Annahme:</strong> Selbstgenutzter Hauptwohnsitz. Deshalb wird keine ImmoESt angesetzt.</p>
+          </div>
+        </div>
+      </div>
 
     </section>
 
@@ -793,9 +815,9 @@
                   <div class="info-panel kmf-info-panel" x-show="openKMF" style="margin-top:.5rem;">
                     <strong>Kauf-Miet-Faktor</strong> = Kaufpreis ÷ Jahreskaltmiete. Gibt an, wie viele Jahresmieten nötig sind, um den reinen Kaufpreis zu decken. Je höher der Wert, desto teurer ist die Immobilie relativ zu den Mieteinnahmen.<br>
                     <em style="font-size:.8125rem;">Kaltmiete = eingegebene Bruttomiete minus Betriebskosten (aus Tab „Laufende Kosten Eigentum").</em><br><br>
-                    <strong class="kmf-ok-text">≤ 20 — Niedriger Faktor:</strong> Die Bruttomietrendite liegt bei ≥ 5 %. Selbst nach Abzug von Instandhaltung und Betriebskosten bleibt eine Nettorendite, die das aktuelle Zinsniveau erreichen oder übertreffen kann. Ob Kaufen oder Mieten vorteilhafter ist, hängt trotzdem von Zins, Wertsteigerung und Sparverhalten ab.<br><br>
+                    <strong class="kmf-ok-text">≤ 20 — Niedriger Faktor:</strong> Die Mietrendite vor Eigentümerkosten (auf Basis geschätzter Kaltmiete) liegt bei ≥ 5 %. Selbst nach Abzug von Instandhaltung und Betriebskosten bleibt eine Nettorendite, die das aktuelle Zinsniveau erreichen oder übertreffen kann. Ob Kaufen oder Mieten vorteilhafter ist, hängt trotzdem von Zins, Wertsteigerung und Sparverhalten ab.<br><br>
                     <strong class="kmf-warn-text">20 bis 30 — Mittlerer Faktor:</strong> Das klassische Mittelfeld. Ob sich der Kauf lohnt, hängt von den individuellen Kreditkonditionen, der Laufzeit und der zukünftigen Wertsteigerung ab. Genau hier liefert die Detailberechnung dieses Kalkulators die entscheidenden Informationen.<br><br>
-                    <strong class="kmf-bad-text">&gt; 30 — Hoher Faktor:</strong> Die Bruttomietrendite liegt unter ~3,3 %. Das bedeutet nicht automatisch, dass Kaufen falsch ist — Wertsteigerung, persönliche Situation und Zinskonditionen spielen ebenfalls eine Rolle. Das Ergebnis hängt bei hohen Faktoren aber stark von der angenommenen Kapitalmarktrendite und der Immobilien-Wertsteigerung ab. Zur Einordnung: In Lagen wie Wien liegt der Faktor aktuell oft bei 35 bis 45.<br><br>
+                    <strong class="kmf-bad-text">&gt; 30 — Hoher Faktor:</strong> Die Mietrendite vor Eigentümerkosten liegt unter ~3,3 %. Das bedeutet nicht automatisch, dass Kaufen falsch ist — Wertsteigerung, persönliche Situation und Zinskonditionen spielen ebenfalls eine Rolle. Das Ergebnis hängt bei hohen Faktoren aber stark von der angenommenen Kapitalmarktrendite und der Immobilien-Wertsteigerung ab. Zur Einordnung: In Lagen wie Wien liegt der Faktor aktuell oft bei 35 bis 45.<br><br>
                     <em>In Anlehnung an Dr. Gerd Kommer, „Kaufen oder mieten?" (2021) und aktuelle Marktdaten.</em>
                   </div>
                 </div>

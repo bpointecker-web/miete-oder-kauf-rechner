@@ -10,11 +10,11 @@ Ein transparenter, rein finanzieller Vergleichsrechner für den österreichische
 
 ### Grundprinzip: Opportunitätskosten-Vermögensvergleich
 
-Beide Seiten starten mit demselben verfügbaren Kapital (Eigenkapital + Kaufnebenkosten, die der Käufer aufbringen muss):
+Beide Seiten starten mit demselben verfügbaren Kapital (Anzahlung/Eigenkapital + Kaufnebenkosten + Finanzierungsnebenkosten):
 
-**Käufer:** zahlt dieses Kapital sofort für Eigenkapital und Nebenkosten. Monatlich: Kreditrate + laufende Eigentümerkosten. Die Immobilie steigt gemäß Wertsteigerungsrate p.a. im Wert.
+**Käufer:** setzt dieses Kapital sofort für Anzahlung und Nebenkosten ein. Monatlich: Kreditrate + laufende Eigentümerkosten. Die Immobilie steigt gemäß Wertsteigerungsrate p.a. im Wert.
 
-**Mieter:** investiert dasselbe Startkapital in ein Wertpapierportfolio (Anlagerendite p.a.). Monatlich zahlt er Miete; die Differenz zu den Käuferkosten wird ins Portfolio ein- oder ausgezahlt. Eine konfigurierbare Sparquote (0–100 %) modelliert, wie diszipliniert der Mieter die Ersparnis tatsächlich investiert.
+**Mieter:** investiert dasselbe Startkapital in ein Wertpapierportfolio (Anlagerendite p.a.). Monatlich zahlt er Miete; wer günstiger wohnt, investiert die Differenz. Eine konfigurierbare Sparquote (0–100 %) modelliert, wie diszipliniert der Mieter die Ersparnis tatsächlich anlegt.
 
 **Am Ende des Horizonts:**
 - **Käufer-Nettovermögen** = Immobilienwert − Restschuld − (optional: Maklerprovision + ImmoESt)
@@ -31,25 +31,10 @@ Die Differenz entscheidet — wer liegt vorne?
 
 | Steuer | Modellierung |
 |---|---|
-| KESt (27,5 %) | Am Ende auf den realisierten Portfoliogewinn angewendet (Vereinfachung) |
-| Laufende Fondsbesteuerung | Optional: jährlicher Haircut (%) auf den Portfoliowert — modelliert Vorabpauschale-Analogon für Meldefonds |
-| ImmoESt (30 %) | Optional bei Verkauf, auf Wertgewinn; Hauptwohnsitzbefreiung konfigurierbar |
-| Grunderwerbsteuer | 3,5 % vom Kaufpreis (Kaufnebenkosten) |
-| Grundbucheintragung | 1,1 % vom Kaufpreis |
-
----
-
-## Regionale Presets
-
-Kaufpreise basieren auf Eurostat-Daten (automatisch aktualisiert via `scripts/update-data.mjs`). Mietrenditen sind Schätzwerte auf Basis allgemeiner Marktkenntnis — keine direkte Inserate-Auswertung.
-
-| Region | Kaufpreis-Quelle | Mietrendite |
-|---|---|---|
-| Wien | Eurostat / OeNB-Wohnimmobilienpreisindex | Schätzwert ~2,8–3,0 % brutto |
-| Graz, Linz, Salzburg, Innsbruck | Eurostat regional | Schätzwert ~3,0–3,4 % brutto |
-| Österreich-Ø | Eurostat national | Schätzwert ~3,2–3,5 % brutto |
-
-Alle Presets sind in der Oberfläche vollständig überschreibbar.
+| KESt (27,5 %) | Am Ende auf den realisierten Portfoliogewinn angewendet (Vereinfachung); laufende Besteuerung bei Meldefonds nicht separat modelliert |
+| ImmoESt (30 %) | Optional bei Verkauf, auf Wertgewinn; Hauptwohnsitzbefreiung konfigurierbar (§ 30 Abs. 2 Z 1 EStG) |
+| Grunderwerbsteuer | 3,5 % vom Kaufpreis (GrEStG 1987) |
+| Grundbuch/Pfandrecht | 1,1 % Eigentumsrecht / 1,2 % Pfandrecht (GGG Tarifpost 9) |
 
 ---
 
@@ -66,13 +51,9 @@ index.html          Benutzeroberfläche
 css/style.css       Styling
 js/
   calculator.js     Reine Berechnungslogik (testbar ohne DOM)
-  presets.js        Regionale Defaultwerte
+  presets.js        Österreich-Durchschnittswerte als Defaults
   charts.js         Chart.js-Rendering
   app.js            Alpine-Komponente, UI-Wiring
-data/
-  regional-generated.js   Auto-generierte Regionaldaten (Eurostat)
-scripts/
-  update-data.mjs   Aktualisiert Regionaldaten via Eurostat-API
 tests/
   calculator.test.js  Unit-Tests (Node.js built-in test runner)
 ```
@@ -93,8 +74,8 @@ Dieser Rechner dient **ausschließlich zur allgemeinen Information** und stellt 
 ## Quellen & Literatur
 
 - Kommer, G. (2021). *Kaufen oder mieten? Wie Sie für sich die richtige Entscheidung treffen.* Campus Verlag.
-- Eurostat: [Housing price statistics](https://ec.europa.eu/eurostat/statistics-explained/index.php/Housing_price_statistics_-_house_price_index)
-- OeNB: [Wohnimmobilienpreisindex Österreich](https://www.oenb.at/Statistik/Standardisierte-Tabellen/Immobilienmarkt.html)
+- Eurostat: [Housing price statistics](https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Housing_price_statistics_-_house_price_index)
+- OeNB: [Wohnimmobilienpreisindex Österreich](https://www.oenb.at/Statistik/Standardisierte-Tabellen/Preise-Wettbewerbsfaehigkeit/immobilien/wohnimmobilienpreisindex.html)
 
 ---
 
