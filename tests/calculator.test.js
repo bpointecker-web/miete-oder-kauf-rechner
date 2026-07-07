@@ -437,6 +437,56 @@ test('applySaleCosts: kein Gewinn -> keine ImmoESt auch ohne Befreiung', () => {
   assert.equal(netProceeds, 141000);
 });
 
+test('runComparison: ImmoESt-Bemessung beruecksichtigt Kaufnebenkosten als Anschaffungskosten', () => {
+  // Arrange — bewusst reduziertes Szenario: Miete=0 und Eigentuemerkosten=0 halten das
+  // Kaeufer-Portfolio bei 0, sodass buyerNetWealthNominal exakt dem Netto-Verkaufserloes
+  // der Immobilie entspricht (isoliert den ImmoESt-Fix von Portfolio-Effekten).
+  const inputs = {
+    pricePerSqm: 1000,
+    livingAreaSqm: 100,
+    transferTaxPct: 10,
+    landRegisterPct: 0,
+    brokerBuyPct: 0,
+    notaryPct: 0,
+    equityRatioPct: 100,
+    mortgageLienPct: 0,
+    bankProcessingPct: 0,
+    rateModel: 'fixed',
+    interestRatePct: 0,
+    loanTermYears: 1,
+    annualExtraRepayment: 0,
+    maintenancePctOfValue: 0,
+    operatingCostsPerSqm: 0,
+    appreciationPct: 15,
+    rentPerSqm: 0,
+    depositMonths: 0,
+    inflationPct: 0,
+    investmentReturnPct: 0,
+    kestPct: 0,
+    horizonYears: 1,
+    simulateSale: true,
+    saleBrokerFeePct: 0,
+    immoEstPct: 30,
+    primaryResidenceExempt: false,
+    renovationCost: 0,
+    renovationYear: 15,
+  };
+
+  // Act
+  const results = runComparison(inputs);
+
+  // Assert
+  // Kaufpreis 100.000, Kaufnebenkosten (nur GrESt 10%) = 10.000 -> Anschaffungskosten 110.000.
+  // Immobilienwert Jahr 1 = 100.000 * 1,15 = 115.000. Wertgewinn = 115.000 - 110.000 = 5.000.
+  // ImmoESt (30%) = 1.500 -> Nettoerloes = 115.000 - 1.500 = 113.500 (kein Kredit, keine Maklerprovision).
+  // Ohne den Fix (Anschaffungskosten = nur Kaufpreis) waere der Gewinn faelschlich 15.000
+  // und der Nettoerloes 110.500 (4.500 statt 1.500 ImmoESt -> 3.000 zu viel Steuer).
+  assert.ok(
+    Math.abs(results.buyerNetWealthNominal - 113500) < 0.01,
+    `buyerNetWealthNominal: ${results.buyerNetWealthNominal} (erwartet 113.500, Bug-Wert waere 110.500)`
+  );
+});
+
 test('findBreakevenYear: klarer Breakeven in der Mitte der Serie', () => {
   // Arrange
   const buyerSeries = [0, 10000, 25000, 45000, 70000];

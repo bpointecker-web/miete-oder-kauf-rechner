@@ -124,9 +124,6 @@ const inputs = {
   saleBrokerFeePct: 3.0,      // Maklerprovision beim Verkauf (Spec §1.5/§2.5)
   immoEstPct: 30,             // ImmoESt-Satz auf Wertgewinn (Spec §1.5/§2.5)
   primaryResidenceExempt: true,
-
-  // Leistbarkeit (2.6, optional/Phase 2)
-  householdNetIncome: null,
 };
 ```
 

@@ -108,13 +108,15 @@ export function appState() {
     recalculate() {
       try {
         this.results = runComparison(this.inputs);
-      } catch {
+      } catch (err) {
+        console.error('runComparison fehlgeschlagen:', err);
         this.results = null;
       }
       if (this.results) {
         try {
           this.results.breakevenSavingsRate = findBreakevenSavingsRate(this.inputs);
-        } catch {
+        } catch (err) {
+          console.error('findBreakevenSavingsRate fehlgeschlagen:', err);
           this.results.breakevenSavingsRate = null;
         }
       }

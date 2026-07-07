@@ -109,7 +109,5 @@ export function createDefaultInputs() {
     saleBrokerFeePct: 3.6,
     immoEstPct: 30,
     primaryResidenceExempt: true,
-
-    householdNetIncome: null,
   };
 }

@@ -31,7 +31,8 @@ export function calculateAnnuityPayment(principal, annualRatePct, remainingMonth
  * @param {object} params
  * @param {number} params.loanAmount - Kreditsumme
  * @param {number} params.loanTermYears - Vertragslaufzeit in Jahren
- * @param {"fixed"|"variable"} [params.rateModel="fixed"] - Zinsmodell (nur für Label, Berechnung identisch)
+ * @param {"fixed"|"hybrid"} [params.rateModel="fixed"] - Zinsmodell; bei "hybrid" wird
+ *   die Annuitaet nach `variableSwitchYear` auf `variableRatePct` umgestellt
  * @param {number} params.interestRatePct - Zins p.a. in Prozent
  * @param {number} [params.annualExtraRepayment=0] - Sondertilgung am Jahresende, gecappt bei Restschuld
  * @param {number} params.horizonYears - Betrachtungshorizont in Jahren
@@ -264,20 +265,23 @@ export function applyCapitalGainsTax(portfolioSeries, kestPct) {
  *
  * `Käufer-Nettovermögen = Immobilienwert − Restschuld − Verkaufskosten/-steuer` (Spec §1.5).
  * Die ImmoESt (30 %) wird nur auf einen **positiven** Wertgewinn
- * (`propertyValue − originalPrice`) angewandt und entfällt bei
+ * (`propertyValue − costBasis`) angewandt und entfällt bei
  * Hauptwohnsitzbefreiung vollständig.
  *
  * @param {number} propertyValue - aktueller Immobilienwert
- * @param {number} originalPrice - ursprünglicher Kaufpreis (für den Wertgewinn)
+ * @param {number} costBasis - steuerliche Anschaffungskosten: Kaufpreis + Anschaffungs-
+ *   nebenkosten (GrESt, Grundbuch, Makler, Notar) + ggf. bereits angefallener
+ *   Herstellungsaufwand (Sanierung). Finanzierungsnebenkosten (Pfandrecht,
+ *   Bankbearbeitung) zaehlen steuerlich NICHT dazu (§ 30 EStG).
  * @param {number} remainingDebt - Restschuld zum Verkaufszeitpunkt
  * @param {number} brokerFeePct - Maklerprovision in Prozent vom Immobilienwert
  * @param {number} taxRate - ImmoESt-Satz in Prozent (z.B. 30)
  * @param {boolean} isPrimaryResidence - Hauptwohnsitzbefreiung aktiv?
  * @returns {number} netProceeds
  */
-export function applySaleCosts(propertyValue, originalPrice, remainingDebt, brokerFeePct, taxRate, isPrimaryResidence) {
+export function applySaleCosts(propertyValue, costBasis, remainingDebt, brokerFeePct, taxRate, isPrimaryResidence) {
   const brokerFee = propertyValue * (brokerFeePct / 100);
-  const gain = Math.max(0, propertyValue - originalPrice);
+  const gain = Math.max(0, propertyValue - costBasis);
   const tax = isPrimaryResidence ? 0 : gain * (taxRate / 100);
 
   return propertyValue - remainingDebt - brokerFee - tax;
@@ -485,14 +489,22 @@ export function runComparison(inputs) {
   const baseMonthlyRent = derived.monthlyRent;
   const inflationFactor = 1 + inputs.inflationPct / 100;
 
+  // Steuerliche Anschaffungskosten (§ 30 EStG): Kaufpreis + Anschaffungsnebenkosten
+  // (GrESt, Grundbuch, Makler, Notar). Finanzierungsnebenkosten zaehlen nicht dazu.
+  const acquisitionCostBase = derived.purchasePrice + derived.closingCosts;
+
   for (let year = 0; year <= inputs.horizonYears; year++) {
     const propertyValue = owner[year].propertyValue;
     const remainingDebt = year === 0 ? derived.loanAmount : amort[year - 1].endBalance;
+    // Herstellungsaufwand (Sanierung) erhoeht die Anschaffungskosten ab dem Jahr,
+    // in dem er tatsaechlich angefallen ist.
+    const renovationIncurred =
+      inputs.renovationCost > 0 && year >= inputs.renovationYear ? inputs.renovationCost : 0;
 
     const propertyNet = inputs.simulateSale
       ? applySaleCosts(
           propertyValue,
-          derived.purchasePrice,
+          acquisitionCostBase + renovationIncurred,
           remainingDebt,
           inputs.saleBrokerFeePct,
           inputs.immoEstPct,
