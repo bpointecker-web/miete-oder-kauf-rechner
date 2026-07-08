@@ -38,14 +38,14 @@
       <div class="methodik-grid">
         <div class="methodik-block">
           <h3>Vergleichsmethode</h3>
-          <p>Opportunity-Cost-Vermögensvergleich. Methodisch fußt der Ansatz auf dem user-cost-of-housing-Modell (Poterba 1984); populär aufbereitet u.&nbsp;a. von Gerd Kommer (2021) und Ben Felix („5 %-Regel").</p>
+          <p>Opportunity-Cost-Vermögensvergleich. Methodisch fußt der Ansatz auf dem user-cost-of-housing-Modell (Poterba 1984); populär aufbereitet u.&nbsp;a. von Gerd Kommer (2021) und Ben Felix „5 %-Regel" (Stark vereinfacht: Ein Hauskauf rechnet sich finanziell nur, wenn die jährliche Kaltmiete mehr als 5&nbsp;% des Kaufpreises beträgt; ist sie günstiger, verbrennst du durch die versteckten Kosten des Eigentums – wie Instandhaltung, Zinsen und entgangene Aktiengewinne – mehr Geld als durch reine Mietzahlungen).</p>
           <p>Beide Seiten starten mit denselben verfügbaren Eigenmitteln. Der Käufer nutzt sie für Kreditanzahlung, Kaufnebenkosten und Finanzierungsnebenkosten; der Mieter investiert denselben Betrag abzüglich Mietkaution.</p>
           <p>Jeden Monat vergleicht der Rechner die laufenden Kosten: Kreditrate plus Eigentümerkosten auf der Käuferseite und Monatsmiete auf der Mieterseite. Wer in einem Monat weniger fürs Wohnen ausgibt, investiert die Differenz im Modell. Beim Mieter kann über die Sparquote eingestellt werden, wie viel dieser Ersparnis tatsächlich angelegt wird.</p>
           <p>Am Ende des Betrachtungshorizonts werden die Nettovermögen beider Seiten verglichen.</p>
         </div>
         <div class="methodik-block">
           <h3>Berücksichtigte Kosten</h3>
-          <p><strong>Käufer (einmalig):</strong> Grunderwerbsteuer (3,5 %), Grundbucheintragung Eigentumsrecht (1,1 %), Makler (einstellbar), Notar/Rechtsanwalt, Pfandrechtseintragung (1,2 % der Kreditsumme), Bankbearbeitungsgebühr.</p>
+          <p><strong>Käufer (einmalig):</strong> Grunderwerbsteuer (3,5 %), Grundbucheintragung Eigentumsrecht (1,1 %), Makler (einstellbar), Notar/Rechtsanwalt, Pfandrechtseintragung / Hypothek (1,2 % der Kreditsumme), Bankbearbeitungsgebühr.</p>
           <p><strong>Käufer (laufend):</strong> Annuität (fix oder variabel), Instandhaltungsrücklage (% des aktuellen Immobilienwerts), Betriebskosten, optionaler Sanierungsstau.</p>
           <p><strong>Käufer (Verkauf, optional):</strong> Maklerprovision, Immobilienertragsteuer 30 % (entfällt bei Hauptwohnsitzbefreiung gem. § 30 Abs. 2 Z 1 EStG).</p>
           <p><strong>Mieter:</strong> Bruttomiete (indexiert mit Inflation), Mietkaution (gebundenes Kapital), KESt 27,5 % auf realisierte Gewinne am Ende des Horizonts (§ 27a EStG).</p>
@@ -57,7 +57,7 @@
             <li>KESt wird vereinfachend am Ende auf den Gesamtgewinn angewendet — laufende Besteuerung ausschüttungsgleicher Erträge bei Meldefonds wird nicht separat modelliert; die Höhe hängt vom Fonds und Jahr ab und kann die effektive Nachsteuerrendite dämpfen.</li>
             <li>Kein Versicherungsmantel, keine AfA, keine Mieteinnahmen, keine steuerliche Absetzbarkeit von Kreditzinsen (für Eigennutzung nicht relevant).</li>
             <li>Sanierungskosten als Einmalbetrag im gewählten Jahr, keine Verteilung über mehrere Jahre.</li>
-            <li>Variabler Zins: einfacher einmaliger Wechsel nach X Jahren, kein stochastisches Zinsmodell.</li>
+            <li>Fix &amp; Variabel: nur ein einmaliger Wechsel vom Fixzins auf den variablen Satz nach X Jahren — danach konstant. Auch der reine variable Zins wird als fixer Wert angenommen, keine laufenden Marktschwankungen.</li>
             <li>Der Rechner ist für selbstgenutztes Wohneigentum konzipiert. Bei erfüllter Hauptwohnsitzbefreiung wird keine Immobilienertragsteuer auf den Wertgewinn angesetzt. Für Zweitwohnsitz oder vermietete Immobilien ist das Ergebnis nur eingeschränkt geeignet.</li>
           </ul>
         </div>
@@ -254,12 +254,12 @@
               · <strong>Zinsen (Kaufkraft-Hebel):</strong> Niedrige Zinsen ermöglichen höhere Kreditsummen, was 1:1 in die Kaufpreise fließt.<br>
               · <strong>Demografie:</strong> Der Trend zum Single-Haushalt erhöht den Wohnflächenbedarf pro Kopf massiv.<br>
               · <strong>Bürokratie:</strong> Strenge Auflagen bremsen den Neubau und verknappen das Angebot künstlich.<br>
-              · <strong>Anlagedruck („Betongold"):</strong> Investoren suchen einen sicheren Hafen und konkurrieren mit Eigennutzern.<br><br>
+              · <strong>Anlagedruck („Betongold"):</strong> Immobilien gelten als wertstabile Geldanlage. Neben Eigennutzern bieten deshalb auch Kapitalanleger auf dasselbe knappe Angebot mit — das treibt die Preise zusätzlich.<br><br>
 
               <strong>3. Historische Zyklen (OeNB-Daten)</strong><br>
               · <strong>1990–2010 (Normalität):</strong> Gesundes Wachstum parallel zur Inflation (~2 % p.a.).<br>
               · <strong>2010–2022 (Boom-Phase):</strong> Nullzinsen und Anlagedruck trieben die Preise weit über das Lohnwachstum hinaus (+6 bis 10 % p.a.).<br>
-              · <strong>Ab 2023 (Korrektur):</strong> Zinswende und KIM-Verordnung bremsen die Kaufkraft. Der Markt normalisiert sich und dockt wieder an die reale Einkommensentwicklung an.<br><br>
+              · <strong>Ab 2023 (Korrektur):</strong> Zinswende und KIM-Verordnung bremsen die Kaufkraft. Der Markt normalisiert sich und dockt wieder an die reale Entwicklung an.<br><br>
 
               <strong>Quellen:</strong>
               <a href="https://www.oenb.at/Statistik/Standardisierte-Tabellen/Preise-Wettbewerbsfaehigkeit/immobilien/wohnimmobilienpreisindex.html" target="_blank" rel="noopener">OeNB (Preisindizes)</a> ·
@@ -361,7 +361,7 @@
         <p class="form-section-title">Finanzierungsnebenkosten (% der Kreditsumme)</p>
         <div class="field-row">
           <div class="field" x-data="{ open: false }">
-            <label>Pfandrechtseintragung</label>
+            <label>Pfandrechtseintragung (Hypothek)</label>
             <div class="input-wrap"><input type="number" x-model.number="inputs.mortgageLienPct" min="0" step="0.1"><span class="input-unit">%</span></div>
             <p class="hint">
               <span class="field-tag optional">Default: 1,2 %</span>
@@ -587,12 +587,12 @@
               · Heizungsanlage: 8.000–15.000 €<br>
               · Fenster (70 m²): 5.000–10.000 €<br>
               · Badezimmer: 10.000–20.000 €<br><br>
-              Der Betrag wird im angegebenen Jahr vom Käufer-Portfolio abgezogen. Dadurch fehlt dieses Kapital für den Rest der Laufzeit (Opportunitätskosten eingerechnet).<br><br>
-              <strong>Modellgrenze:</strong> Reicht das Käufer-Portfolio für die Sanierung nicht aus, wird es rechnerisch negativ und "erholt" sich danach mit der Anlagerendite — das entspricht einem impliziten, unrealistisch günstigen Kredit. In der Praxis würdest du die Sanierung über einen (teureren) Zusatzkredit finanzieren. Ist dein Portfolio zum Sanierungsjahr voraussichtlich klein, rechne das Ergebnis mit Vorsicht.
+              <strong>Achtung Doppelzählung:</strong> Die laufende „Instandhaltung &amp; Rücklage" enthält bereits eine Rücklage dafür — nutze dieses Feld nur zusätzlich, wenn ein bekannter Sanierungsstau über die normale Rücklage hinausgeht.
+              <small class="quelle-inline">Quelle: <a href="https://www.klimaaktiv.at/private/zukunftsfittes-haus/heizung-tauschen/foerderungen-kosten/so-viel-kosten-neue-heizungen" target="_blank" rel="noopener">klimaaktiv.at</a> (Heizung), <a href="https://www.infina.at/ratgeber/altbausanierung/" target="_blank" rel="noopener">infina.at – Altbausanierung</a> (Fenster/Bad) · Stand: Juli 2026</small>
             </div>
           </div>
           <div class="field">
-            <label>Fällig in Jahr</label>
+            <label>Fällig in X Jahren</label>
             <div class="input-wrap"><input type="number" x-model.number="inputs.renovationYear" min="1" :max="inputs.horizonYears" step="1"><span class="input-unit">J</span></div>
             <p class="hint"><span class="field-tag optional">Default: 15</span></p>
           </div>
@@ -714,7 +714,8 @@
             <div class="info-panel" x-show="open">
               Wenn der Käufer mehr zahlt als der Mieter, hat der Mieter jeden Monat Geld übrig. Das Modell geht davon aus, dass er diesen Überschuss anlegt.<br><br>
               In der Realität sparen die wenigsten 100 % — ein Teil fließt in Lifestyle, Urlaub oder Konsum. Der Käufer hingegen spart zwangsläufig: die Kreditrate enthält immer eine Tilgungskomponente, egal ob er will oder nicht.<br><br>
-              <strong>Empfehlung:</strong> 100 % ist der theoretisch faire Vergleich. 60–80 % bildet die Realität besser ab. Am besten beide Szenarien durchspielen.
+              <strong>Empfehlung:</strong> 100 % ist der theoretisch faire Vergleich. 60–80 % bildet die Realität besser ab. Am besten beide Szenarien durchspielen.<br><br>
+              <strong>Wichtig:</strong> Die Sparquote betrifft nur die laufende monatliche Differenz — nicht das Startkapital. Das legt der Mieter unabhängig von der Sparquote von Anfang an voll an und lässt es über die gesamte Laufzeit wachsen. Deshalb kann Mieten auch bei 0 % Sparquote vorteilhafter sein, wenn die Anlagerendite deutlich über der Immobilien-Wertsteigerung liegt.
             </div>
           </div>
         </div>
@@ -910,7 +911,7 @@
 
             <div class="sensitivity-row" x-data="{ v: inputs.renterSavingsRatePct }" x-effect="v = inputs.renterSavingsRatePct">
               <div class="sens-label">
-                <span>Sparquote Mieter</span>
+                <span>Sparquote Mieter <small style="font-weight:400; opacity:.6; font-size:.75rem;">(wirkt nur auf die laufende Differenz, nicht aufs Startkapital)</small></span>
                 <span class="sens-value" x-text="v.toFixed(0) + ' %'"></span>
               </div>
               <input type="range" class="sens-slider"
